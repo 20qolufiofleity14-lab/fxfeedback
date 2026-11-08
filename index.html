@@ -145,6 +145,7 @@ nav button svg{width:22px;height:22px}
 nav button.on{color:var(--acc)}
 nav .plus{flex:none;width:54px;height:54px;border-radius:18px;background:var(--acc);color:#111;margin:-22px 6px 0;justify-content:center;box-shadow:0 6px 20px var(--accdim)}
 nav .plus svg{width:26px;height:26px}
+nav .plus.on{color:#111;box-shadow:0 0 0 3px var(--accdim),0 6px 20px var(--accdim)}
 .view{display:none}.view.on{display:block}
 .empty{color:var(--mute);font-size:13px;text-align:center;padding:16px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:9}
@@ -253,8 +254,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .lg-now .day small{font-size:16px;color:var(--mute);font-weight:500}
 .meters{margin-top:12px;display:grid;gap:9px}
 .mt{display:grid;grid-template-columns:62px 1fr 42px;align-items:center;gap:8px;font-size:12px}
-.mt .bar{height:8px;border-radius:5px;background:var(--bg2);overflow:hidden}
-.mt .bar i{display:block;height:100%;border-radius:5px;transition:width 1s ease}
+.mt .mbar{height:8px;border-radius:5px;background:var(--bg2);overflow:hidden}
+.mt .mbar i{display:block;height:100%;border-radius:5px;transition:width 1s ease}
 .mt b{font-family:Outfit;text-align:right;font-size:12px}
 .tl{position:relative;margin:6px 0 16px;padding-left:18px}
 .tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
@@ -337,7 +338,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝注意ポイントあり　●緑＝ルール通り　●金＝タグあり</div>
   </div>
   <div class="card">
-    <div class="ttl">トレード一覧 <em id="logCnt"></em></div>
+    <div class="ttl"><span>トレード一覧 <em id="logCnt"></em></span><button class="chip" id="addTradeBtn">＋ 記録</button></div>
     <div id="tradeList"></div>
   </div>
 </section>
@@ -388,11 +389,6 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
-  <div class="card">
-    <div class="ttl">口座の一生 <em>生まれて、散って、学ぶ</em></div>
-    <div id="lifeStats"></div>
-    <div id="lifeList"></div>
-  </div>
   <div class="card">
     <div class="ttl">注意ポイント <em>ABCD・データの影響が大きい順</em></div>
     <div class="small" style="margin-bottom:4px">A＝きっかけ　B＝頭の中（自分の言葉）　C＝データ　D＝次はこう考える</div>
@@ -469,11 +465,10 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 </div></div>
 
 <nav><div class="in">
-  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>ホーム</button>
-  <button data-v="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>カレンダー</button>
-  <button class="plus" id="plusBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button data-v="lot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg>ロット</button>
+  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>ホーム</button>
   <button data-v="log2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ログ</button>
+  <button data-v="lot" class="plus" id="lotCenter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg></button>
+  <button data-v="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>カレンダー</button>
   <button data-v="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>パターン</button>
 </div></nav>
 <div class="toast" id="toast"></div>
@@ -782,7 +777,8 @@ function openAdd(id,date){
   $('#delBtn').style.display=t?'block':'none';$('#delBtn').dataset.c='';$('#delBtn').textContent='このトレードを削除';
   $('#addModal').classList.add('on');
 }
-$('#plusBtn').onclick=()=>openAdd();
+
+$('#addTradeBtn').onclick=()=>openAdd();
 $$('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close).classList.remove('on'));
 $$('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove('on')});
 $('#saveBtn').onclick=()=>{
@@ -965,7 +961,7 @@ function renderLog2(){
       <div class="chara-row"><div class="chara">${sprite(stageOf(dayN(td)||1).k,cfg.state,6)}</div>
         <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
       <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
-      <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="bar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
+      <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="mbar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
@@ -999,7 +995,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!cfg.stateTouched&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLives();renderLog2();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();
 }
 $('#states').addEventListener('click',()=>{cfg.stateTouched=todayStr();save()});
 if(cfg.stateTouched&&cfg.stateTouched!==todayStr())cfg.stateTouched=null;
