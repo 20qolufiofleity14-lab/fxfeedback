@@ -184,6 +184,19 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .focus{margin-top:10px;background:var(--accdim);border-radius:14px;padding:11px 12px;font-size:13px;font-weight:700;color:var(--acc2)}
 .mind{margin-top:10px;border-left:3px solid var(--acc);padding:4px 0 4px 12px;font-size:12.5px;line-height:1.7;color:var(--text)}
 .mind small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.chbar{height:10px;border-radius:6px;background:var(--bg2);position:relative;overflow:hidden;margin:8px 0 4px}
+.chbar i{position:absolute;top:0;bottom:0;left:0;border-radius:6px}
+.chrow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute)}
+.chrow b{font-family:Outfit;color:var(--text);font-size:13px}
+.chgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.chgrid div{background:var(--bg2);border-radius:14px;padding:10px;text-align:center}
+.chgrid b{display:block;font-family:Outfit;font-size:19px;font-weight:800}
+.chgrid span{font-size:10.5px;color:var(--mute)}
+.chgrid .stopnow{background:rgba(255,93,108,.15);outline:1px solid rgba(255,93,108,.5)}
+.lostbtn{width:100%;margin-top:12px;border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.1);color:#ff9aa4;border-radius:14px;padding:13px;font:inherit;font-weight:900;font-size:15px}
+.lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
+.lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
+.lock p{font-size:13px;line-height:1.6;margin-top:4px}
 .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
 .dayhead .big{font-size:30px}
 </style>
@@ -196,6 +209,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <!-- ===== HOME ===== -->
 <section class="view on" id="v-home">
   <div id="homeCoach"></div>
+  <div class="card" id="chal"></div>
 
   <div class="card">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
@@ -257,6 +271,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <div class="card">
     <div class="ttl">ロット計算 <em id="lotAcctLbl"></em></div>
     <div id="coachBox"></div>
+    <button class="lostbtn" id="lostBtn">😤 負けた（15分ロック）</button>
+    <div id="lockBox"></div>
     <label class="f">今の自分の状態</label>
     <div class="states" id="states"></div>
     <div id="stateHint"></div>
@@ -382,13 +398,16 @@ const CLAUDE_DATA={
     {id:'c-20261005-2',date:'2026-10-05',time:'10:04',acct:'あみくも',pair:'USDJPY',dir:'S',lot:1,pips:-21,pnl:-32843}
   ],
   dayNotes:{},
+  // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
+  challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5000000,target:300000,
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4850000,start:null,days:60,selfLosses:2,selfR:2},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-08',state:'normal',grade:'C',
     headline:'リセット期間。まずは「待てた」を積み上げる',
-    reason:'直近の記録は10/5の2連敗のみ。負けた1分後に逆方向へ再エントリーしていて、典型的な「負けた瞬間に火がつく」パターン。1か月空いているので通常倍率から再スタート。',
+    reason:'Fintokei速攻プロ（500万・バッファ15万円）に挑戦開始。直近の記録は10/5の2連敗のみで、負けた1分後に逆方向へ再エントリーした「負けた瞬間に火がつく」パターン。あの2本（−4.5万円）は今回のバッファの3割にあたる。手法より「暴走ゼロ」が合否を決める。',
     good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
     watch:['負けた直後の再エントリー（10/5に発生）','1分足での飛び乗り'],
-    focus:'負けたら15分はチャートを閉じる。打つのは4h確定から1時間後。',
+    focus:'負けたら「負けた」ボタンで15分ロック。1日2敗か−2Rで終了。',
     mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。負けは「想定内の1回」として受け流す。'}}
 };
 
@@ -422,7 +441,8 @@ let local=LS.get('local',{trades:{},deleted:[],dayTags:{},dayMemo:{}});
 let tagList=LS.get('tagList',DEF_TAGS);
 let cfg=LS.get('cfg',{maxLotJ:1,maxLotG:0.1,cool:15,theme:'a',acct:'all',
   mult:{great:1,normal:0.75,stress:0.5,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
-  accounts:{'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'あみくも'});
+  accounts:{'Fintokei速攻':{bal:5000000,floor:4850000,cur:'JPY',risk:5,rate:150},'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4850000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
 const save=()=>{LS.set('local',local);LS.set('tagList',tagList);LS.set('cfg',cfg)};
 function allTrades(){const m={};CLAUDE_DATA.trades.forEach(t=>m[t.id]={tf:'',aim:'',conf:'',emo:null,after:'',state:'',good:'',bad:'',...t});
   Object.values(local.trades).forEach(t=>m[t.id]={...(m[t.id]||{}),...t});local.deleted.forEach(id=>delete m[id]);return Object.values(m)}
@@ -705,6 +725,36 @@ function renderCoach(){
   const box=$('#homeCoach .coachbig');box.classList.toggle('fold',cfg.coachFold===c.date);
   box.querySelector('.top').onclick=()=>{box.classList.toggle('fold');cfg.coachFold=box.classList.contains('fold')?c.date:null;save()};
 }
+function renderChal(){
+  const C=CLAUDE_DATA.challenge,el=$('#chal');if(!C){el.style.display='none';return}
+  const ct=trades.filter(t=>t.acct===C.acct),bal=C.balance,profit=bal-C.size,toFloor=bal-C.totalFloor;
+  const td=todayStr(),tdT=ct.filter(t=>t.date===td),tdPnl=tdT.reduce((x,t)=>x+t.pnl,0),tdLoss=tdT.filter(t=>t.pnl<0).length;
+  const A=cfg.accounts[C.acct]||{risk:5},base=Math.max(0,(A.bal||bal)-(A.floor||C.totalFloor))*(A.risk||5)/100,selfYen=base*C.selfR;
+  const selfLeft=Math.max(0,selfYen+Math.min(0,tdPnl)),lossLeft=Math.max(0,C.selfLosses-tdLoss),stop=selfLeft<=0||lossLeft<=0;
+  let day='開始前';if(C.start){const n=Math.floor((new Date(td)-new Date(C.start))/864e5)+1;day=`${n} / ${C.days}日目`}
+  const pct=Math.max(0,Math.min(100,profit/C.target*100)),fpct=Math.max(0,Math.min(100,toFloor/(C.size-C.totalFloor)*100));
+  el.innerHTML=`<div class="ttl">${C.name} <em>${day}</em></div>
+    <div class="chrow"><span>目標まで</span><span><b>${yen(profit)}</b> / ${yen(C.target)}</span></div>
+    <div class="chbar"><i style="width:${pct}%;background:var(--win)"></i></div>
+    <div class="chrow"><span>失格ラインまで（バッファ）</span><span><b>${yen(toFloor)}</b> / ${yen(C.size-C.totalFloor)}</span></div>
+    <div class="chbar"><i style="width:${fpct}%;background:${fpct<40?'var(--loss)':'var(--acc)'}"></i></div>
+    <div class="chgrid">
+      <div class="${selfLeft<=0?'stopnow':''}"><b class="num">${selfLeft<=0?'終了':yen(selfLeft)}</b><span>今日の自分ストップまで（−${C.selfR}R＝${yen(selfYen)}）</span></div>
+      <div class="${lossLeft<=0?'stopnow':''}"><b class="num">${lossLeft<=0?'終了':'あと'+lossLeft+'敗'}</b><span>今日の負け許容（${C.selfLosses}敗で終了）</span></div>
+      <div><b class="num">${yen(C.dailyLoss+Math.min(0,tdPnl))}</b><span>Fintokei日次ラインまで</span></div>
+      <div><b class="num">${yen(Math.max(0,C.dailyProfit-Math.max(0,tdPnl)))}</b><span>今日の利益上限まで</span></div>
+    </div>${stop?'<div class="alert"><h5>今日はここまで</h5><p>自分ルールのストップに到達。チャートを閉じて、明日に回す。</p></div>':''}`;
+}
+let lockTimer=null;
+function renderLock(){
+  const until=LS.get('lockUntil',0),box=$('#lockBox');clearInterval(lockTimer);
+  if(until-Date.now()<=0){box.innerHTML='';$('#lotOut').style.display='';return}
+  $('#lotOut').style.display='none';
+  const draw=()=>{const l=until-Date.now();if(l<=0){clearInterval(lockTimer);box.innerHTML='';$('#lotOut').style.display='';toast('ロット計算に戻れます');return}
+    box.innerHTML=`<div class="lock"><b>${Math.floor(l/60000)}:${pad(Math.floor(l%60000/1000))}</b><p>今は打たない。チャートを閉じる。<br><span class="small">「負けた瞬間に火がつく」——次の4h確定でチャンスはまた来る。</span></p></div>`};
+  draw();lockTimer=setInterval(draw,1000);
+}
+$('#lostBtn').onclick=()=>{LS.set('lockUntil',Date.now()+15*60000);const n=LS.get('lostTaps',[]);n.push(Date.now());LS.set('lostTaps',n);renderLock();toast('15分ロック開始')};
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
   trades=allTrades();
@@ -714,12 +764,12 @@ function renderAll(){
     const rank={great:0,normal:1,stress:2,tilt:3},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState();
     const pick=[c,a].filter(Boolean).sort((x,y)=>rank[y]-rank[x])[0];if(pick)cfg.state=pick;
   }
-  renderCoach();
+  renderCoach();renderChal();
   renderHome();renderLot();renderAcct();renderAna();renderPat();
 }
 $('#states').addEventListener('click',()=>{cfg.stateTouched=todayStr();save()});
 if(cfg.stateTouched&&cfg.stateTouched!==todayStr())cfg.stateTouched=null;
-applyTheme();renderAll();
+applyTheme();renderAll();renderLock();
 </script>
 </body>
 </html>
