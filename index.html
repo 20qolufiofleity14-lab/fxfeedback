@@ -226,6 +226,17 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .life .log span{font-family:Outfit;color:var(--mute);margin-right:6px}
 .lstat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
 .lstat div{background:var(--bg2);border-radius:12px;padding:9px 2px}.lstat b{display:block;font-family:Outfit;font-size:18px;font-weight:800}.lstat span{font-size:10px;color:var(--mute)}
+.chara-row{display:flex;gap:14px;align-items:center;margin-top:8px}
+.chara{background:radial-gradient(circle at 50% 70%,var(--accdim),transparent 70%);border-radius:16px;padding:6px 8px;flex:none;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.age{font-size:12.5px;color:var(--mute);margin-top:2px}.age span{color:var(--text);font-weight:700}
+.growth{display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px;padding:10px 6px 4px;background:var(--bg2);border-radius:14px}
+.gs{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:1}
+.gs span{font-family:Outfit;font-size:10px;color:var(--mute)}
+.gs.fut{opacity:.25;filter:grayscale(1)}
+.gs.now span{color:var(--acc);font-weight:800}
+.gs.now svg{filter:drop-shadow(0 0 4px var(--acc))}
+.garr{font-style:normal;color:var(--line);font-size:14px;padding-bottom:16px}
 .lg-head{text-align:center;padding:18px 0 10px}
 .lg-k{font-family:Outfit;font-size:13px;letter-spacing:.3em;color:var(--acc)}
 .lg-t{font-size:26px;font-weight:900;margin-top:4px;letter-spacing:.08em}
@@ -874,6 +885,26 @@ function renderLives(){
     ${(l.log||[]).length?`<div class="log">${l.log.map(x=>`<div><span>${x.d.slice(5).replace('-','/')}</span>${x.t}</div>`).join('')}</div>`:''}</div>`}).join('')+
     (dead.length?'':'<div class="small" style="margin-top:10px">過去に散った口座のダッシュボードを送ってくれたら、ここに墓標として並べていきます。</div>');
 }
+/* ---- ドット絵キャラ（口座の年齢で成長。60日＝60歳） ---- */
+const SPR={
+ baby:['','','','','','','','....hhhh....','...ssssss...','...sesses...','...ssmmss...','..wwwwwwww..','..wbbbbbbw..','..wbbbbbbw..','...wwwwww...',''],
+ child:['','','','','....hhhh....','...hhhhhh...','...ssssss...','...sesses...','...ssssss...','....smms....','...bbbbbb...','..sbbbbbbs..','..sbbbbbbs..','...bbbbbb...','...pp..pp...','...kk..kk...'],
+ adult:['....hhhh....','...hhhhhh...','...hssssh...','...sesses...','...ssssss...','....smms....','....ssss....','..bbbbbbbb..','.sbbbbbbbbs.','.sbbbbbbbbs.','.s.bbbbbb.s.','...bbbbbb...','...pp..pp...','...pp..pp...','...pp..pp...','..kkk..kkk..'],
+ elder:['....gggg....','...gggggg...','...gssssg...','...sesses...','...ssssss...','....smms....','....ssss....','..bbbbbbbb..','.sbbbbbbbbs.','.sbbbbbbbb.c','...bbbbbb..c','...bbbbbb..c','...pp..pp..c','...pp..pp..c','...pp..pp..c','..kkk..kkk.c'],
+ grave:['','','','....gggg....','...gggggg...','..gggxxggg..','..ggxxxxgg..','..gggxxggg..','..gggxxggg..','..gggggggg..','..gggggggg..','..gggggggg..','..gggggggg..','.llllllllll.','llllllllllll','']
+};
+const STAGES=[{k:'baby',d:1,n:'赤ちゃん'},{k:'child',d:6,n:'子ども'},{k:'adult',d:16,n:'青年'},{k:'adult',d:36,n:'大人'},{k:'elder',d:56,n:'長老'}];
+function sprite(key,mood,px,extra){
+  const pal={h:'#3b2a1e',s:'#f2c9a0',e:'#111',m:'#c0392b',w:'#f4efe4',b:'var(--acc)',p:'#2c3e66',k:'#4a3426',g:'#9aa3ad',c:'#8b5a2b',x:'#5d6670',l:'#3d6b3a',y:'#ffd34d',d:'#5aa9ff',r:'#ff5d6c'};
+  const rows=SPR[key].map(r=>r.padEnd(12,'.'));
+  const add=[];if(extra==='crown')add.push([4,0,'y'],[5,0,'y'],[6,0,'y'],[7,0,'y'],[4,-1,'y'],[7,-1,'y'],[5,-1,'y']);
+  const top=rows.findIndex(r=>r.trim().replace(/\./g,'').length);
+  if(key!=='grave'){if(mood==='stress')add.push([10,top+3,'d'],[10,top+4,'d']);if(mood==='tilt')add.push([9,top,'r'],[10,top+1,'r'],[10,top,'r'],[9,top+1,'r']);if(mood==='great')add.push([1,top+1,'y'],[10,top+2,'y'])}
+  let r='';rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(c!=='.')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[c]}"/>`}));
+  add.forEach(([x,y,c])=>{if(y>=0)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[c]}"/>`});
+  return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${r}</svg>`;
+}
+function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
 function renderLog2(){
   const L=CLAUDE_DATA.lives||[],C=CLAUDE_DATA.challenge,td=todayStr(),cur=L.find(l=>l.status==='alive');
   const dayN=d=>cur&&cur.start?Math.floor((new Date(d)-new Date(cur.start))/864e5)+1:null;
@@ -886,7 +917,9 @@ function renderLog2(){
     const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
       ['規律',clean,'var(--win)',Math.round(clean*100)+'%'],['平常心',calm,'var(--blue)',Math.round(calm*100)+'%'],['目標',prog,'var(--win)',Math.round(prog*100)+'%']];
     $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${Math.round(cur.size/10000)}万円口座</div>
-      <div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div>
+      <div class="chara-row"><div class="chara">${sprite(stageOf(dayN(td)||1).k,cfg.state,6)}</div>
+        <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
+      <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="bar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
     // タイムライン：Claudeのログ＋トレード＋勝ち負けボタンを日ごとに
     const days=new Set([...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{}))].filter(d=>!cur.start||d>=cur.start));
@@ -902,7 +935,7 @@ function renderLog2(){
   const dead=L.filter(l=>l.status!=='alive');
   $('#lgGraves').innerHTML=`<div class="ttl" style="margin-top:6px">これまでの一生 <em>${dead.length}口座</em></div>`+(dead.length?dead.map(l=>{
     const a=l.start&&l.end?Math.floor((new Date(l.end)-new Date(l.start))/864e5)+1:'?';
-    return `<div class="grave"><div class="st">${l.status==='graduated'?'🏆':'🪦'}</div><div><b>${l.name}</b><div>${a}日で${l.status==='graduated'?'合格':'散る'}${l.cause?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
+    return `<div class="grave"><div class="st">${l.status==='graduated'?sprite('adult','great',3,'crown'):sprite('grave','',3)}</div><div><b>${l.name}</b><div>${a}日で${l.status==='graduated'?'合格':'散る'}${l.cause?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
     :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>');
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
