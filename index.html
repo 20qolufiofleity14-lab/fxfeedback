@@ -80,7 +80,14 @@ header small{color:var(--mute);font-size:12px;display:block}
 .pat q{display:block;font-size:12.5px;color:var(--acc2);margin-top:4px;quotes:"「" "」"}
 .pat .st{font-size:11px;color:var(--mute);margin-top:4px}
 .meter{height:6px;background:var(--bg2);border-radius:4px;margin-top:6px;overflow:hidden}
-.meter i{display:block;height:100%;background:var(--loss)}
+.meter i{display:block;height:100%;background:var(--acc)}
+.abcd{display:grid;grid-template-columns:22px 1fr;gap:6px 8px;margin-top:8px;font-size:12.5px;line-height:1.6}
+.abcd i{font-style:normal;font-family:Outfit;font-weight:800;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:11px;background:var(--bg2);color:var(--mute)}
+.abcd i.bb{background:var(--accdim);color:var(--acc)}
+.abcd i.dd{background:rgba(54,211,153,.15);color:var(--win)}
+.abcd .bt{color:var(--acc2)}
+.abcd .dt{color:var(--text);font-weight:700}
+.abcd .ct{color:var(--mute)}
 /* chips */
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{border:1.5px solid var(--line);background:var(--bg2);color:var(--text);padding:8px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:500}
@@ -237,7 +244,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div class="ttl"><span>カレンダー</span><span class="calnav"><button id="cPrev">‹</button><span class="num" id="cLbl" style="font-size:13px"></span><button id="cNext">›</button></span></div>
     <div class="cal" id="cal"></div>
     <div class="monthsum"><span>月間収支 <b class="num" id="mPnl">¥0</b></span><span>勝率 <b class="num" id="mWin">0%</b></span><span>取引 <b class="num" id="mN">0</b></span></div>
-    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝爆散パターンあり　●緑＝ルール通り　●金＝タグあり</div>
+    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝注意ポイントあり　●緑＝ルール通り　●金＝タグあり</div>
   </div>
   <div class="card">
     <div class="ttl">トレード一覧 <em id="logCnt"></em></div>
@@ -282,7 +289,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
   <div class="card">
-    <div class="ttl">爆散ランキング <em>損失額の大きい順</em></div>
+    <div class="ttl">注意ポイント <em>ABCD・データの影響が大きい順</em></div>
+    <div class="small" style="margin-bottom:4px">A＝きっかけ　B＝頭の中（自分の言葉）　C＝データ　D＝次はこう考える</div>
     <div id="patList"></div>
   </div>
   <div class="card">
@@ -396,13 +404,13 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setT
 
 /* ---------- 固定データ（Notionのノートより） ---------- */
 const PATTERNS=[
- {id:'revenge',name:'負け直後の再エントリー',quote:'負けた瞬間に火がつく'},
- {id:'lot',name:'ロット超過・ロットを上げたあと',quote:'ロットミスで頭が暴発'},
- {id:'m1',name:'1分足で戦う',quote:'1分足で戦い出したらマジで終わり'},
- {id:'tired',name:'疲れ・夜',quote:'疲れてる時ダメ。夜は触らない'},
- {id:'dd',name:'ドローダウン中の焦り',quote:'少しでも勝てるようになりたい気持ちで始めて崩れる'},
- {id:'pride',name:'大きな損失（プライドの金額割れ）',quote:'10万単位の損失に心がついていけてない'},
- {id:'news',name:'指標・月末',quote:'指標負けが続きすぎ'}
+ {id:'revenge',name:'負け直後の再エントリー',quote:'負けた瞬間に火がつく',a:'負けた直後',b:'今すぐ取り返したい',d:'負けは想定内の1回。15分チャートを閉じれば、次の4h確定でチャンスはまた来る。'},
+ {id:'lot',name:'ロット超過・ロットを上げたあと',quote:'ロットミスで頭が暴発',a:'ロットを上げた・計算を飛ばした',b:'早く増やしたい',d:'ロットは状態の倍率で決まる。計算した数字以外は打たない。'},
+ {id:'m1',name:'1分足で戦う',quote:'1分足で戦い出したらマジで終わり',a:'1分足を見続けている',b:'今動いてる、乗らなきゃ',d:'1分足は確認用。根拠は15分足以上で揃ってから。'},
+ {id:'tired',name:'疲れ・夜',quote:'疲れてる時ダメ。夜は触らない',a:'夜・当直明け・疲れている日',b:'今日も少しはやっておきたい',d:'疲れている日は「打たない日」。休むのもルールを守ったトレード。'},
+ {id:'dd',name:'ドローダウン中の焦り',quote:'少しでも勝てるようになりたい気持ちで始めて崩れる',a:'ドローダウン中',b:'早く元に戻したい',d:'DD中ほど倍率を下げる。戻すのは回数で、1回で取り返しにいかない。'},
+ {id:'pride',name:'大きな損失（プライドの金額割れ）',quote:'10万単位の損失に心がついていけてない',a:'大きな含み損・損失',b:'この金額を負けたまま終われない',d:'損失額ではなく、ルール通りに切れたかで自分を評価する。'},
+ {id:'news',name:'指標・月末',quote:'指標負けが続きすぎ',a:'指標の前・月末',b:'動くから取れそう',d:'指標の前後は様子見。動いたあとの形ができるまで待つ。'}
 ];
 const CURES=['負けてトレードしたくなったら、MT5デモで戦う','暴走したら、魚釣りの形をイメージして振り返る','建値を置いていたのは偉かった','4h確定から1時間後に絞ると、決断疲れが減る','逆行したら、リボンが整うまで待つ'];
 const DEF_TAGS=['睡眠不足','仕事疲れ','当直明け','飲み会のあと','テンション高め','イライラ','DD中','指標前','夜トレ','コーヒー','運動した','家族時間◎','スッキリ'];
@@ -468,7 +476,7 @@ function renderHome(){
   const td=todayStr();
   tagChips($('#todayTags'),td,renderAll);
   const pids=riskPids(td);let html='';
-  if(pids.length){html=`<div class="alert"><h5>⚠ 今日は爆散しやすい条件があります</h5>`+pids.map(id=>{const p=PATTERNS.find(x=>x.id===id),hit=vis().filter(t=>detect(t).includes(id));
+  if(pids.length){html=`<div class="alert"><h5>⚠ 今日は注意ポイントに当てはまる条件があります</h5>`+pids.map(id=>{const p=PATTERNS.find(x=>x.id===id),hit=vis().filter(t=>detect(t).includes(id));
     return `<p>・${p.name}　<q>${p.quote}</q><br><span class="small">過去 ${hit.length}回 / ${yen(hit.reduce((s,t)=>s+t.pnl,0))}　→ ロットは「${STATES.find(s=>s.id===suggestState()).name}」で計算</span></p>`}).join('')+`</div>`}
   else if(tagsOf(td).length) html=`<div class="okbox">今のところ危ない条件は出ていません。いつも通り、待って待って入る。</div>`;
   $('#todayAlert').innerHTML=html;
@@ -605,9 +613,14 @@ function renderAna(){
 function renderPat(){
   const list=vis();
   const rows=PATTERNS.map(p=>{const hit=list.filter(t=>detect(t).includes(p.id));return {...p,n:hit.length,loss:hit.reduce((s,t)=>s+t.pnl,0)}}).sort((a,b)=>a.loss-b.loss||b.n-a.n);
-  const mx=Math.max(1,...rows.map(r=>Math.abs(Math.min(0,r.loss))));
-  $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}</h4><q>${r.quote}</q>
-    <div class="st">${r.n?`検出 ${r.n}回 ・ ${yen(r.loss)}`:'まだ検出なし（Notionのノートより）'}</div><div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div></div></div>`).join('');
+  const mx=Math.max(1,...rows.map(r=>Math.abs(Math.min(0,r.loss)))),totalLoss=-list.filter(t=>t.pnl<0).reduce((x,t)=>x+t.pnl,0);
+  $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}</h4>
+    <div class="abcd">
+      <i>A</i><div>${r.a}</div>
+      <i class="bb">B</i><div class="bt">「${r.b}」<span class="small">　ノートより：「${r.quote}」</span></div>
+      <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:'まだデータなし。出たらここに溜まっていく'}</div>
+      <i class="dd">D</i><div class="dt">${r.d}</div>
+    </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`).join('');
   $('#cureList').innerHTML=CURES.map(c=>`<div class="cure"><i>✓</i>${c}</div>`).join('');
   const cnt={};list.filter(t=>t.pnl>0).forEach(t=>tagsOf(t.date).forEach(g=>cnt[g]=(cnt[g]||0)+1));
   const g=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
