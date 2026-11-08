@@ -193,6 +193,12 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .chgrid b{display:block;font-family:Outfit;font-size:19px;font-weight:800}
 .chgrid span{font-size:10.5px;color:var(--mute)}
 .chgrid .stopnow{background:rgba(255,93,108,.15);outline:1px solid rgba(255,93,108,.5)}
+.losses{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.ldots{display:flex;gap:6px;align-items:center;margin-top:4px}
+.ldots .ld{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg2)}
+.ldots .ld.on{background:var(--loss);border-color:var(--loss)}
+.ldots span{font-size:13px;color:var(--mute);margin-left:4px}
+.lossbtn{border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.12);color:#ff9aa4;border-radius:14px;padding:12px 18px;font:inherit;font-weight:900;font-size:15px;flex:none}
 .lostbtn{width:100%;margin-top:12px;border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.1);color:#ff9aa4;border-radius:14px;padding:13px;font:inherit;font-weight:900;font-size:15px}
 .lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
 .lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
@@ -400,7 +406,7 @@ const CLAUDE_DATA={
   dayNotes:{},
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
   challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5000000,target:300000,
-    dailyLoss:100000,dailyProfit:150000,totalFloor:4850000,start:null,days:60,selfLosses:2,selfR:2},
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4850000,start:null,days:60,selfLosses:3,selfR:2},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-08',state:'normal',grade:'C',
     headline:'リセット期間。まずは「待てた」を積み上げる',
@@ -725,25 +731,23 @@ function renderCoach(){
   const box=$('#homeCoach .coachbig');box.classList.toggle('fold',cfg.coachFold===c.date);
   box.querySelector('.top').onclick=()=>{box.classList.toggle('fold');cfg.coachFold=box.classList.contains('fold')?c.date:null;save()};
 }
+const lossToday=()=>{const m=LS.get('lossTaps',{});return m[todayStr()]||0};
+function addLoss(n){const m=LS.get('lossTaps',{}),k=todayStr();m[k]=Math.max(0,(m[k]||0)+n);LS.set('lossTaps',m)}
 function renderChal(){
   const C=CLAUDE_DATA.challenge,el=$('#chal');if(!C){el.style.display='none';return}
-  const ct=trades.filter(t=>t.acct===C.acct),bal=C.balance,profit=bal-C.size,toFloor=bal-C.totalFloor;
-  const td=todayStr(),tdT=ct.filter(t=>t.date===td),tdPnl=tdT.reduce((x,t)=>x+t.pnl,0),tdLoss=tdT.filter(t=>t.pnl<0).length;
-  const A=cfg.accounts[C.acct]||{risk:5},base=Math.max(0,(A.bal||bal)-(A.floor||C.totalFloor))*(A.risk||5)/100,selfYen=base*C.selfR;
-  const selfLeft=Math.max(0,selfYen+Math.min(0,tdPnl)),lossLeft=Math.max(0,C.selfLosses-tdLoss),stop=selfLeft<=0||lossLeft<=0;
-  let day='開始前';if(C.start){const n=Math.floor((new Date(td)-new Date(C.start))/864e5)+1;day=`${n} / ${C.days}日目`}
-  const pct=Math.max(0,Math.min(100,profit/C.target*100)),fpct=Math.max(0,Math.min(100,toFloor/(C.size-C.totalFloor)*100));
-  el.innerHTML=`<div class="ttl">${C.name} <em>${day}</em></div>
-    <div class="chrow"><span>目標まで</span><span><b>${yen(profit)}</b> / ${yen(C.target)}</span></div>
-    <div class="chbar"><i style="width:${pct}%;background:var(--win)"></i></div>
-    <div class="chrow"><span>失格ラインまで（バッファ）</span><span><b>${yen(toFloor)}</b> / ${yen(C.size-C.totalFloor)}</span></div>
+  const td=todayStr(),recLoss=trades.filter(t=>t.acct===C.acct&&t.date===td&&t.pnl<0).length,n=Math.max(lossToday(),recLoss),max=C.selfLosses;
+  const toFloor=C.balance-C.totalFloor,fpct=Math.max(0,Math.min(100,toFloor/(C.size-C.totalFloor)*100));
+  let left='開始日 未設定';if(C.start){const d=Math.floor((new Date(td)-new Date(C.start))/864e5);left=`残り <b class="num" style="font-size:16px;color:var(--acc)">${Math.max(0,C.days-d)}</b> 日`}
+  const dots=Array.from({length:max},(_,i)=>`<i class="ld ${i<n?'on':''}"></i>`).join('');
+  el.innerHTML=`<div class="ttl">${C.name} <em>${left}</em></div>
+    <div class="chrow"><span>失格ラインまで</span><span><b>${yen(toFloor)}</b> / ${yen(C.size-C.totalFloor)}　目標 ${yen(C.balance-C.size)} / ${yen(C.target)}</span></div>
     <div class="chbar"><i style="width:${fpct}%;background:${fpct<40?'var(--loss)':'var(--acc)'}"></i></div>
-    <div class="chgrid">
-      <div class="${selfLeft<=0?'stopnow':''}"><b class="num">${selfLeft<=0?'終了':yen(selfLeft)}</b><span>今日の自分ストップまで（−${C.selfR}R＝${yen(selfYen)}）</span></div>
-      <div class="${lossLeft<=0?'stopnow':''}"><b class="num">${lossLeft<=0?'終了':'あと'+lossLeft+'敗'}</b><span>今日の負け許容（${C.selfLosses}敗で終了）</span></div>
-      <div><b class="num">${yen(C.dailyLoss+Math.min(0,tdPnl))}</b><span>Fintokei日次ラインまで</span></div>
-      <div><b class="num">${yen(Math.max(0,C.dailyProfit-Math.max(0,tdPnl)))}</b><span>今日の利益上限まで</span></div>
-    </div>${stop?'<div class="alert"><h5>今日はここまで</h5><p>自分ルールのストップに到達。チャートを閉じて、明日に回す。</p></div>':''}`;
+    <div class="losses"><div><div class="small">今日の負け</div><div class="ldots">${dots}<span class="num">${n} / ${max}</span></div></div>
+      <button class="lossbtn" id="lossTap">＋ 負けた</button></div>
+    ${n>=max?'<div class="alert"><h5>今日はここまで</h5><p>負けが'+max+'回に届いた。チャートを閉じて、明日に回す。</p></div>':n===max-1?'<div class="hint">あと1敗で今日は終了。次は本当に打つべき形だけ。</div>':''}
+    <div class="small" style="margin-top:6px;text-align:right"><a href="#" id="lossUndo" style="color:var(--mute)">1つ取り消す</a></div>`;
+  $('#lossTap').onclick=()=>{addLoss(1);LS.set('lockUntil',Date.now()+15*60000);renderChal();renderLock();toast('記録しました。15分ロック開始')};
+  $('#lossUndo').onclick=e=>{e.preventDefault();addLoss(-1);renderChal()};
 }
 let lockTimer=null;
 function renderLock(){
@@ -754,7 +758,7 @@ function renderLock(){
     box.innerHTML=`<div class="lock"><b>${Math.floor(l/60000)}:${pad(Math.floor(l%60000/1000))}</b><p>今は打たない。チャートを閉じる。<br><span class="small">「負けた瞬間に火がつく」——次の4h確定でチャンスはまた来る。</span></p></div>`};
   draw();lockTimer=setInterval(draw,1000);
 }
-$('#lostBtn').onclick=()=>{LS.set('lockUntil',Date.now()+15*60000);const n=LS.get('lostTaps',[]);n.push(Date.now());LS.set('lostTaps',n);renderLock();toast('15分ロック開始')};
+$('#lostBtn').onclick=()=>{addLoss(1);LS.set('lockUntil',Date.now()+15*60000);renderLock();renderChal();toast('負けを記録。15分ロック開始')};
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
   trades=allTrades();
