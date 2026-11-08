@@ -244,6 +244,11 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .sc-walk{animation:walk 8s linear infinite}@keyframes walk{from{transform:translateX(-12px)}to{transform:translateX(66px)}}
 .sc-note{font:bold 4px sans-serif;fill:#f5d78a;animation:zz 2.4s linear infinite}
 .sc-glow{animation:blink 3s ease-in-out infinite}
+.sc-cheers{animation:hop 1.2s ease-in-out infinite}
+.sc-cloud{animation:cloud 6s linear infinite alternate}@keyframes cloud{from{transform:translateX(8px)}to{transform:translateX(-8px)}}
+.sc-plane{animation:hop 2s ease-in-out infinite}
+.sc-walk2{animation:walk 12s linear infinite}
+.sc-twinkle{animation:blink 2s ease-in-out infinite}
 .sc-water{animation:pen 1s steps(2) infinite}
 .sc-mobile{transform-box:view-box;transform-origin:22px 0;animation:rock 4s ease-in-out infinite}
 .sc-z{font:bold 4px monospace;fill:#8a93a3;animation:zz 3s linear infinite}.sc-z.d2{animation-delay:1.5s}
@@ -957,7 +962,7 @@ const SPR={
  elder:['....gggg....','...gggggg...','...gssssg...','...sesses...','...ssssss...','....smms....','....ssss....','..bbbbbbbb..','.sbbbbbbbbs.','.sbbbbbbbb.c','...bbbbbb..c','...bbbbbb..c','...pp..pp..c','...pp..pp..c','...pp..pp..c','..kkk..kkk.c'],
  grave:['','','','....gggg....','...gggggg...','..gggxxggg..','..ggxxxxgg..','..gggxxggg..','..gggxxggg..','..gggggggg..','..gggggggg..','..gggggggg..','..gggggggg..','.llllllllll.','llllllllllll','']
 };
-const STAGES=[{k:'baby',d:1,n:'乳児'},{k:'child',d:3,n:'幼児'},{k:'child',d:6,n:'小学校 低学年'},{k:'child',d:9,n:'小学校 高学年'},{k:'adult',d:13,n:'中学生（思春期）'},{k:'adult',d:16,n:'高校生（青春）'},{k:'adult',d:19,n:'大学生'},{k:'adult',d:23,n:'社会人'},{k:'adult',d:35,n:'中堅'},{k:'adult',d:45,n:'円熟'},{k:'elder',d:55,n:'長老'}];
+const STAGES=[{k:'baby',d:1,n:'乳児'},{k:'child',d:3,n:'幼児'},{k:'child',d:6,n:'小学校 低学年'},{k:'child',d:9,n:'小学校 高学年'},{k:'adult',d:13,n:'中学生（思春期）'},{k:'adult',d:16,n:'高校生（青春）'},{k:'adult',d:19,n:'大学生（講義）'},{k:'adult',d:21,n:'大学生（仲間と飲み会）'},{k:'adult',d:23,n:'新社会人'},{k:'adult',d:28,n:'昇給・昇進'},{k:'adult',d:33,n:'海外出張'},{k:'adult',d:37,n:'中堅（部下を指導）'},{k:'adult',d:42,n:'部長'},{k:'adult',d:47,n:'学会発表'},{k:'elder',d:51,n:'定年退職'},{k:'elder',d:55,n:'シニア旅行'},{k:'elder',d:59,n:'最期のとき'}];
 function sprite(key,mood,px,extra){return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${spriteRects(key,mood,extra)}</svg>`}
 function spriteRects(key,mood,extra){
   const pal={h:'#3b2a1e',s:'#f2c9a0',e:'#111',m:'#c0392b',w:'#f4efe4',b:'var(--acc)',p:'#2c3e66',k:'#4a3426',g:'#9aa3ad',c:'#8b5a2b',x:'#5d6670',l:'#3d6b3a',y:'#ffd34d',d:'#5aa9ff',r:'#ff5d6c'};
@@ -972,7 +977,7 @@ function spriteRects(key,mood,extra){
 /* ---- 年齢ごとのシーン（ドット絵アニメ） ---- */
 const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
 function scene(stageKey,day,mood){
-  const W=64,H=30,spr=(k,x,y,cls)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,mood)}</g></g>`;
+  const W=64,H=30,spr=(k,x,y,cls,shirt,md)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,md||mood).replace(/var\(--acc\)/g,shirt||'var(--acc)')}</g></g>`;
   const room=(wall)=>R(0,0,W,H,wall||'#1d2230')+R(0,24,W,6,'#2a2f3d')+R(0,24,W,.8,'#3a4052');
   const out=(sky,grass)=>R(0,0,W,H,sky)+R(0,23,W,7,grass)+R(0,23,W,.8,'#4f8f45');
   const win=(x,moon)=>R(x,3,10,9,'#2c3550')+R(x+1,4,8,7,moon?'#3b4a72':'#7fb3e6')+(moon?`<circle cx="${x+7}" cy="6" r="1.4" fill="#f5e7a1"/>`:'');
@@ -985,12 +990,27 @@ function scene(stageKey,day,mood){
   else if(day<13){b=out('#9cc8ef','#5aa64e')+R(46,12,3,11,'#7a5230')+`<circle cx="47.5" cy="10" r="6" fill="#3d8b3a"/>`+R(4,18,8,5,'#d9d9d9')+R(4,17,8,1,'#b0b0b0')+`<g class="sc-run">${spr('child',14,8)}</g>`+`<g class="sc-ball2"><circle cx="34" cy="21.5" r="1.5" fill="#f4efe4"/></g>`}
   else if(day<16){b=room('#1a1a2b')+win(4,1)+R(30,16,28,2,'#5b4636')+R(32,18,1.5,6,'#4a3426')+R(55,18,1.5,6,'#4a3426')+R(50,11,1,5,'#c9b88f')+R(48,10,5,1.5,'#ffd34d')+`<g class="sc-glow"><circle cx="50.5" cy="13" r="6" fill="#ffd34d" opacity=".12"/></g>`+spr('adult',36,1,'sc-nod')+`<text x="22" y="10" class="sc-note">♪</text>`}
   else if(day<19){b=`<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a5a"/><stop offset=".7" stop-color="#e38a5a"/></linearGradient></defs>`+R(0,0,W,H,'url(#dusk)')+`<circle cx="48" cy="18" r="4" fill="#ffcf7a"/>`+R(0,22,W,8,'#3a3348')+R(0,22,W,.6,'#55506a')+`<g class="sc-walk">${spr('adult',0,7)}${R(9,15,3,3,'#4a3426')}</g>`}
-  else if(day<23){b=room('#232030')+[2,10,18].map(x=>R(x,2,7,20,'#5b4636')+R(x+.5,5,6,.6,'#3a2a1e')+R(x+.5,11,6,.6,'#3a2a1e')+R(x+.5,17,6,.6,'#3a2a1e')+R(x+1,2.6,1,2.3,'#c0392b')+R(x+2.3,2.6,1,2.3,'#2c3e66')+R(x+3.6,8.6,1,2.3,'#36d399')).join('')+R(30,16,30,2,'#a0703a')+spr('adult',36,1,'sc-breathe')+R(46,14.6,6,1.4,'#f4efe4')+`<g class="sc-pen">${R(51,12.5,.8,3,'#e9b949')}</g>`}
-  else if(day<45){const two=day>=35,c=['#36d399','#ff5d6c','#36d399','#36d399','#ff5d6c','#36d399'];
-    const mon=(x)=>R(x,3,22,13,'#0b0e14')+R(x,3,22,1,'#3a4052')+c.map((col,i)=>{const h=[4,3,5,6,3,7][i],y=[9,10,7,6,9,5][i];return `<g class="sc-candle" style="animation-delay:${i*.25}s">${R(x+2.5+i*3.1,y-1,.4,h+2,col)}${R(x+2+i*3.1,y,1.4,h,col)}</g>`}).join('');
-    b=room()+mon(two?20:32)+(two?mon(42):'')+R(28,19,34,2,'#a0703a')+R(30,21,1.5,3,'#8b5a2b')+R(59,21,1.5,3,'#8b5a2b')+spr('adult',4,8,'sc-breathe')+R(two?16:24,17,3,2,'#f4efe4')+`<g class="sc-steam">${R((two?16:24)+1,14,.6,2,'#8a93a3')}</g>`}
-  else if(day<55){b=out('#a7d0ef','#5aa64e')+[30,38,46,54].map((x,i)=>R(x,19,1,4,'#3d8b3a')+`<circle cx="${x+.5}" cy="18" r="1.6" fill="${['#ff5d6c','#ffd34d','#f4a3c4','#ffd34d'][i]}"/>`).join('')+spr('adult',10,7,'sc-breathe')+`<g class="sc-water">${R(20,14,4,3,'#5aa9ff')}${R(24,15,3,.8,'#5aa9ff')}</g>`}
-  else{b=room()+win(46,1)+`<g class="sc-rock2">${R(12,23,22,1.4,'#8b5a2b')}${R(14,8,2,15,'#a0703a')}${R(14,17,16,2,'#a0703a')}${spr('elder',15,3)}</g>`}
+  else if(day<21){b=room('#232030')+R(14,2,36,11,'#2f3d33')+R(14,2,36,.8,'#8b5a2b')+`<text x="17" y="7.5" class="sc-chalk">リスクリワード</text><text x="17" y="11" class="sc-chalk">期待値＝勝率×RR</text>`+
+    spr('adult',6,8,'sc-nod','#5a7bd6','normal')+spr('adult',26,8,'sc-breathe')+spr('adult',46,8,'sc-nod','#c46a8a','normal')+R(2,18,60,2,'#a0703a')}
+  else if(day<23){b=room('#2a2020')+R(48,3,12,8,'#3a2a1e')+`<text x="49.5" y="8.5" class="sc-chalk">居酒屋</text>`+spr('adult',4,6,'sc-breathe','#5a7bd6','great')+spr('adult',20,6,'sc-hop')+spr('adult',36,6,'sc-breathe','#c46a8a','great')+R(2,18,50,2,'#a0703a')+
+    `<g class="sc-cheers">${R(14,14,2.4,3,'#ffd34d')+R(14,13.4,2.4,.8,'#f4efe4')+R(30,14,2.4,3,'#ffd34d')+R(30,13.4,2.4,.8,'#f4efe4')}</g>`}
+  else if(day<28){b=room('#202733')+win(4)+R(26,8,16,10,'#0b0e14')+R(27,9,14,8,'#2c3e66')+[10,12,14].map(y=>R(29,y,10,.6,'#8fb3e8')).join('')+R(22,18,40,2,'#c9b88f')+R(24,20,1.5,4,'#9a8a6a')+R(59,20,1.5,4,'#9a8a6a')+spr('adult',44,6,'sc-nod','#2c3e66','normal')+R(52,15,1.5,3,'#ff5d6c')}
+  else if(day<33){b=room('#202733')+R(4,3,22,15,'#f4efe4')+`<polyline points="6,15 10,13 14,13.5 18,9 23,5" fill="none" stroke="#36d399" stroke-width="1"/>`+`<text x="6" y="6.5" class="sc-chalk" style="fill:#333">昇給!</text>`+
+    spr('adult',34,6,'sc-hop','#2c3e66','great')+`<g class="sc-cheers">${R(46,12,6,4,'#f4efe4')+R(46,12,6,1,'#ff5d6c')}</g>`+`<text x="44" y="6" class="sc-note">★</text>`}
+  else if(day<37){b=`<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#bfe0ff"/></linearGradient></defs>`+R(0,0,W,H,'url(#sky2)')+
+    `<g class="sc-cloud">${R(4,6,10,3,'#fff')+R(6,4.5,6,2,'#fff')+R(40,20,12,3,'#fff')+R(43,18.5,6,2,'#fff')}</g>`+
+    `<g class="sc-plane">${R(18,12,26,4,'#e8eef6')+R(42,12.5,3,3,'#e8eef6')+R(26,8,6,4,'#c9d4e2')+R(26,16,6,4,'#c9d4e2')+R(16,10,3,6,'#c9d4e2')+[22,25,28,31,34,37].map(x=>R(x,13,1.4,1.2,'#2c3e66')).join('')}</g>`}
+  else if(day<42){b=room('#202733')+R(30,3,28,14,'#f4efe4')+R(30,3,28,.8,'#9aa3ad')+`<text x="32" y="8" class="sc-chalk" style="fill:#333">損切りは経費</text><text x="32" y="12.5" class="sc-chalk" style="fill:#c0392b">ルール＞感情</text>`+
+    spr('adult',16,6,'sc-breathe','#2c3e66','normal')+R(26,12,6,.8,'#8b5a2b')+spr('child',2,10,'sc-nod','#5a7bd6','normal')}
+  else if(day<47){b=room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#c9b88f')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">部長</text>`+spr('adult',34,2,'sc-breathe','#3a2a5a','great')+R(14,14,3,2,'#f4efe4')}
+  else if(day<51){b=room('#141a26')+R(28,2,32,17,'#f4efe4')+`<text x="30" y="6.5" class="sc-chalk" style="fill:#333">口座の生存と規律</text>`+[0,1,2,3,4].map(i=>R(32+i*5,16-[3,5,4,8,10][i],3,[3,5,4,8,10][i],'#5aa9ff')).join('')+
+    R(14,16,8,8,'#5b4636')+spr('adult',12,2,'sc-breathe','#2c3e66','normal')+[2,6,10,48,52].map(x=>`<circle cx="${x+4}" cy="27" r="2.2" fill="#3a4052"/>`).join('')}
+  else if(day<55){b=room('#2a2420')+`<text x="18" y="6" class="sc-chalk" style="font-size:3.4px;fill:#f5d78a">おつかれさまでした</text>`+spr('elder',24,8,'sc-breathe','#3a2a5a','great')+
+    `<g class="sc-cheers">${R(34,13,4,5,'#3d8b3a')+`<circle cx="35" cy="12.5" r="1.4" fill="#ff5d6c"/><circle cx="37.5" cy="12" r="1.4" fill="#ffd34d"/><circle cx="36" cy="10.6" r="1.4" fill="#f4a3c4"/>`}</g>`+spr('adult',4,8,'sc-hop','#5a7bd6','great')+spr('adult',48,8,'sc-hop','#c46a8a','great')}
+  else if(day<59){b=R(0,0,W,H,'#9cc8ef')+[[2,'#e38a5a'],[12,'#f5d78a'],[22,'#8fc1a9'],[32,'#e6a3a3'],[42,'#c9b88f'],[52,'#9fb3d9']].map(([x,c])=>R(x,6,9,17,c)+R(x+1,4,7,2,'#7a3a2a')+R(x+2,9,2,3,'#3b4a72')+R(x+5,9,2,3,'#3b4a72')+R(x+2,15,2,3,'#3b4a72')+R(x+5,15,2,3,'#3b4a72')).join('')+R(0,23,W,7,'#b9a88a')+R(0,23,W,.6,'#8a7a5a')+
+    `<g class="sc-walk2">${spr('elder',0,7,'','#2c3e66','great')}${spr('elder',10,7,'','#c46a8a','great')}</g>`}
+  else{b=room('#151a28')+win(46,1)+`<g class="sc-twinkle">${[[8,4],[20,7],[32,3]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`+R(10,18,40,4,'#5b4636')+R(10,14,4,8,'#5b4636')+R(14,16,34,3,'#f4efe4')+R(14,14.6,6,2.4,'#fff')+
+    `<g class="sc-breathe">${R(15,12.6,4,3,'#f2c9a0')+R(15,12,4,1,'#9aa3ad')+R(16,13.8,.8,.5,'#111')+R(18,13.8,.8,.5,'#111')+R(20,14.6,26,3.4,'#7f9fd6')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`}
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges">${b}</svg>`;
 }
 function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
