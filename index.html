@@ -153,6 +153,24 @@ nav .plus svg{width:26px;height:26px}
 .coach .cs{font-size:20px;font-weight:900;margin:6px 0 4px}
 .coach p{font-size:12.5px;line-height:1.65;color:var(--text)}
 .coach .cf{margin-top:8px;font-size:12.5px;color:var(--acc2);font-weight:700}
+.form{display:flex;gap:5px;flex-wrap:wrap}
+.form i{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:800;color:#111}
+.form i.w{background:var(--win)}.form i.l{background:var(--loss)}.form i.e{background:var(--line);color:var(--mute)}
+.coachbig{background:linear-gradient(160deg,rgba(233,185,73,.16),var(--card) 55%);border:1px solid var(--acc);border-radius:22px;padding:18px;margin-bottom:12px}
+body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--card) 55%)}
+.coachbig .top{display:flex;gap:14px;align-items:center}
+.grade{width:62px;height:62px;border-radius:18px;border:2px solid var(--acc);display:grid;place-items:center;font-family:Outfit;font-size:34px;font-weight:800;color:var(--acc);flex:none}
+.coachbig .lbl{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.08em}
+.coachbig h3{font-size:17px;font-weight:900;line-height:1.45;margin-top:2px}
+.coachbig .st{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;background:var(--bg2);border-radius:8px;padding:3px 8px}
+.coachbig p{font-size:13px;line-height:1.7;margin-top:12px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.cg div{background:var(--bg2);border-radius:14px;padding:10px 12px;font-size:12px;line-height:1.6}
+.cg b{display:block;font-size:11px;margin-bottom:4px}
+.cg .g b{color:var(--win)}.cg .w b{color:var(--loss)}
+.focus{margin-top:10px;background:var(--accdim);border-radius:14px;padding:11px 12px;font-size:13px;font-weight:700;color:var(--acc2)}
+.mind{margin-top:10px;border-left:3px solid var(--acc);padding:4px 0 4px 12px;font-size:12.5px;line-height:1.7;color:var(--text)}
+.mind small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
 .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
 .dayhead .big{font-size:30px}
 </style>
@@ -164,18 +182,12 @@ nav .plus svg{width:26px;height:26px}
 
 <!-- ===== HOME ===== -->
 <section class="view on" id="v-home">
+  <div id="homeCoach"></div>
+
   <div class="card">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
     <div class="chips" id="todayTags"></div>
     <div id="todayAlert"></div>
-  </div>
-  <div class="card" id="homeCoach"></div>
-
-  <div class="card">
-    <div class="ttl"><span>カレンダー</span><span class="calnav"><button id="cPrev">‹</button><span class="num" id="cLbl" style="font-size:13px"></span><button id="cNext">›</button></span></div>
-    <div class="cal" id="cal"></div>
-    <div class="monthsum"><span>月間収支 <b class="num" id="mPnl">¥0</b></span><span>勝率 <b class="num" id="mWin">0%</b></span><span>取引 <b class="num" id="mN">0</b></span></div>
-    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝爆散パターンあり　●緑＝ルール通り　●金＝タグあり</div>
   </div>
 
   <div class="card">
@@ -185,6 +197,16 @@ nav .plus svg{width:26px;height:26px}
       <div style="flex:1"><div class="small" id="perLbl"></div><div class="big num" id="perPnl" style="font-size:32px">¥0</div>
         <div class="small" id="perSub"></div></div>
     </div>
+    <div class="tiles" id="tiles" style="margin-top:14px"></div>
+    <div class="ttl" style="margin:16px 0 8px;font-size:13px">直近の流れ <em id="formTxt"></em></div>
+    <div class="form" id="formStrip"></div>
+  </div>
+
+  <div class="card">
+    <div class="seg" id="barSeg"><button data-b="wd" class="on">曜日</button><button data-b="hr">時間帯</button><button data-b="pair">通貨</button><button data-b="conf">確信度</button><button data-b="state">状態</button></div>
+    <div class="barval" id="barVal"></div>
+    <div class="bars" id="bars"></div>
+    <div class="barlbl" id="barLbl"></div>
   </div>
 
   <div class="card">
@@ -197,7 +219,22 @@ nav .plus svg{width:26px;height:26px}
   </div>
 
   <div class="card">
-    <div class="ttl">最近のトレード <em id="logCnt"></em></div>
+    <div class="ttl">コンディション別の成績 <em>バイオリズム</em></div>
+    <table class="tbl" id="condTbl"></table>
+    <div class="small" style="margin-top:8px">「仮」＝5回未満。偶然の可能性が高いので、まだ法則として扱わない。</div>
+  </div>
+</section>
+
+<!-- ===== CALENDAR ===== -->
+<section class="view" id="v-cal">
+  <div class="card">
+    <div class="ttl"><span>カレンダー</span><span class="calnav"><button id="cPrev">‹</button><span class="num" id="cLbl" style="font-size:13px"></span><button id="cNext">›</button></span></div>
+    <div class="cal" id="cal"></div>
+    <div class="monthsum"><span>月間収支 <b class="num" id="mPnl">¥0</b></span><span>勝率 <b class="num" id="mWin">0%</b></span><span>取引 <b class="num" id="mN">0</b></span></div>
+    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝爆散パターンあり　●緑＝ルール通り　●金＝タグあり</div>
+  </div>
+  <div class="card">
+    <div class="ttl">トレード一覧 <em id="logCnt"></em></div>
     <div id="tradeList"></div>
   </div>
 </section>
@@ -233,25 +270,6 @@ nav .plus svg{width:26px;height:26px}
   <div class="card">
     <div class="ttl">状態ごとの倍率 <em>自分のフィーリングに合わせて調整</em></div>
     <div class="row2" id="multEdit"></div>
-  </div>
-</section>
-
-<!-- ===== ANALYSIS ===== -->
-<section class="view" id="v-ana">
-  <div class="card">
-    <div class="ttl">トレード分析</div>
-    <div class="tiles" id="tiles"></div>
-  </div>
-  <div class="card">
-    <div class="seg" id="barSeg"><button data-b="wd" class="on">曜日</button><button data-b="hr">時間帯</button><button data-b="pair">通貨</button><button data-b="conf">確信度</button><button data-b="state">状態</button></div>
-    <div class="barval" id="barVal"></div>
-    <div class="bars" id="bars"></div>
-    <div class="barlbl" id="barLbl"></div>
-  </div>
-  <div class="card">
-    <div class="ttl">コンディション別の成績 <em>バイオリズム</em></div>
-    <table class="tbl" id="condTbl"></table>
-    <div class="small" style="margin-top:8px">「仮」＝5回未満。偶然の可能性が高いので、まだ法則として扱わない。</div>
   </div>
 </section>
 
@@ -323,17 +341,19 @@ nav .plus svg{width:26px;height:26px}
   </div>
   <div class="small" style="margin-top:8px">負けたあと、何分以内のエントリーを「再エントリー」とみなすか</div>
   <input type="number" id="cool">
-  <label class="f">バックアップ</label>
-  <div class="small">今の試作版は、この端末のブラウザに保存されます（GitHub版で端末間共有に切り替え予定）。</div>
-  <button class="btn sm ghost" id="expBtn">データをコピー</button>
+  <label class="f">引き継ぎ</label>
+  <div class="small">アプリで自分で入力したトレード・タグ・メモだけをコピーします。トークに貼ればClaudeが本体に反映、別の端末なら下の欄に貼って読み込み。</div>
+  <button class="btn sm ghost" id="expBtn">自分の入力分をコピー</button>
+  <textarea id="impTxt" placeholder="引き継ぎコードを貼り付け" style="margin-top:8px;font-size:12px;font-family:monospace;min-height:56px"></textarea>
+  <button class="btn sm ghost" id="impBtn">引き継ぎコードを読み込む</button>
   <button class="btn sm ghost" id="resetBtn">初期状態に戻す</button>
 </div></div>
 
 <nav><div class="in">
-  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>ホーム</button>
-  <button data-v="lot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg>ロット</button>
+  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>ホーム</button>
+  <button data-v="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>カレンダー</button>
   <button class="plus" id="plusBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button data-v="ana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>分析</button>
+  <button data-v="lot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg>ロット</button>
   <button data-v="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>パターン</button>
 </div></nav>
 <div class="toast" id="toast"></div>
@@ -349,9 +369,13 @@ const CLAUDE_DATA={
   ],
   dayNotes:{},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-08',state:'normal',
-    reason:'直近の記録は10/5の2連敗（負けた1分後に逆方向へ再エントリー）のみ。1か月空いているので通常倍率から再スタート。',
-    focus:'負けたら15分はチャートを閉じる。次の結果を見て判定を更新する。'}
+  coach:{date:'2026-11-08',state:'normal',grade:'C',
+    headline:'リセット期間。まずは「待てた」を積み上げる',
+    reason:'直近の記録は10/5の2連敗のみ。負けた1分後に逆方向へ再エントリーしていて、典型的な「負けた瞬間に火がつく」パターン。1か月空いているので通常倍率から再スタート。',
+    good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
+    watch:['負けた直後の再エントリー（10/5に発生）','1分足での飛び乗り'],
+    focus:'負けたら15分はチャートを閉じる。打つのは4h確定から1時間後。',
+    mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。負けは「想定内の1回」として受け流す。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -453,7 +477,7 @@ function renderHome(){
   $('#bc1').textContent=yen(sa);$('#bc1').className='num '+(sa<0?'neg':'pos');$('#bc1n').textContent=a.length+'回';
   $('#bc2').textContent=yen(sb);$('#bc2').className='num '+(sb<0?'neg':sb>0?'pos':'');$('#bc2n').textContent=b.length+'回';
   $('#bcMsg').textContent=a.length?`パターンが出たトレードを見送れていたら、収支は ${yen(sb)} だった計算。`:'まだパターンは検出されていません。';
-  const rec=all.slice().reverse().slice(0,8);$('#logCnt').textContent=all.length+'件';
+  const rec=all.slice().reverse();$('#logCnt').textContent=all.length+'件';
   $('#tradeList').innerHTML=rec.length?rec.map(trRow).join(''):'<div class="empty">まだ記録がありません</div>';
   bindRows($('#tradeList'));
 }
@@ -546,8 +570,12 @@ $('#aCur').onchange=e=>{cfg.accounts[cfg.lotAcct].cur=e.target.value;save();rend
 
 /* ---------- ANALYSIS ---------- */
 let barMode='wd';
+function perList(){const now=new Date(),ym=ds(now).slice(0,7),y=String(now.getFullYear());return vis().filter(t=>per==='m'?t.date.startsWith(ym):per==='y'?t.date.startsWith(y):true)}
 function renderAna(){
-  const list=vis(),s=stats(list);
+  const list=perList(),s=stats(list);
+  const last=vis().slice(-20),l10=last.slice(-10),w10=l10.filter(t=>t.pnl>0).length;
+  $('#formStrip').innerHTML=Array.from({length:20},(_,i)=>{const t=last[last.length-20+i];return t?`<i class="${t.pnl>0?'w':'l'}">${t.pnl>0?'W':'L'}</i>`:'<i class="e">·</i>'}).join('');
+  $('#formTxt').textContent=l10.length?`直近${l10.length}回 勝率${Math.round(w10/l10.length*100)}%`:'';
   const T=[[s.n,'取引数'],[Math.round(s.win*100)+'%','勝率'],[pfTxt(s.pf),'PF'],[s.avgL?(s.avgW/s.avgL).toFixed(2):'—','平均RR'],
     [short(s.avgW),'平均勝ち(¥)'],[short(-s.avgL),'平均負け(¥)'],[s.maxL,'最大連敗'],[short(-s.dd),'最大DD(¥)']];
   $('#tiles').innerHTML=T.map(([v,l])=>`<div class="tile"><b class="num">${v}</b><span>${l}</span></div>`).join('');
@@ -624,24 +652,34 @@ function renderSet(){
   $('#maxLotJ').value=cfg.maxLotJ;$('#maxLotG').value=cfg.maxLotG;$('#cool').value=cfg.cool;
 }
 ['maxLotJ','maxLotG','cool'].forEach(k=>$('#'+k).onchange=e=>{cfg[k]=Number(e.target.value);save();renderAll()});
-$('#expBtn').onclick=async()=>{const s=JSON.stringify({local,tagList});try{await navigator.clipboard.writeText(s);toast('コピーしました')}catch(e){toast('コピーできませんでした')}};
+$('#expBtn').onclick=async()=>{const s='COCKPIT:'+JSON.stringify({local,tagList});try{await navigator.clipboard.writeText(s);toast('コピーしました')}catch(e){$('#impTxt').value=s;toast('下の欄に出したのでコピーしてください')}};
+$('#impBtn').onclick=()=>{try{const raw=$('#impTxt').value.trim(),o=JSON.parse(raw.slice(raw.indexOf('{')));
+  Object.assign(local.trades,o.local.trades||{});local.deleted=[...new Set([...local.deleted,...(o.local.deleted||[])])];
+  Object.assign(local.dayTags,o.local.dayTags||{});Object.assign(local.dayMemo,o.local.dayMemo||{});
+  (o.tagList||[]).forEach(g=>{if(!tagList.includes(g))tagList.push(g)});save();renderAll();$('#impTxt').value='';toast('引き継ぎました')}catch(e){toast('読み取れませんでした')}};
 $('#resetBtn').onclick=()=>{const b=$('#resetBtn');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='もう一度押すと初期化';return}
   local={trades:{},deleted:[],dayTags:{},dayMemo:{}};tagList=[...DEF_TAGS];b.dataset.c='';b.textContent='初期状態に戻す';save();renderAll();toast('初期化しました')};
 
 /* ---------- NAV ---------- */
 $$('nav button[data-v]').forEach(b=>b.onclick=()=>{$$('nav button[data-v]').forEach(x=>x.classList.toggle('on',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));window.scrollTo(0,0)});
-$$('#perSeg button').forEach(b=>b.onclick=()=>{per=b.dataset.p;$$('#perSeg button').forEach(x=>x.classList.toggle('on',x===b));renderHome()});
+$$('#perSeg button').forEach(b=>b.onclick=()=>{per=b.dataset.p;$$('#perSeg button').forEach(x=>x.classList.toggle('on',x===b));renderHome();renderAna()});
 $$('#barSeg button').forEach(b=>b.onclick=()=>{barMode=b.dataset.b;$$('#barSeg button').forEach(x=>x.classList.toggle('on',x===b));renderAna()});
 $('#cPrev').onclick=()=>{const d=calM||new Date();calM=new Date(d.getFullYear(),d.getMonth()-1,1);renderCal()};
 $('#cNext').onclick=()=>{const d=calM||new Date();calM=new Date(d.getFullYear(),d.getMonth()+1,1);renderCal()};
 
 function renderCoach(){
-  const c=CLAUDE_DATA.coach;if(!c){$('#coachBox').innerHTML='';$('#homeCoach').style.display='none';return}
-  const s=STATES.find(x=>x.id===c.state),d=new Date(c.date+'T00:00');
-  const html=`<div class="coach"><div class="ch"><span>CLAUDEの判定</span><span>${d.getMonth()+1}/${d.getDate()} 更新</span></div>
+  const c=CLAUDE_DATA.coach;if(!c){$('#coachBox').innerHTML='';$('#homeCoach').innerHTML='';return}
+  const s=STATES.find(x=>x.id===c.state),d=new Date(c.date+'T00:00'),upd=`${d.getMonth()+1}/${d.getDate()} 更新`;
+  $('#coachBox').innerHTML=`<div class="coach"><div class="ch"><span>CLAUDEの判定</span><span>${upd}</span></div>
     <div class="cs">${s.ic} ${s.name}　<span class="num" style="font-size:15px;color:var(--mute)">×${cfg.mult[s.id]}</span></div>
-    <p>${c.reason}</p>${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
-  $('#coachBox').innerHTML=html;$('#homeCoach').innerHTML=html;$('#homeCoach').style.display='';$('#homeCoach').style.padding='0';$('#homeCoach').style.border='none';
+    ${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
+  const li=a=>(a||[]).map(x=>`・${x}`).join('<br>')||'—';
+  $('#homeCoach').innerHTML=`<div class="coachbig"><div class="top"><div class="grade">${c.grade||'—'}</div>
+    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div></div>
+    <p>${c.reason||''}</p>
+    <div class="cg"><div class="g"><b>良い流れ</b>${li(c.good)}</div><div class="w"><b>要注意</b>${li(c.watch)}</div></div>
+    ${c.focus?`<div class="focus">▶ 今日の一手：${c.focus}</div>`:''}
+    ${c.mind?`<div class="mind">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}</div>`;
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
