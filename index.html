@@ -237,6 +237,12 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .gs.now span{color:var(--acc);font-weight:800}
 .gs.now svg{filter:drop-shadow(0 0 4px var(--acc))}
 .garr{font-style:normal;color:var(--line);font-size:14px;padding-bottom:16px}
+.voice-ask{margin-top:14px;border:1px dashed var(--acc);border-radius:16px;padding:14px;background:var(--accdim)}
+.va-k{font-size:10.5px;letter-spacing:.2em;color:var(--acc);font-weight:800}
+.va-t{font-size:16px;font-weight:900;margin-top:2px}
+.va-q{font-size:13px;color:var(--acc2);margin:6px 0 8px;line-height:1.6}
+.va-b{display:flex;gap:8px}.va-b .btn{margin-top:8px}
+.vq{display:block;margin-top:6px;padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg2);border-radius:0 10px 10px 0;font-size:13px;line-height:1.7}
 .lg-head{text-align:center;padding:18px 0 10px}
 .lg-k{font-family:Outfit;font-size:13px;letter-spacing:.3em;color:var(--acc)}
 .lg-t{font-size:26px;font-weight:900;margin-top:4px;letter-spacing:.08em}
@@ -854,10 +860,11 @@ function mechState(){
   if(bal>=C.size+R*4&&L===0)return {s:'great',why:'含み益ゾーン＆今日負けなし'};
   return {s:'normal',why:'バッファ十分・今日の崩れなし'};
 }
+function wdaysLeft(start,days){const end=new Date(start);end.setDate(end.getDate()+days-1);let n=0;const d=new Date(todayStr());for(;d<=end;d.setDate(d.getDate()+1)){const w=d.getDay();if(w>0&&w<6)n++}return n}
 function renderChal(){
   const C=CLAUDE_DATA.challenge,el=$('#chal');if(!C){el.style.display='none';return}
   const td=todayStr(),bal=chalBal(),buf=C.size-C.totalFloor,toFloor=bal-C.totalFloor,bp=toFloor/buf,max=C.selfLosses,res=resToday(),n=lossToday();
-  let left='開始日 未設定';if(C.start){const d=Math.floor((new Date(td)-new Date(C.start))/864e5);left=`残り ${Math.max(0,C.days-d)} 日`}
+  let left='開始日 未設定';if(C.start){const d=Math.floor((new Date(td)-new Date(C.start))/864e5);left=`残り ${Math.max(0,C.days-d)} 日（平日 ${wdaysLeft(C.start,C.days)}日）`}
   const lo=C.totalFloor,hi=C.size+C.target,col=bp<0.2?'var(--loss)':bp<0.5?'var(--warn)':bal>=C.size?'var(--win)':'var(--acc)';
   const m=mechState(),ms=STATES.find(x=>x.id===m.s);
   el.innerHTML=`<div class="ttl">${C.name} <em>${left}</em></div>
@@ -922,6 +929,27 @@ function sprite(key,mood,px,extra){
   return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${r}</svg>`;
 }
 function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
+/* ---- 節目の手記 ---- */
+function milestones(cur,C){
+  const out=[],day=cur.start?Math.floor((new Date(todayStr())-new Date(cur.start))/864e5)+1:1;
+  STAGES.forEach(st=>{if(day>=st.d)out.push({id:'age'+st.d,t:`${st.d}歳・${st.n}になった`,q:st.d===1?'この口座で、どんな自分でいたい？':'ここまでの自分を、ひとことで言うと？'})});
+  const res=LS.get('dayRes',{}),all=Object.values(res).flat();
+  if(all.includes('L'))out.push({id:'firstL',t:'初めての負け',q:'負けた直後、頭の中で何が起きた？'});
+  if(Object.values(res).some(a=>a.filter(x=>x==='L').length>=3))out.push({id:'stop3',t:'初めて「今日はここまで」',q:'止まれた？止まれなかった？そのときの気持ちは？'});
+  const bal=chalBal(),bp=(bal-C.totalFloor)/(C.size-C.totalFloor),pr=(bal-C.size)/C.target;
+  if(bp<.5)out.push({id:'half',t:'バッファが半分を切った',q:'今いちばん怖いことは？それでも守りたいルールは？'});
+  if(pr>=.5)out.push({id:'p50',t:'目標の半分に到達',q:'過去の口座は「勝ち始めた後」に散った。今の自分に言っておきたいことは？'});
+  if(pr>=.9)out.push({id:'p90',t:'目標まであと少し',q:'The5ersは目標の98%から崩れた。あの時と今の違いは？'});
+  return out;
+}
+function renderVoices(cur,C){
+  const V=LS.get('voices',{}),key=cur.name,mine=V[key]||{},ms=milestones(cur,C);
+  const open=ms.find(m=>!mine[m.id]);
+  let html='';
+  if(open)html+=`<div class="voice-ask"><div class="va-k">節目</div><div class="va-t">${open.t}</div><div class="va-q">${open.q}</div>
+    <textarea id="vaTx" placeholder="今の気持ちを、そのまま"></textarea><div class="va-b"><button class="btn sm" id="vaSave">残す</button><button class="btn sm ghost" id="vaSkip">あとで</button></div></div>`;
+  return {html,open,save:(txt)=>{V[key]=V[key]||{};V[key][open.id]={t:open.t,q:open.q,a:txt,d:todayStr()};LS.set('voices',V)}};
+}
 function renderLog2(){
   const L=CLAUDE_DATA.lives||[],C=CLAUDE_DATA.challenge,td=todayStr(),cur=L.find(l=>l.status==='alive');
   const dayN=d=>cur&&cur.start?Math.floor((new Date(d)-new Date(cur.start))/864e5)+1:null;
@@ -938,11 +966,14 @@ function renderLog2(){
         <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
       <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="bar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
+    const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
+    if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
+    const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
     // タイムライン：Claudeのログ＋トレード＋勝ち負けボタンを日ごとに
-    const days=new Set([...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{}))].filter(d=>!cur.start||d>=cur.start));
+    const days=new Set([...myV.map(v=>v.d),...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{}))].filter(d=>!cur.start||d>=cur.start));
     const evs=[...days].sort().reverse().map(d=>{
       const lines=(cur.log||[]).filter(x=>x.d===d).map(x=>x.t),dt=ct.filter(t=>t.date===d),res=(LS.get('dayRes',{})[d]||[]);
-      let cls='';const parts=[...lines];
+      let cls='';const parts=[...lines,...myV.filter(v=>v.d===d).map(v=>`<span class="vq">✎ ${v.t}<br>「${v.a}」</span>`)];
       if(dt.length){const p=dt.reduce((x,t)=>x+t.pnl,0),pats=[...new Set(dt.flatMap(detect))].map(id=>PATTERNS.find(x=>x.id===id).name);
         parts.push(`${dt.length}戦${dt.filter(t=>t.pnl>0).length}勝、${yen(p)}。`+(pats.length?`<em>注意ポイント：${pats.join('、')}</em>`:''));cls=p<0?'bad':'good'}
       else if(res.length){const w=res.filter(x=>x==='W').length;parts.push(`${res.length}戦${w}勝（ボタン記録）。`);cls=w*2>=res.length?'good':'bad'}
