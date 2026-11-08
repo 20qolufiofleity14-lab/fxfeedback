@@ -484,7 +484,23 @@ const CLAUDE_DATA={
   dayNotes:{},
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
-    {name:'Fintokei 速攻プロ シルバー',size:5000000,start:'2026-11-08',end:null,status:'alive',cause:'',epitaph:'',
+    {name:'The5ers ブートキャンプ $20K',sizeLabel:'$20K',start:'2026-08-24',end:'2026-09-22',status:'dead',cause:'全体ライン',
+     epitaph:'合格まであと$410から、2週間で全部返した',
+     log:[{d:'2026-09-08',t:'残高$21,590で最高値。目標$22,000まであと$410。'},{d:'2026-09-22',t:'$18,766で失格ライン$18,800を割る。勝率36%・PF0.70。'}]},
+    {name:'Fintokei サファイヤ STEP1',sizeLabel:'',status:'dead',cause:'全体ライン',epitaph:'日次は耐えても、全体で削り切られた'},
+    {name:'Fintokei サファイヤ STEP1（2回目）',sizeLabel:'',status:'dead',cause:'不明',epitaph:'全体の損失率52%で終了'},
+    {name:'Fintokei エメラルド STEP1',sizeLabel:'',status:'dead',cause:'全体ライン',epitaph:'1日で日次の93%を失った日がある'},
+    {name:'Fintokei エメラルド STEP1（合格）',sizeLabel:'',status:'graduated',cause:'',epitaph:'+411万円で突破'},
+    {name:'Fintokei エメラルド STEP2',sizeLabel:'',status:'dead',cause:'全体ライン',epitaph:'STEP1突破のあとに散る（1日で日次の92%）'},
+    {name:'Fintokei ビギナー STEP1',sizeLabel:'100万',status:'dead',cause:'日次ライン',epitaph:'1日で散った'},
+    {name:'Fintokei クリスタル・スリム STEP1（合格）',sizeLabel:'',status:'graduated',cause:'',epitaph:'+16万円で突破'},
+    {name:'Fintokei クリスタル・スリム STEP2',sizeLabel:'',status:'dead',cause:'全体ライン',epitaph:'STEP1突破のあとに散る'},
+    {name:'Fintokei ビギナー STEP1（合格）',sizeLabel:'100万',status:'graduated',cause:'',epitaph:'+2.1万円で突破'},
+    {name:'Fintokei ビギナー STEP2',sizeLabel:'100万',status:'dead',cause:'不明',epitaph:'STEP1突破のあとに散る（全体の76%）'},
+    {name:'Fintokei パール STEP1',sizeLabel:'',status:'dead',cause:'不明',epitaph:'日次87%・全体87%まで削られた'},
+    {name:'Fintokei クリスタル STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'全体はまだ7割残っていたのに、1日で終わった'},
+    {name:'Fintokei ブロンズ STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'1日で日次も全体も使い切った'},
+    {name:'Fintokei 速攻プロ シルバー',sizeLabel:'500万',size:5000000,start:'2026-11-08',end:null,status:'alive',cause:'',epitaph:'',
      log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'}]}
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
@@ -493,9 +509,9 @@ const CLAUDE_DATA={
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-08',state:'normal',grade:'C',
     headline:'リセット期間。まずは「待てた」を積み上げる',
-    reason:'Fintokei速攻プロ（500万・バッファ17.5万円）に挑戦開始。直近の記録は10/5の2連敗のみで、負けた1分後に逆方向へ再エントリーした「負けた瞬間に火がつく」パターン。あの2本（−4.5万円）は今回のバッファの約4分の1にあたる。手法より「暴走ゼロ」が合否を決める。',
+    reason:'過去14口座を振り返ると、STEP1を突破した3口座は3つとも次で散り、The5ersも目標の98%から2週間で失格。死因の多くは「1日で日次ラインまで行く」日。今回の速攻プロ（500万・バッファ17.5万円）は1ステップなので、勝ち始めた後と、荒れた1日をどう止めるかが合否を決める。',
     good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
-    watch:['負けた直後の再エントリー（10/5に発生）','1分足での飛び乗り'],
+    watch:['1日で日次ラインまで行く荒れた日（過去の死因の中心）','勝ち始めた後・目標が見えた後の緩み'],
     focus:'負けたら「負けた」ボタンで15分ロック。1日2敗か−2Rで終了。',
     mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。負けは「想定内の1回」として受け流す。'}}
 };
@@ -518,6 +534,7 @@ const PATTERNS=[
  {id:'tired',name:'疲れ・夜',quote:'疲れてる時ダメ。夜は触らない',a:'夜・当直明け・疲れている日',b:'今日も少しはやっておきたい',d:'疲れている日は「打たない日」。休むのもルールを守ったトレード。'},
  {id:'dd',name:'ドローダウン中の焦り',quote:'少しでも勝てるようになりたい気持ちで始めて崩れる',a:'ドローダウン中',b:'早く元に戻したい',d:'DD中ほど倍率を下げる。戻すのは回数で、1回で取り返しにいかない。'},
  {id:'pride',name:'大きな損失（プライドの金額割れ）',quote:'10万単位の損失に心がついていけてない',a:'大きな含み損・損失',b:'この金額を負けたまま終われない',d:'損失額ではなく、ルール通りに切れたかで自分を評価する。'},
+ {id:'step2',name:'合格・突破の直後',quote:'（過去口座のデータより）',a:'STEP1を突破した・目標が目前',b:'もう勝てる、取り切りたい',d:'突破した日から3日は倍率を1段下げる。勝った後こそ「同じことを繰り返すだけ」。',evidence:'STEP1を突破した3口座は、3つともSTEP2で散っている。The5ersも目標の98%まで行ってから2週間で失格。'},
  {id:'news',name:'指標・月末',quote:'指標負けが続きすぎ',a:'指標の前・月末',b:'動くから取れそう',d:'指標の前後は様子見。動いたあとの形ができるまで待つ。'}
 ];
 const CURES=['負けてトレードしたくなったら、MT5デモで戦う','暴走したら、魚釣りの形をイメージして振り返る','建値を置いていたのは偉かった','4h確定から1時間後に絞ると、決断疲れが減る','逆行したら、リボンが整うまで待つ'];
@@ -723,13 +740,13 @@ function renderAna(){
 /* ---------- PATTERNS ---------- */
 function renderPat(){
   const list=vis();
-  const rows=PATTERNS.map(p=>{const hit=list.filter(t=>detect(t).includes(p.id));return {...p,n:hit.length,loss:hit.reduce((s,t)=>s+t.pnl,0)}}).sort((a,b)=>a.loss-b.loss||b.n-a.n);
+  const rows=PATTERNS.map(p=>{const hit=list.filter(t=>detect(t).includes(p.id));return {...p,n:hit.length,loss:hit.reduce((s,t)=>s+t.pnl,0)}}).sort((a,b)=>a.loss-b.loss||b.n-a.n||(b.evidence?1:0)-(a.evidence?1:0));
   const mx=Math.max(1,...rows.map(r=>Math.abs(Math.min(0,r.loss)))),totalLoss=-list.filter(t=>t.pnl<0).reduce((x,t)=>x+t.pnl,0);
   $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}</h4>
     <div class="abcd">
       <i>A</i><div>${r.a}</div>
-      <i class="bb">B</i><div class="bt">「${r.b}」<span class="small">　ノートより：「${r.quote}」</span></div>
-      <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:'まだデータなし。出たらここに溜まっていく'}</div>
+      <i class="bb">B</i><div class="bt">「${r.b}」${r.quote&&r.quote[0]!=='（'?`<span class="small">　ノートより：「${r.quote}」</span>`:''}</div>
+      <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:(r.evidence||'まだデータなし。出たらここに溜まっていく')}</div>
       <i class="dd">D</i><div class="dt">${r.d}</div>
     </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`).join('');
   $('#cureList').innerHTML=CURES.map(c=>`<div class="cure"><i>✓</i>${c}</div>`).join('');
@@ -874,13 +891,13 @@ function renderLives(){
   const L=CLAUDE_DATA.lives||[],td=todayStr();
   const age=l=>{if(!l.start)return null;const e=l.end||td;return Math.floor((new Date(e)-new Date(l.start))/864e5)+1};
   const dead=L.filter(l=>l.status==='dead'),grad=L.filter(l=>l.status==='graduated');
-  const avg=dead.length?Math.round(dead.reduce((x,l)=>x+(age(l)||0),0)/dead.length):null;
+  const known=dead.filter(l=>age(l));const avg=known.length?Math.round(known.reduce((x,l)=>x+age(l),0)/known.length):null;
   const causes={};dead.forEach(l=>{if(l.cause)causes[l.cause]=(causes[l.cause]||0)+1});const top=Object.entries(causes).sort((a,b)=>b[1]-a[1])[0];
   $('#lifeStats').innerHTML=`<div class="lstat"><div><b>${L.length}</b><span>これまでの口座</span></div><div><b>${avg!=null?avg+'日':'—'}</b><span>平均寿命</span></div><div><b style="font-size:13px;line-height:1.4">${top?top[0]:'—'}</b><span>一番多い死因</span></div></div>`;
   const tagOf=l=>l.status==='alive'?['alive','生存中']:l.status==='graduated'?['grad','合格']:['dead','散った'];
   $('#lifeList').innerHTML=L.slice().reverse().map(l=>{const[tc,tt]=tagOf(l),a=age(l);
     return `<div class="life ${l.status==='alive'?'alive':''}"><div class="lh"><b>${l.name}</b><span class="tag ${tc}">${tt}</span></div>
-    <div class="meta">${Math.round(l.size/10000)}万円口座　${l.start?l.start.slice(5).replace('-','/'):'開始前'}${l.end?' → '+l.end.slice(5).replace('-','/'):''}${a?`（${a}日目${l.status==='alive'?'':'で終了'}）`:''}${l.cause?'　死因：'+l.cause:''}</div>
+    <div class="meta">${l.sizeLabel?l.sizeLabel+'口座　':''}${l.start?l.start.slice(5).replace('-','/'):(l.status==='alive'?'開始前':'')}${l.end?' → '+l.end.slice(5).replace('-','/'):''}${a?`（${a}日目${l.status==='alive'?'':'で終了'}）`:''}${l.cause?'　死因：'+l.cause:''}</div>
     ${l.epitaph?`<div class="epi">「${l.epitaph}」</div>`:''}
     ${(l.log||[]).length?`<div class="log">${l.log.map(x=>`<div><span>${x.d.slice(5).replace('-','/')}</span>${x.t}</div>`).join('')}</div>`:''}</div>`}).join('')+
     (dead.length?'':'<div class="small" style="margin-top:10px">過去に散った口座のダッシュボードを送ってくれたら、ここに墓標として並べていきます。</div>');
@@ -916,7 +933,7 @@ function renderLog2(){
     const prog=Math.max(0,Math.min(1,(bal-C.size)/C.target));
     const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
       ['規律',clean,'var(--win)',Math.round(clean*100)+'%'],['平常心',calm,'var(--blue)',Math.round(calm*100)+'%'],['目標',prog,'var(--win)',Math.round(prog*100)+'%']];
-    $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${Math.round(cur.size/10000)}万円口座</div>
+    $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${cur.sizeLabel}円口座</div>
       <div class="chara-row"><div class="chara">${sprite(stageOf(dayN(td)||1).k,cfg.state,6)}</div>
         <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
       <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
@@ -933,9 +950,10 @@ function renderLog2(){
     $('#lgLine').innerHTML=`<div class="tl">${evs.map((e,i)=>e.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`;
   } else {$('#lgNow').innerHTML='';$('#lgLine').innerHTML=''}
   const dead=L.filter(l=>l.status!=='alive');
-  $('#lgGraves').innerHTML=`<div class="ttl" style="margin-top:6px">これまでの一生 <em>${dead.length}口座</em></div>`+(dead.length?dead.map(l=>{
+  const nd=dead.filter(l=>l.status==='dead').length,ng=dead.filter(l=>l.status==='graduated').length,byC={};dead.filter(l=>l.status==='dead'&&l.cause&&l.cause!=='不明').forEach(l=>byC[l.cause]=(byC[l.cause]||0)+1);
+  $('#lgGraves').innerHTML=`<div class="ttl" style="margin-top:6px">これまでの一生 <em>散った${nd}・突破${ng}</em></div><div class="small" style="margin:-4px 0 10px">死因：${Object.entries(byC).map(([k,v])=>k+' '+v).join('／')}　※突破した${ng}口座は、すべて次のステップで散っている</div>`+(dead.length?dead.map(l=>{
     const a=l.start&&l.end?Math.floor((new Date(l.end)-new Date(l.start))/864e5)+1:'?';
-    return `<div class="grave"><div class="st">${l.status==='graduated'?sprite('adult','great',3,'crown'):sprite('grave','',3)}</div><div><b>${l.name}</b><div>${a}日で${l.status==='graduated'?'合格':'散る'}${l.cause?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
+    return `<div class="grave"><div class="st">${l.status==='graduated'?sprite('adult','great',3,'crown'):sprite('grave','',3)}</div><div><b>${l.name}</b><div>${a!=='?'?a+'日で':''}${l.status==='graduated'?'合格':'散る'}${l.cause&&l.cause!=='不明'?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
     :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>');
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
