@@ -158,7 +158,13 @@ nav .plus svg{width:26px;height:26px}
 .form i.w{background:var(--win)}.form i.l{background:var(--loss)}.form i.e{background:var(--line);color:var(--mute)}
 .coachbig{background:linear-gradient(160deg,rgba(233,185,73,.16),var(--card) 55%);border:1px solid var(--acc);border-radius:22px;padding:18px;margin-bottom:12px}
 body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--card) 55%)}
-.coachbig .top{display:flex;gap:14px;align-items:center}
+.coachbig .top{display:flex;gap:14px;align-items:center;cursor:pointer}
+.coachbig .fold-btn{margin-left:auto;align-self:flex-start;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--acc);display:grid;place-items:center;flex:none;transition:transform .25s}
+.coachbig .cbody{overflow:hidden;transition:max-height .35s ease,opacity .25s;max-height:1200px;opacity:1}
+.coachbig.fold .cbody{max-height:0;opacity:0}
+.coachbig.fold .fold-btn{transform:rotate(-90deg)}
+.coachbig.fold .foldnote{display:block}
+.coachbig .foldnote{display:none;font-size:11px;color:var(--mute);margin-top:8px}
 .grade{width:62px;height:62px;border-radius:18px;border:2px solid var(--acc);display:grid;place-items:center;font-family:Outfit;font-size:34px;font-weight:800;color:var(--acc);flex:none}
 .coachbig .lbl{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.08em}
 .coachbig h3{font-size:17px;font-weight:900;line-height:1.45;margin-top:2px}
@@ -675,11 +681,16 @@ function renderCoach(){
     ${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
   const li=a=>(a||[]).map(x=>`・${x}`).join('<br>')||'—';
   $('#homeCoach').innerHTML=`<div class="coachbig"><div class="top"><div class="grade">${c.grade||'—'}</div>
-    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div></div>
-    <p>${c.reason||''}</p>
+    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div>
+    <button class="fold-btn" aria-label="折りたたむ">⌄</button></div>
+    <div class="foldnote">タップで全文を開く</div>
+    <div class="cbody"><p>${c.reason||''}</p>
     <div class="cg"><div class="g"><b>良い流れ</b>${li(c.good)}</div><div class="w"><b>要注意</b>${li(c.watch)}</div></div>
     ${c.focus?`<div class="focus">▶ 今日の一手：${c.focus}</div>`:''}
-    ${c.mind?`<div class="mind">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}</div>`;
+    ${c.mind?`<div class="mind">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}</div></div>`;
+  // 折りたたみ：読んだら畳む。判定が更新されたら自動でまた開く
+  const box=$('#homeCoach .coachbig');box.classList.toggle('fold',cfg.coachFold===c.date);
+  box.querySelector('.top').onclick=()=>{box.classList.toggle('fold');cfg.coachFold=box.classList.contains('fold')?c.date:null;save()};
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
