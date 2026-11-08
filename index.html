@@ -81,6 +81,11 @@ header small{color:var(--mute);font-size:12px;display:block}
 .pat .st{font-size:11px;color:var(--mute);margin-top:4px}
 .meter{height:6px;background:var(--bg2);border-radius:4px;margin-top:6px;overflow:hidden}
 .meter i{display:block;height:100%;background:var(--acc)}
+.pat.acc{cursor:pointer}
+.pat.acc .abcd{display:none}.pat.acc.open .abcd{display:grid}
+.pch{float:right;color:var(--mute);font-weight:400;transition:.2s}.pat.open .pch{transform:rotate(180deg)}
+.psum{font-size:12px;color:var(--mute);margin-top:4px;line-height:1.6}.psum b{color:var(--win);font-weight:700}
+.pat.open .psum{display:none}
 .abcd{display:grid;grid-template-columns:22px 1fr;gap:6px 8px;margin-top:8px;font-size:12.5px;line-height:1.6}
 .abcd i{font-style:normal;font-family:Outfit;font-weight:800;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:11px;background:var(--bg2);color:var(--mute)}
 .abcd i.bb{background:var(--accdim);color:var(--acc)}
@@ -227,11 +232,20 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .life .log span{font-family:Outfit;color:var(--mute);margin-right:6px}
 .lstat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
 .lstat div{background:var(--bg2);border-radius:12px;padding:9px 2px}.lstat b{display:block;font-family:Outfit;font-size:18px;font-weight:800}.lstat span{font-size:10px;color:var(--mute)}
-.scene-wrap{margin:10px -4px 4px;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.scene-wrap{margin:10px auto 4px;max-width:300px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 .scene{display:block;width:100%;height:auto;image-rendering:pixelated}
-.sc-rock{transform-box:view-box;transform-origin:24px 28px;animation:rock 2.6s ease-in-out infinite}
+.sc-rock{transform-box:view-box;transform-origin:22px 24px;animation:rock 2.6s ease-in-out infinite}
 @keyframes rock{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-.sc-mobile{transform-box:view-box;transform-origin:24px 0;animation:rock 4s ease-in-out infinite}
+.sc-rock2{transform-box:view-box;transform-origin:22px 24px;animation:rock 3.4s ease-in-out infinite}
+.sc-hop{animation:hop .8s ease-in-out infinite}@keyframes hop{50%{transform:translateY(-1.5px)}}
+.sc-ball{animation:ball .8s ease-in-out infinite}@keyframes ball{50%{transform:translateY(-6px)}}
+.sc-run{animation:run 4s ease-in-out infinite alternate}@keyframes run{to{transform:translateX(12px)}}
+.sc-ball2{animation:run2 4s ease-in-out infinite alternate}@keyframes run2{to{transform:translateX(10px)}}
+.sc-walk{animation:walk 8s linear infinite}@keyframes walk{from{transform:translateX(-12px)}to{transform:translateX(66px)}}
+.sc-note{font:bold 4px sans-serif;fill:#f5d78a;animation:zz 2.4s linear infinite}
+.sc-glow{animation:blink 3s ease-in-out infinite}
+.sc-water{animation:pen 1s steps(2) infinite}
+.sc-mobile{transform-box:view-box;transform-origin:22px 0;animation:rock 4s ease-in-out infinite}
 .sc-z{font:bold 4px monospace;fill:#8a93a3;animation:zz 3s linear infinite}.sc-z.d2{animation-delay:1.5s}
 @keyframes zz{0%{opacity:0;transform:translateY(2px)}30%{opacity:1}100%{opacity:0;transform:translateY(-4px)}}
 .sc-chalk{font:2.6px "Noto Sans JP",sans-serif;fill:#e8f0e8;opacity:.9}
@@ -285,6 +299,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .grave .st{font-size:26px;flex:none}
 .grave b{font-size:13px}.grave div div{font-size:11.5px;color:var(--mute);margin-top:2px}
 .grave q{display:block;font-size:12.5px;color:var(--acc2);margin-top:4px;quotes:"「" "」"}
+.stepper{display:flex;gap:6px}.stepper input{text-align:center}
+.stepper button{flex:none;width:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:20px;font-weight:700}
 .lostbtn{width:100%;margin-top:12px;border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.1);color:#ff9aa4;border-radius:14px;padding:13px;font:inherit;font-weight:900;font-size:15px}
 .lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
 .lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
@@ -370,8 +386,10 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div id="stateHint"></div>
     <div class="row2">
       <div><label class="f">通貨ペア</label><div class="chips" id="lPair"></div></div>
-      <div><label class="f" id="slLbl">損切り幅（pips）</label><input type="number" id="lSl" step="0.1" inputmode="decimal"></div>
+      <div><label class="f" id="slLbl">損切り幅（pips）</label><div class="stepper"><button id="slMinus">−</button><input type="number" id="lSl" step="0.1" inputmode="decimal"><button id="slPlus">＋</button></div></div>
     </div>
+    <div class="chips" id="slChips" style="margin-top:8px"></div>
+    <label class="f">1回のリスク（バッファ比）</label><div class="chips" id="riskChips"></div>
     <div id="lotOut"></div>
   </div>
   <div class="card">
@@ -405,7 +423,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
   <div class="card">
-    <div class="ttl">注意ポイント <em>ABCD・データの影響が大きい順</em></div>
+    <div class="ttl">注意ポイント <em>タップで詳しく（ABCD）</em></div>
     <div class="small" style="margin-bottom:4px">A＝きっかけ　B＝頭の中（自分の言葉）　C＝データ　D＝次はこう考える</div>
     <div id="patList"></div>
   </div>
@@ -696,6 +714,12 @@ function renderLot(){
   $$('#lPair .chip').forEach(b=>b.onclick=()=>{cfg.lPair=b.dataset.p;save();renderLot()});
   $('#slLbl').textContent=cfg.lPair==='USDJPY'?'損切り幅（pips）':'損切り幅（$ 値幅）';
   if(document.activeElement!==$('#lSl'))$('#lSl').value=cfg.lSl;
+  const pres=cfg.lPair==='USDJPY'?[5,8,10,15,20,30]:[2,3,5,8,10,15];
+  $('#slChips').innerHTML=pres.map(v=>`<button class="chip ${+cfg.lSl===v?'on':''}" data-v="${v}">${cfg.lPair==='USDJPY'?v+'p':'$'+v}</button>`).join('');
+  $$('#slChips .chip').forEach(b=>b.onclick=()=>{cfg.lSl=+b.dataset.v;save();renderLot()});
+  const Aa=cfg.accounts[cfg.lotAcct]||Object.values(cfg.accounts)[0];
+  $('#riskChips').innerHTML=[2,3,5,7,10].map(v=>`<button class="chip ${+Aa.risk===v?'on':''}" data-v="${v}">${v}%</button>`).join('');
+  $$('#riskChips .chip').forEach(b=>b.onclick=()=>{Aa.risk=+b.dataset.v;save();renderAll()});
   // calc
   const buf=Math.max(0,A.bal-A.floor),base=buf*A.risk/100,mult=cfg.mult[cfg.state],risk=base*mult,sl=Number(cfg.lSl)||0;
   let perLot; // 1lotあたりの損失（口座通貨）
@@ -713,6 +737,9 @@ function renderLot(){
     </div>`;
 }
 $('#lSl').oninput=e=>{cfg.lSl=e.target.value;save();renderLot()};
+const slStep=()=>cfg.lPair==='USDJPY'?1:0.5;
+$('#slMinus').onclick=()=>{cfg.lSl=Math.max(0,+(+cfg.lSl-slStep()).toFixed(1));save();renderLot()};
+$('#slPlus').onclick=()=>{cfg.lSl=+(+cfg.lSl+slStep()).toFixed(1);save();renderLot()};
 function renderAcct(){
   $('#acctPick').innerHTML=Object.keys(cfg.accounts).map(a=>`<button class="chip ${cfg.lotAcct===a?'on':''}" data-a="${a}">${a}</button>`).join('')+'<button class="chip add" id="newAcct">＋口座</button>';
   $$('#acctPick .chip[data-a]').forEach(b=>b.onclick=()=>{cfg.lotAcct=b.dataset.a;save();renderAcct();renderLot()});
@@ -758,13 +785,15 @@ function renderPat(){
   const list=vis();
   const rows=PATTERNS.map(p=>{const hit=list.filter(t=>detect(t).includes(p.id));return {...p,n:hit.length,loss:hit.reduce((s,t)=>s+t.pnl,0)}}).sort((a,b)=>a.loss-b.loss||b.n-a.n||(b.evidence?1:0)-(a.evidence?1:0));
   const mx=Math.max(1,...rows.map(r=>Math.abs(Math.min(0,r.loss)))),totalLoss=-list.filter(t=>t.pnl<0).reduce((x,t)=>x+t.pnl,0);
-  $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}</h4>
+  $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat acc" data-i="${i}"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}<span class="pch">⌄</span></h4>
+    <div class="psum">${r.n?`${r.n}回・${yen(r.loss)}`:(r.evidence?'過去口座のデータあり':'まだデータなし')}　<b>→ ${r.d.split('。')[0]}。</b></div>
     <div class="abcd">
       <i>A</i><div>${r.a}</div>
       <i class="bb">B</i><div class="bt">「${r.b}」${r.quote&&r.quote[0]!=='（'?`<span class="small">　ノートより：「${r.quote}」</span>`:''}</div>
       <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:(r.evidence||'まだデータなし。出たらここに溜まっていく')}</div>
       <i class="dd">D</i><div class="dt">${r.d}</div>
     </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`).join('');
+  $$('#patList .pat').forEach(p=>p.onclick=()=>p.classList.toggle('open'));
   $('#cureList').innerHTML=CURES.map(c=>`<div class="cure"><i>✓</i>${c}</div>`).join('');
   const cnt={};list.filter(t=>t.pnl>0).forEach(t=>tagsOf(t.date).forEach(g=>cnt[g]=(cnt[g]||0)+1));
   const g=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
@@ -928,7 +957,7 @@ const SPR={
  elder:['....gggg....','...gggggg...','...gssssg...','...sesses...','...ssssss...','....smms....','....ssss....','..bbbbbbbb..','.sbbbbbbbbs.','.sbbbbbbbb.c','...bbbbbb..c','...bbbbbb..c','...pp..pp..c','...pp..pp..c','...pp..pp..c','..kkk..kkk.c'],
  grave:['','','','....gggg....','...gggggg...','..gggxxggg..','..ggxxxxgg..','..gggxxggg..','..gggxxggg..','..gggggggg..','..gggggggg..','..gggggggg..','..gggggggg..','.llllllllll.','llllllllllll','']
 };
-const STAGES=[{k:'baby',d:1,n:'赤ちゃん'},{k:'child',d:6,n:'子ども'},{k:'adult',d:16,n:'青年'},{k:'adult',d:36,n:'大人'},{k:'elder',d:56,n:'長老'}];
+const STAGES=[{k:'baby',d:1,n:'乳児'},{k:'child',d:3,n:'幼児'},{k:'child',d:6,n:'小学校 低学年'},{k:'child',d:9,n:'小学校 高学年'},{k:'adult',d:13,n:'中学生（思春期）'},{k:'adult',d:16,n:'高校生（青春）'},{k:'adult',d:19,n:'大学生'},{k:'adult',d:23,n:'社会人'},{k:'adult',d:35,n:'中堅'},{k:'adult',d:45,n:'円熟'},{k:'elder',d:55,n:'長老'}];
 function sprite(key,mood,px,extra){return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${spriteRects(key,mood,extra)}</svg>`}
 function spriteRects(key,mood,extra){
   const pal={h:'#3b2a1e',s:'#f2c9a0',e:'#111',m:'#c0392b',w:'#f4efe4',b:'var(--acc)',p:'#2c3e66',k:'#4a3426',g:'#9aa3ad',c:'#8b5a2b',x:'#5d6670',l:'#3d6b3a',y:'#ffd34d',d:'#5aa9ff',r:'#ff5d6c'};
@@ -943,26 +972,25 @@ function spriteRects(key,mood,extra){
 /* ---- 年齢ごとのシーン（ドット絵アニメ） ---- */
 const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
 function scene(stageKey,day,mood){
-  const W=64,H=36,wall='#1d2230',floor='#2a2f3d',spr=(k,x,y,cls)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,mood)}</g></g>`;
-  let b=R(0,0,W,H,wall)+R(0,28,W,8,floor)+R(0,28,W,1,'#3a4052');
-  if(day<6){ // 赤ちゃん：ゆりかご
-    b+=R(48,4,10,10,'#2c3550')+R(49,5,8,8,'#3b4a72')+`<circle cx="55" cy="7" r="1.6" fill="#f5e7a1"/>`; // 窓と月
-    b+=`<g class="sc-mobile"><line x1="24" y1="0" x2="24" y2="6" stroke="#8a93a3" stroke-width=".4"/>${R(20,6,8,.6,'#8a93a3')}${R(19.5,6.6,1.4,1.4,'#e9b949')}${R(23.3,6.6,1.4,1.4,'#5aa9ff')}${R(27,6.6,1.4,1.4,'#36d399')}</g>`;
-    b+=`<g class="sc-rock">${R(14,26,20,2,'#8b5a2b')}${R(15,14,1,12,'#a0703a')}${R(32,14,1,12,'#a0703a')}${R(15,19,18,.8,'#a0703a')}${R(16,22,16,4,'#f4efe4')}${spr('baby',18,7)}${[17,20,23,26,29].map(x=>R(x,19.5,.8,3,'#a0703a')).join('')}</g>`;
-    b+=`<text x="44" y="24" class="sc-z">z</text><text x="47" y="20" class="sc-z d2">z</text>`;
-  } else if(day<16){ // 子ども：教室
-    b+=R(6,4,30,14,'#264d3a')+R(6,4,30,1,'#8b5a2b')+R(6,17,30,1,'#8b5a2b')+`<text x="9" y="11" class="sc-chalk">1+1=2</text><text x="9" y="15.5" class="sc-chalk">買い→待つ</text>`;
-    b+=spr('child',40,10,'sc-nod')+R(36,22,22,2,'#a0703a')+R(38,24,1.5,5,'#8b5a2b')+R(54,24,1.5,5,'#8b5a2b')+R(42,20.6,7,1.4,'#f4efe4')+`<g class="sc-pen">${R(48,18.5,.8,3,'#e9b949')}</g>`;
-  } else if(day<56){ // 青年・大人：トレードデスク
-    const c=['#36d399','#ff5d6c','#36d399','#36d399','#ff5d6c','#36d399'];
-    b+=R(30,6,26,15,'#0b0e14')+R(30,6,26,1,'#3a4052')+R(42,21,2,3,'#3a4052')+R(38,24,10,1,'#3a4052');
-    b+=c.map((col,i)=>{const h=[4,3,5,6,3,7][i],y=[12,13,10,9,12,8][i];return `<g class="sc-candle" style="animation-delay:${i*.25}s">${R(33+i*3.6,y-1,.4,h+2,col)}${R(32.4+i*3.6,y,1.6,h,col)}</g>`}).join('');
-    b+=R(26,24,34,2,'#a0703a')+R(28,26,1.5,3,'#8b5a2b')+R(57,26,1.5,3,'#8b5a2b')+spr('adult',8,12,'sc-breathe')+R(52,22,3,2,'#f4efe4')+R(55,22.5,.8,1,'#f4efe4');
-    b+=`<g class="sc-steam">${R(53,19,.6,2,'#8a93a3')}${R(54.2,18,.6,2,'#8a93a3')}</g>`;
-  } else { // 長老：ロッキングチェア
-    b+=R(44,4,12,12,'#2c3550')+R(45,5,10,10,'#3b4a72')+`<circle cx="52" cy="8" r="2" fill="#f5e7a1"/>`;
-    b+=`<g class="sc-rock">${R(14,27,22,1.4,'#8b5a2b')}${R(16,12,2,15,'#a0703a')}${R(16,21,16,2,'#a0703a')}${spr('elder',17,7)}</g>`;
-  }
+  const W=64,H=30,spr=(k,x,y,cls)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,mood)}</g></g>`;
+  const room=(wall)=>R(0,0,W,H,wall||'#1d2230')+R(0,24,W,6,'#2a2f3d')+R(0,24,W,.8,'#3a4052');
+  const out=(sky,grass)=>R(0,0,W,H,sky)+R(0,23,W,7,grass)+R(0,23,W,.8,'#4f8f45');
+  const win=(x,moon)=>R(x,3,10,9,'#2c3550')+R(x+1,4,8,7,moon?'#3b4a72':'#7fb3e6')+(moon?`<circle cx="${x+7}" cy="6" r="1.4" fill="#f5e7a1"/>`:'');
+  let b='';
+  if(day<3){b=room()+win(50,1)+`<g class="sc-mobile"><line x1="22" y1="0" x2="22" y2="4" stroke="#8a93a3" stroke-width=".4"/>${R(18,4,8,.6,'#8a93a3')}${R(17.5,4.6,1.4,1.4,'#e9b949')}${R(21.3,4.6,1.4,1.4,'#5aa9ff')}${R(25,4.6,1.4,1.4,'#36d399')}</g>`+
+    `<g class="sc-rock">${R(12,22,20,2,'#8b5a2b')}${R(13,10,1,12,'#a0703a')}${R(30,10,1,12,'#a0703a')}${R(14,18,16,4,'#f4efe4')}${spr('baby',16,3)}${R(13,15,18,.8,'#a0703a')}${[15,18,21,24,27].map(x=>R(x,15.5,.8,3,'#a0703a')).join('')}</g><text x="40" y="18" class="sc-z">z</text><text x="43" y="14" class="sc-z d2">z</text>`}
+  else if(day<6){b=out('#7fb3e6','#5aa64e')+`<circle cx="54" cy="6" r="3" fill="#ffd34d"/>`+R(6,14,3,9,'#7a5230')+`<circle cx="7.5" cy="12" r="5" fill="#3d8b3a"/>`+spr('child',22,8,'sc-hop')+`<g class="sc-ball"><circle cx="40" cy="21" r="1.8" fill="#ff5d6c"/></g>`}
+  else if(day<9){b=room()+R(4,3,30,13,'#264d3a')+R(4,3,30,1,'#8b5a2b')+R(4,15,30,1,'#8b5a2b')+`<text x="7" y="9" class="sc-chalk">1+1=2</text><text x="7" y="13.5" class="sc-chalk">買い→待つ</text>`+
+    spr('child',40,6,'sc-nod')+R(36,18,22,2,'#a0703a')+R(38,20,1.5,4,'#8b5a2b')+R(54,20,1.5,4,'#8b5a2b')+R(42,16.6,7,1.4,'#f4efe4')+`<g class="sc-pen">${R(48,14.5,.8,3,'#e9b949')}</g>`}
+  else if(day<13){b=out('#9cc8ef','#5aa64e')+R(46,12,3,11,'#7a5230')+`<circle cx="47.5" cy="10" r="6" fill="#3d8b3a"/>`+R(4,18,8,5,'#d9d9d9')+R(4,17,8,1,'#b0b0b0')+`<g class="sc-run">${spr('child',14,8)}</g>`+`<g class="sc-ball2"><circle cx="34" cy="21.5" r="1.5" fill="#f4efe4"/></g>`}
+  else if(day<16){b=room('#1a1a2b')+win(4,1)+R(30,16,28,2,'#5b4636')+R(32,18,1.5,6,'#4a3426')+R(55,18,1.5,6,'#4a3426')+R(50,11,1,5,'#c9b88f')+R(48,10,5,1.5,'#ffd34d')+`<g class="sc-glow"><circle cx="50.5" cy="13" r="6" fill="#ffd34d" opacity=".12"/></g>`+spr('adult',36,1,'sc-nod')+`<text x="22" y="10" class="sc-note">♪</text>`}
+  else if(day<19){b=`<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a5a"/><stop offset=".7" stop-color="#e38a5a"/></linearGradient></defs>`+R(0,0,W,H,'url(#dusk)')+`<circle cx="48" cy="18" r="4" fill="#ffcf7a"/>`+R(0,22,W,8,'#3a3348')+R(0,22,W,.6,'#55506a')+`<g class="sc-walk">${spr('adult',0,7)}${R(9,15,3,3,'#4a3426')}</g>`}
+  else if(day<23){b=room('#232030')+[2,10,18].map(x=>R(x,2,7,20,'#5b4636')+R(x+.5,5,6,.6,'#3a2a1e')+R(x+.5,11,6,.6,'#3a2a1e')+R(x+.5,17,6,.6,'#3a2a1e')+R(x+1,2.6,1,2.3,'#c0392b')+R(x+2.3,2.6,1,2.3,'#2c3e66')+R(x+3.6,8.6,1,2.3,'#36d399')).join('')+R(30,16,30,2,'#a0703a')+spr('adult',36,1,'sc-breathe')+R(46,14.6,6,1.4,'#f4efe4')+`<g class="sc-pen">${R(51,12.5,.8,3,'#e9b949')}</g>`}
+  else if(day<45){const two=day>=35,c=['#36d399','#ff5d6c','#36d399','#36d399','#ff5d6c','#36d399'];
+    const mon=(x)=>R(x,3,22,13,'#0b0e14')+R(x,3,22,1,'#3a4052')+c.map((col,i)=>{const h=[4,3,5,6,3,7][i],y=[9,10,7,6,9,5][i];return `<g class="sc-candle" style="animation-delay:${i*.25}s">${R(x+2.5+i*3.1,y-1,.4,h+2,col)}${R(x+2+i*3.1,y,1.4,h,col)}</g>`}).join('');
+    b=room()+mon(two?20:32)+(two?mon(42):'')+R(28,19,34,2,'#a0703a')+R(30,21,1.5,3,'#8b5a2b')+R(59,21,1.5,3,'#8b5a2b')+spr('adult',4,8,'sc-breathe')+R(two?16:24,17,3,2,'#f4efe4')+`<g class="sc-steam">${R((two?16:24)+1,14,.6,2,'#8a93a3')}</g>`}
+  else if(day<55){b=out('#a7d0ef','#5aa64e')+[30,38,46,54].map((x,i)=>R(x,19,1,4,'#3d8b3a')+`<circle cx="${x+.5}" cy="18" r="1.6" fill="${['#ff5d6c','#ffd34d','#f4a3c4','#ffd34d'][i]}"/>`).join('')+spr('adult',10,7,'sc-breathe')+`<g class="sc-water">${R(20,14,4,3,'#5aa9ff')}${R(24,15,3,.8,'#5aa9ff')}</g>`}
+  else{b=room()+win(46,1)+`<g class="sc-rock2">${R(12,23,22,1.4,'#8b5a2b')}${R(14,8,2,15,'#a0703a')}${R(14,17,16,2,'#a0703a')}${spr('elder',15,3)}</g>`}
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges">${b}</svg>`;
 }
 function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
@@ -1003,7 +1031,6 @@ function renderLog2(){
       <div class="scene-wrap">${scene(stageOf(dayN(td)||1).k,dayN(td)||1,cfg.state)}</div>
       <div class="chara-row"><div class="cname" id="cname">${charName(cur)}<button id="cnEdit">✎</button></div>
         <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
-      <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="mbar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
     $('#cnEdit').onclick=()=>{const box=$('#cname');box.innerHTML=`<input type="text" id="cnIn" value="${charName(cur)==='名前をつける'?'':charName(cur)}" placeholder="この口座のキャラ名" style="padding:6px 8px;font-size:14px">`;const i=$('#cnIn');i.focus();
       const done=()=>{const m=LS.get('charNames',{});if(i.value.trim())m[cur.name]=i.value.trim();LS.set('charNames',m);renderLog2()};i.onkeydown=e=>{if(e.key==='Enter')done()};i.onblur=done};
