@@ -394,6 +394,8 @@ const CLAUDE_DATA={
   dayNotes:{},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-08',week:'11/9〜11/13週',state:'normal',grade:'C',
+    headline:'リセット期間。まずは「待てた」を積み上げる',
+    reason:'直近の記録は10/5の2連敗のみ。負けた1分後に逆方向へ再エントリーしていて、典型的な「負けた瞬間に火がつく」パターン。1か月空いているので通常倍率から再スタート。',
     title:'リセットから、待つ一週間',
     sub:'まず「負けた後の15分」を守れるか',
     lead:'10/5の2連敗から1か月、トレードを止めて仕組みづくりに時間を使ってきた。腕よりも先に、崩れ方のクセを外しにいく週になる。',
@@ -703,17 +705,13 @@ function renderCoach(){
   $('#coachBox').innerHTML=`<div class="coach"><div class="ch"><span>CLAUDEの判定</span><span>${upd}</span></div>
     <div class="cs">${s.ic} ${s.name}　<span class="num" style="font-size:15px;color:var(--mute)">×${cfg.mult[s.id]}</span></div>
     ${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
-  const md=t=>(t||'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
-  const wd='日月火水木金土'[d.getDay()];
-  $('#homeCoach').innerHTML=`<div class="brief">
-    <div class="meta"><span>${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd}）</span><span>${c.week||''}</span></div>
-    <div class="mast">COCKPIT <b>Briefing</b></div><div class="rule2"></div>
-    <h2>${c.title||''}</h2><div class="sub">${c.sub||''}</div>
-    <div class="lead">${md(c.lead)}</div>
-    ${(c.sections||[]).map(x=>`<h4>${x.h}</h4><div class="sec">${md(x.t)}</div>`).join('')}
-    <div class="stamp"><div class="gr">${c.grade||'—'}</div><div><strong>${s.ic} ${s.name}　×${cfg.mult[s.id]}</strong><br>今日の一手：${c.focus||''}</div></div>
-    ${c.mind?`<div class="quote">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}
-  </div>`;
+  const li=a=>(a||[]).map(x=>`・${x}`).join('<br>')||'—';
+  $('#homeCoach').innerHTML=`<div class="coachbig"><div class="top"><div class="grade">${c.grade||'—'}</div>
+    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||c.title||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div></div>
+    <p>${c.reason||''}</p>
+    <div class="cg"><div class="g"><b>良い流れ</b>${li(c.good)}</div><div class="w"><b>要注意</b>${li(c.watch)}</div></div>
+    ${c.focus?`<div class="focus">▶ 今日の一手：${c.focus}</div>`:''}
+    ${c.mind?`<div class="mind">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}</div>`;
   renderMinis();
 }
 function renderMinis(){
