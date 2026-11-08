@@ -226,6 +226,32 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .life .log span{font-family:Outfit;color:var(--mute);margin-right:6px}
 .lstat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
 .lstat div{background:var(--bg2);border-radius:12px;padding:9px 2px}.lstat b{display:block;font-family:Outfit;font-size:18px;font-weight:800}.lstat span{font-size:10px;color:var(--mute)}
+.lg-head{text-align:center;padding:18px 0 10px}
+.lg-k{font-family:Outfit;font-size:13px;letter-spacing:.3em;color:var(--acc)}
+.lg-t{font-size:26px;font-weight:900;margin-top:4px;letter-spacing:.08em}
+.lg-s{font-size:12px;color:var(--mute);margin-top:6px}
+.lg-now{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin:12px 0}
+.lg-now .nm{font-size:13px;color:var(--mute)}
+.lg-now .day{font-family:Outfit;font-size:40px;font-weight:800;line-height:1.1;margin-top:2px}
+.lg-now .day small{font-size:16px;color:var(--mute);font-weight:500}
+.meters{margin-top:12px;display:grid;gap:9px}
+.mt{display:grid;grid-template-columns:62px 1fr 42px;align-items:center;gap:8px;font-size:12px}
+.mt .bar{height:8px;border-radius:5px;background:var(--bg2);overflow:hidden}
+.mt .bar i{display:block;height:100%;border-radius:5px;transition:width 1s ease}
+.mt b{font-family:Outfit;text-align:right;font-size:12px}
+.tl{position:relative;margin:6px 0 16px;padding-left:18px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.ev{position:relative;padding:10px 0 12px;opacity:0;transform:translateY(6px);animation:evIn .5s forwards}
+.ev::before{content:"";position:absolute;left:-17px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--acc)}
+.ev.bad::before{border-color:var(--loss)}.ev.good::before{border-color:var(--win)}
+.ev .dh{font-family:Outfit;font-size:12px;color:var(--acc);letter-spacing:.06em}
+.ev .tx{font-size:14px;line-height:1.75;margin-top:2px}
+.ev .tx em{font-style:normal;color:var(--mute);font-size:12px;display:block;margin-top:2px}
+@keyframes evIn{to{opacity:1;transform:none}}
+.grave{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.grave .st{font-size:26px;flex:none}
+.grave b{font-size:13px}.grave div div{font-size:11.5px;color:var(--mute);margin-top:2px}
+.grave q{display:block;font-size:12.5px;color:var(--acc2);margin-top:4px;quotes:"「" "」"}
 .lostbtn{width:100%;margin-top:12px;border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.1);color:#ff9aa4;border-radius:14px;padding:13px;font:inherit;font-weight:900;font-size:15px}
 .lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
 .lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
@@ -335,6 +361,14 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   </div>
 </section>
 
+<!-- ===== LOG (80億分の1風) ===== -->
+<section class="view" id="v-log2">
+  <div class="lg-head"><div class="lg-k">1 / ∞</div><div class="lg-t">口座の一生</div><div class="lg-s">生まれる相場は選べない。選べるのは、どう生きるかだけ。</div></div>
+  <div id="lgNow"></div>
+  <div id="lgLine"></div>
+  <div id="lgGraves"></div>
+</section>
+
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
   <div class="card">
@@ -422,6 +456,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <button data-v="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>カレンダー</button>
   <button class="plus" id="plusBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg></button>
   <button data-v="lot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg>ロット</button>
+  <button data-v="log2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ログ</button>
   <button data-v="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>パターン</button>
 </div></nav>
 <div class="toast" id="toast"></div>
@@ -438,16 +473,16 @@ const CLAUDE_DATA={
   dayNotes:{},
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
-    {name:'Fintokei 速攻プロ シルバー',size:5000000,start:null,end:null,status:'alive',cause:'',epitaph:'',
-     log:[{d:'2026-11-08',t:'誕生。バッファ15万円・60日。今回のテーマは「暴走ゼロ」。'}]}
+    {name:'Fintokei 速攻プロ シルバー',size:5000000,start:'2026-11-08',end:null,status:'alive',cause:'',epitaph:'',
+     log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'}]}
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
   challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5000000,target:300000,
-    dailyLoss:100000,dailyProfit:150000,totalFloor:4850000,start:null,days:60,selfLosses:3,selfR:2,balanceDate:'2026-11-08'},
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,selfLosses:3,selfR:2,balanceDate:'2026-11-08'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-08',state:'normal',grade:'C',
     headline:'リセット期間。まずは「待てた」を積み上げる',
-    reason:'Fintokei速攻プロ（500万・バッファ15万円）に挑戦開始。直近の記録は10/5の2連敗のみで、負けた1分後に逆方向へ再エントリーした「負けた瞬間に火がつく」パターン。あの2本（−4.5万円）は今回のバッファの3割にあたる。手法より「暴走ゼロ」が合否を決める。',
+    reason:'Fintokei速攻プロ（500万・バッファ17.5万円）に挑戦開始。直近の記録は10/5の2連敗のみで、負けた1分後に逆方向へ再エントリーした「負けた瞬間に火がつく」パターン。あの2本（−4.5万円）は今回のバッファの約4分の1にあたる。手法より「暴走ゼロ」が合否を決める。',
     good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
     watch:['負けた直後の再エントリー（10/5に発生）','1分足での飛び乗り'],
     focus:'負けたら「負けた」ボタンで15分ロック。1日2敗か−2Rで終了。',
@@ -484,8 +519,9 @@ let local=LS.get('local',{trades:{},deleted:[],dayTags:{},dayMemo:{}});
 let tagList=LS.get('tagList',DEF_TAGS);
 let cfg=LS.get('cfg',{maxLotJ:1,maxLotG:0.1,cool:15,theme:'a',acct:'all',
   mult:{great:1,normal:0.75,stress:0.5,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
-  accounts:{'Fintokei速攻':{bal:5000000,floor:4850000,cur:'JPY',risk:5,rate:150},'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
-if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4850000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
+  accounts:{'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
+if(cfg.accounts['Fintokei速攻']&&cfg.accounts['Fintokei速攻'].floor===4850000)cfg.accounts['Fintokei速攻'].floor=4825000;
 const save=()=>{LS.set('local',local);LS.set('tagList',tagList);LS.set('cfg',cfg)};
 function allTrades(){const m={};CLAUDE_DATA.trades.forEach(t=>m[t.id]={tf:'',aim:'',conf:'',emo:null,after:'',state:'',good:'',bad:'',...t});
   Object.values(local.trades).forEach(t=>m[t.id]={...(m[t.id]||{}),...t});local.deleted.forEach(id=>delete m[id]);return Object.values(m)}
@@ -838,6 +874,37 @@ function renderLives(){
     ${(l.log||[]).length?`<div class="log">${l.log.map(x=>`<div><span>${x.d.slice(5).replace('-','/')}</span>${x.t}</div>`).join('')}</div>`:''}</div>`}).join('')+
     (dead.length?'':'<div class="small" style="margin-top:10px">過去に散った口座のダッシュボードを送ってくれたら、ここに墓標として並べていきます。</div>');
 }
+function renderLog2(){
+  const L=CLAUDE_DATA.lives||[],C=CLAUDE_DATA.challenge,td=todayStr(),cur=L.find(l=>l.status==='alive');
+  const dayN=d=>cur&&cur.start?Math.floor((new Date(d)-new Date(cur.start))/864e5)+1:null;
+  const wd=d=>'日月火水木金土'[new Date(d+'T00:00').getDay()];
+  if(cur){
+    const bal=chalBal(),buf=C.size-C.totalFloor,bp=Math.max(0,Math.min(1,(bal-C.totalFloor)/buf));
+    const ct=trades.filter(t=>t.acct===C.acct),clean=ct.length?ct.filter(t=>!detect(t).length).length/ct.length:1;
+    const calm={great:1,normal:.75,stress:.4,tilt:.1}[cfg.state];
+    const prog=Math.max(0,Math.min(1,(bal-C.size)/C.target));
+    const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
+      ['規律',clean,'var(--win)',Math.round(clean*100)+'%'],['平常心',calm,'var(--blue)',Math.round(calm*100)+'%'],['目標',prog,'var(--win)',Math.round(prog*100)+'%']];
+    $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${Math.round(cur.size/10000)}万円口座</div>
+      <div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div>
+      <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="bar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
+    // タイムライン：Claudeのログ＋トレード＋勝ち負けボタンを日ごとに
+    const days=new Set([...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{}))].filter(d=>!cur.start||d>=cur.start));
+    const evs=[...days].sort().reverse().map(d=>{
+      const lines=(cur.log||[]).filter(x=>x.d===d).map(x=>x.t),dt=ct.filter(t=>t.date===d),res=(LS.get('dayRes',{})[d]||[]);
+      let cls='';const parts=[...lines];
+      if(dt.length){const p=dt.reduce((x,t)=>x+t.pnl,0),pats=[...new Set(dt.flatMap(detect))].map(id=>PATTERNS.find(x=>x.id===id).name);
+        parts.push(`${dt.length}戦${dt.filter(t=>t.pnl>0).length}勝、${yen(p)}。`+(pats.length?`<em>注意ポイント：${pats.join('、')}</em>`:''));cls=p<0?'bad':'good'}
+      else if(res.length){const w=res.filter(x=>x==='W').length;parts.push(`${res.length}戦${w}勝（ボタン記録）。`);cls=w*2>=res.length?'good':'bad'}
+      return `<div class="ev ${cls}"><div class="dh">DAY ${dayN(d)} ・ ${d.slice(5).replace('-','/')}（${wd(d)}）</div><div class="tx">${parts.join('<br>')}</div></div>`});
+    $('#lgLine').innerHTML=`<div class="tl">${evs.map((e,i)=>e.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`;
+  } else {$('#lgNow').innerHTML='';$('#lgLine').innerHTML=''}
+  const dead=L.filter(l=>l.status!=='alive');
+  $('#lgGraves').innerHTML=`<div class="ttl" style="margin-top:6px">これまでの一生 <em>${dead.length}口座</em></div>`+(dead.length?dead.map(l=>{
+    const a=l.start&&l.end?Math.floor((new Date(l.end)-new Date(l.start))/864e5)+1:'?';
+    return `<div class="grave"><div class="st">${l.status==='graduated'?'🏆':'🪦'}</div><div><b>${l.name}</b><div>${a}日で${l.status==='graduated'?'合格':'散る'}${l.cause?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
+    :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>');
+}
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
   trades=allTrades();
@@ -850,7 +917,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!cfg.stateTouched&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLives();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLives();renderLog2();
 }
 $('#states').addEventListener('click',()=>{cfg.stateTouched=todayStr();save()});
 if(cfg.stateTouched&&cfg.stateTouched!==todayStr())cfg.stateTouched=null;
