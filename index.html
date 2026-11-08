@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>COCKPIT LOG — トレードノート</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#07080a;--bg2:#101216;--card:#14171c;--line:#252a33;--text:#eef1f5;--mute:#8a93a3;
   --acc:#e9b949;--acc2:#f5d78a;--accdim:rgba(233,185,73,.14);--win:#36d399;--loss:#ff5d6c;--warn:#ffb547;--blue:#5aa9ff}
@@ -171,29 +171,6 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .focus{margin-top:10px;background:var(--accdim);border-radius:14px;padding:11px 12px;font-size:13px;font-weight:700;color:var(--acc2)}
 .mind{margin-top:10px;border-left:3px solid var(--acc);padding:4px 0 4px 12px;font-size:12.5px;line-height:1.7;color:var(--text)}
 .mind small{display:block;color:var(--mute);font-size:11px;margin-top:2px}
-.brief{background:#f4efe4;color:#1d1a16;border:1px solid #c9b88f;border-radius:6px;padding:20px 18px 18px;margin-bottom:12px;font-family:"Noto Serif JP",serif}
-.brief .meta{display:flex;justify-content:space-between;font-size:13px;color:#6b6152;padding-bottom:10px;border-bottom:3px solid #1d1a16}
-.brief .mast{text-align:center;font-size:24px;font-weight:500;letter-spacing:.06em;padding:8px 0;border-bottom:1px solid #8a8070}
-.brief .mast b{color:#a07a1a;font-weight:700}
-.brief .rule2{border-top:3px solid #1d1a16;margin-top:3px}
-.brief h2{font-size:25px;font-weight:700;line-height:1.35;margin-top:16px}
-.brief .sub{color:#a33a22;font-size:15px;margin-top:4px;padding-bottom:12px;border-bottom:2px dotted #c9b88f}
-.brief .lead{font-size:15px;line-height:1.95;margin-top:12px}
-.brief h4{font-size:16px;font-weight:900;border-left:4px solid #1d1a16;padding-left:10px;margin-top:20px}
-.brief .sec{font-size:14.5px;line-height:1.95;margin-top:8px}
-.brief .sec b,.brief .lead b{font-weight:900}
-.brief .stamp{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid #c9b88f}
-.brief .stamp .gr{width:52px;height:52px;border:2px solid #a07a1a;color:#a07a1a;border-radius:50%;display:grid;place-items:center;font-family:Outfit;font-size:26px;font-weight:800;flex:none}
-.brief .stamp div{font-size:13px;line-height:1.6}
-.brief .stamp strong{font-size:15px}
-.brief .quote{margin-top:14px;font-size:13px;line-height:1.8;color:#4a4237;border-left:2px solid #c9b88f;padding-left:10px}
-.brief .quote small{display:block;color:#8a8070;font-size:11px}
-.minis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.mini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;text-align:center}
-.mini h5{font-size:13px;font-weight:900}
-.mini small{display:block;font-size:10.5px;color:var(--mute);margin-top:2px}
-.mini b{display:block;font-family:Outfit;font-size:30px;font-weight:800;margin:8px 0 2px;color:var(--acc)}
-.mini span{font-size:11px;color:var(--mute)}
 .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
 .dayhead .big{font-size:30px}
 </style>
@@ -206,7 +183,6 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <!-- ===== HOME ===== -->
 <section class="view on" id="v-home">
   <div id="homeCoach"></div>
-  <div class="minis" id="minis"></div>
 
   <div class="card">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
@@ -393,21 +369,13 @@ const CLAUDE_DATA={
   ],
   dayNotes:{},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-08',week:'11/9〜11/13週',state:'normal',grade:'C',
+  coach:{date:'2026-11-08',state:'normal',grade:'C',
     headline:'リセット期間。まずは「待てた」を積み上げる',
     reason:'直近の記録は10/5の2連敗のみ。負けた1分後に逆方向へ再エントリーしていて、典型的な「負けた瞬間に火がつく」パターン。1か月空いているので通常倍率から再スタート。',
-    title:'リセットから、待つ一週間',
-    sub:'まず「負けた後の15分」を守れるか',
-    lead:'10/5の2連敗から1か月、トレードを止めて仕組みづくりに時間を使ってきた。腕よりも先に、崩れ方のクセを外しにいく週になる。',
-    sections:[
-      {h:'いまの構図',t:'直近の記録は10/5の2本のみ。**負けた1分後に逆方向へ再エントリー**していて、ノートに何度も出てくる「**負けた瞬間に火がつく**」パターンそのもの。手法の問題ではなく、負けた直後の数分間の扱いが収支を決めている。'},
-      {h:'今週のカギ',t:'**負けたら15分チャートを閉じる**、エントリーは**4h確定から1時間後**に絞る、の2つだけ。新しいことは足さない。倍率は**通常（×0.75）**から再スタートする。'},
-      {h:'こう見る',t:'2〜3回続けて「待てた」なら好調寄りに戻す余地あり。逆に、負けた直後の再エントリーがもう一度出たら、その日は**暴走気味（打たない）**に切り替える。1回の勝ち負けではなく、**同じルールを何回繰り返せたか**で判定する。'}
-    ],
     good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
     watch:['負けた直後の再エントリー（10/5に発生）','1分足での飛び乗り'],
     focus:'負けたら15分はチャートを閉じる。打つのは4h確定から1時間後。',
-    mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。'}}
+    mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。負けは「想定内の1回」として受け流す。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -707,20 +675,11 @@ function renderCoach(){
     ${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
   const li=a=>(a||[]).map(x=>`・${x}`).join('<br>')||'—';
   $('#homeCoach').innerHTML=`<div class="coachbig"><div class="top"><div class="grade">${c.grade||'—'}</div>
-    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||c.title||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div></div>
+    <div><div class="lbl">CLAUDEの総合判定　${upd}</div><h3>${c.headline||''}</h3><span class="st">${s.ic} ${s.name} ×${cfg.mult[s.id]}</span></div></div>
     <p>${c.reason||''}</p>
     <div class="cg"><div class="g"><b>良い流れ</b>${li(c.good)}</div><div class="w"><b>要注意</b>${li(c.watch)}</div></div>
     ${c.focus?`<div class="focus">▶ 今日の一手：${c.focus}</div>`:''}
     ${c.mind?`<div class="mind">${c.mind.text}<small>— ${c.mind.who} の考え方より</small></div>`:''}</div>`;
-  renderMinis();
-}
-function renderMinis(){
-  const A=cfg.accounts[cfg.lotAcct]||Object.values(cfg.accounts)[0],buf=Math.max(0,A.bal-A.floor),base=buf*A.risk/100;
-  const last=vis().slice(-10),w=last.filter(t=>t.pnl>0).length,ym=ds(new Date()).slice(0,7),ms=stats(vis().filter(t=>t.date.startsWith(ym)));
-  const st=STATES.find(x=>x.id===cfg.state);
-  const M=[['今日の倍率',st.ic+' '+st.name,'×'+cfg.mult[cfg.state],'ロット画面と連動'],['残機',cfg.lotAcct,base?Math.floor(buf/base)+'回':'—','通常リスクで耐えられる連敗'],
-    ['直近10回',last.length+'トレード',last.length?Math.round(w/last.length*100)+'%':'—','勝率'],['今月',`${new Date().getMonth()+1}月`,short(ms.pnl),ms.n+'回 / 円']];
-  $('#minis').innerHTML=M.map(([h,sm,b,sp])=>`<div class="mini"><h5>${h}</h5><small>${sm}</small><b>${b}</b><span>${sp}</span></div>`).join('');
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
