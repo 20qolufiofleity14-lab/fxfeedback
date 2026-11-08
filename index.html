@@ -227,7 +227,22 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .life .log span{font-family:Outfit;color:var(--mute);margin-right:6px}
 .lstat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
 .lstat div{background:var(--bg2);border-radius:12px;padding:9px 2px}.lstat b{display:block;font-family:Outfit;font-size:18px;font-weight:800}.lstat span{font-size:10px;color:var(--mute)}
-.chara-row{display:flex;gap:14px;align-items:center;margin-top:8px}
+.scene-wrap{margin:10px -4px 4px;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.scene{display:block;width:100%;height:auto;image-rendering:pixelated}
+.sc-rock{transform-box:view-box;transform-origin:24px 28px;animation:rock 2.6s ease-in-out infinite}
+@keyframes rock{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.sc-mobile{transform-box:view-box;transform-origin:24px 0;animation:rock 4s ease-in-out infinite}
+.sc-z{font:bold 4px monospace;fill:#8a93a3;animation:zz 3s linear infinite}.sc-z.d2{animation-delay:1.5s}
+@keyframes zz{0%{opacity:0;transform:translateY(2px)}30%{opacity:1}100%{opacity:0;transform:translateY(-4px)}}
+.sc-chalk{font:2.6px "Noto Sans JP",sans-serif;fill:#e8f0e8;opacity:.9}
+.sc-nod{animation:nod 1.6s ease-in-out infinite}@keyframes nod{50%{transform:translateY(.7px)}}
+.sc-pen{animation:pen .5s steps(2) infinite}@keyframes pen{50%{transform:translate(-2px,.5px)}}
+.sc-candle{animation:blink 2s ease-in-out infinite}@keyframes blink{50%{opacity:.35}}
+.sc-breathe{animation:br 2.4s ease-in-out infinite}@keyframes br{50%{transform:translateY(-.6px)}}
+.sc-steam{animation:zz 2.5s linear infinite}
+.cname{font-size:15px;font-weight:900;display:flex;align-items:center;gap:6px}
+.cname button{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;width:26px;height:24px;font-size:12px}
+.chara-row{justify-content:space-between;display:flex;gap:14px;align-items:center;margin-top:8px}
 .chara{background:radial-gradient(circle at 50% 70%,var(--accdim),transparent 70%);border-radius:16px;padding:6px 8px;flex:none;animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-3px)}}
 .age{font-size:12.5px;color:var(--mute);margin-top:2px}.age span{color:var(--text);font-weight:700}
@@ -914,7 +929,8 @@ const SPR={
  grave:['','','','....gggg....','...gggggg...','..gggxxggg..','..ggxxxxgg..','..gggxxggg..','..gggxxggg..','..gggggggg..','..gggggggg..','..gggggggg..','..gggggggg..','.llllllllll.','llllllllllll','']
 };
 const STAGES=[{k:'baby',d:1,n:'赤ちゃん'},{k:'child',d:6,n:'子ども'},{k:'adult',d:16,n:'青年'},{k:'adult',d:36,n:'大人'},{k:'elder',d:56,n:'長老'}];
-function sprite(key,mood,px,extra){
+function sprite(key,mood,px,extra){return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${spriteRects(key,mood,extra)}</svg>`}
+function spriteRects(key,mood,extra){
   const pal={h:'#3b2a1e',s:'#f2c9a0',e:'#111',m:'#c0392b',w:'#f4efe4',b:'var(--acc)',p:'#2c3e66',k:'#4a3426',g:'#9aa3ad',c:'#8b5a2b',x:'#5d6670',l:'#3d6b3a',y:'#ffd34d',d:'#5aa9ff',r:'#ff5d6c'};
   const rows=SPR[key].map(r=>r.padEnd(12,'.'));
   const add=[];if(extra==='crown')add.push([4,0,'y'],[5,0,'y'],[6,0,'y'],[7,0,'y'],[4,-1,'y'],[7,-1,'y'],[5,-1,'y']);
@@ -922,7 +938,32 @@ function sprite(key,mood,px,extra){
   if(key!=='grave'){if(mood==='stress')add.push([10,top+3,'d'],[10,top+4,'d']);if(mood==='tilt')add.push([9,top,'r'],[10,top+1,'r'],[10,top,'r'],[9,top+1,'r']);if(mood==='great')add.push([1,top+1,'y'],[10,top+2,'y'])}
   let r='';rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(c!=='.')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[c]}"/>`}));
   add.forEach(([x,y,c])=>{if(y>=0)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[c]}"/>`});
-  return `<svg viewBox="0 0 12 16" width="${px*12}" height="${px*16}" shape-rendering="crispEdges" style="image-rendering:pixelated">${r}</svg>`;
+  return r;
+}
+/* ---- 年齢ごとのシーン（ドット絵アニメ） ---- */
+const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+function scene(stageKey,day,mood){
+  const W=64,H=36,wall='#1d2230',floor='#2a2f3d',spr=(k,x,y,cls)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,mood)}</g></g>`;
+  let b=R(0,0,W,H,wall)+R(0,28,W,8,floor)+R(0,28,W,1,'#3a4052');
+  if(day<6){ // 赤ちゃん：ゆりかご
+    b+=R(48,4,10,10,'#2c3550')+R(49,5,8,8,'#3b4a72')+`<circle cx="55" cy="7" r="1.6" fill="#f5e7a1"/>`; // 窓と月
+    b+=`<g class="sc-mobile"><line x1="24" y1="0" x2="24" y2="6" stroke="#8a93a3" stroke-width=".4"/>${R(20,6,8,.6,'#8a93a3')}${R(19.5,6.6,1.4,1.4,'#e9b949')}${R(23.3,6.6,1.4,1.4,'#5aa9ff')}${R(27,6.6,1.4,1.4,'#36d399')}</g>`;
+    b+=`<g class="sc-rock">${R(14,26,20,2,'#8b5a2b')}${R(15,14,1,12,'#a0703a')}${R(32,14,1,12,'#a0703a')}${R(15,19,18,.8,'#a0703a')}${R(16,22,16,4,'#f4efe4')}${spr('baby',18,7)}${[17,20,23,26,29].map(x=>R(x,19.5,.8,3,'#a0703a')).join('')}</g>`;
+    b+=`<text x="44" y="24" class="sc-z">z</text><text x="47" y="20" class="sc-z d2">z</text>`;
+  } else if(day<16){ // 子ども：教室
+    b+=R(6,4,30,14,'#264d3a')+R(6,4,30,1,'#8b5a2b')+R(6,17,30,1,'#8b5a2b')+`<text x="9" y="11" class="sc-chalk">1+1=2</text><text x="9" y="15.5" class="sc-chalk">買い→待つ</text>`;
+    b+=spr('child',40,10,'sc-nod')+R(36,22,22,2,'#a0703a')+R(38,24,1.5,5,'#8b5a2b')+R(54,24,1.5,5,'#8b5a2b')+R(42,20.6,7,1.4,'#f4efe4')+`<g class="sc-pen">${R(48,18.5,.8,3,'#e9b949')}</g>`;
+  } else if(day<56){ // 青年・大人：トレードデスク
+    const c=['#36d399','#ff5d6c','#36d399','#36d399','#ff5d6c','#36d399'];
+    b+=R(30,6,26,15,'#0b0e14')+R(30,6,26,1,'#3a4052')+R(42,21,2,3,'#3a4052')+R(38,24,10,1,'#3a4052');
+    b+=c.map((col,i)=>{const h=[4,3,5,6,3,7][i],y=[12,13,10,9,12,8][i];return `<g class="sc-candle" style="animation-delay:${i*.25}s">${R(33+i*3.6,y-1,.4,h+2,col)}${R(32.4+i*3.6,y,1.6,h,col)}</g>`}).join('');
+    b+=R(26,24,34,2,'#a0703a')+R(28,26,1.5,3,'#8b5a2b')+R(57,26,1.5,3,'#8b5a2b')+spr('adult',8,12,'sc-breathe')+R(52,22,3,2,'#f4efe4')+R(55,22.5,.8,1,'#f4efe4');
+    b+=`<g class="sc-steam">${R(53,19,.6,2,'#8a93a3')}${R(54.2,18,.6,2,'#8a93a3')}</g>`;
+  } else { // 長老：ロッキングチェア
+    b+=R(44,4,12,12,'#2c3550')+R(45,5,10,10,'#3b4a72')+`<circle cx="52" cy="8" r="2" fill="#f5e7a1"/>`;
+    b+=`<g class="sc-rock">${R(14,27,22,1.4,'#8b5a2b')}${R(16,12,2,15,'#a0703a')}${R(16,21,16,2,'#a0703a')}${spr('elder',17,7)}</g>`;
+  }
+  return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges">${b}</svg>`;
 }
 function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
 /* ---- 節目の手記 ---- */
@@ -946,6 +987,7 @@ function renderVoices(cur,C){
     <textarea id="vaTx" placeholder="今の気持ちを、そのまま"></textarea><div class="va-b"><button class="btn sm" id="vaSave">残す</button><button class="btn sm ghost" id="vaSkip">あとで</button></div></div>`;
   return {html,open,save:(txt)=>{V[key]=V[key]||{};V[key][open.id]={t:open.t,q:open.q,a:txt,d:todayStr()};LS.set('voices',V)}};
 }
+function charName(l){const m=LS.get('charNames',{});return m[l.name]||l.charName||'名前をつける'}
 function renderLog2(){
   const L=CLAUDE_DATA.lives||[],C=CLAUDE_DATA.challenge,td=todayStr(),cur=L.find(l=>l.status==='alive');
   const dayN=d=>cur&&cur.start?Math.floor((new Date(d)-new Date(cur.start))/864e5)+1:null;
@@ -958,10 +1000,13 @@ function renderLog2(){
     const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
       ['規律',clean,'var(--win)',Math.round(clean*100)+'%'],['平常心',calm,'var(--blue)',Math.round(calm*100)+'%'],['目標',prog,'var(--win)',Math.round(prog*100)+'%']];
     $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${cur.sizeLabel}円口座</div>
-      <div class="chara-row"><div class="chara">${sprite(stageOf(dayN(td)||1).k,cfg.state,6)}</div>
+      <div class="scene-wrap">${scene(stageOf(dayN(td)||1).k,dayN(td)||1,cfg.state)}</div>
+      <div class="chara-row"><div class="cname" id="cname">${charName(cur)}<button id="cnEdit">✎</button></div>
         <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
       <div class="growth">${STAGES.map(x=>{const now=stageOf(dayN(td)||1)===x,past=(dayN(td)||1)>=x.d;return `<div class="gs ${now?'now':''} ${past?'':'fut'}">${sprite(x.k,'normal',2.6,(x.d===56&&false)?'crown':'')}<span>${x.d}歳</span></div>`}).join('<i class="garr">›</i>')}</div>
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="mbar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
+    $('#cnEdit').onclick=()=>{const box=$('#cname');box.innerHTML=`<input type="text" id="cnIn" value="${charName(cur)==='名前をつける'?'':charName(cur)}" placeholder="この口座のキャラ名" style="padding:6px 8px;font-size:14px">`;const i=$('#cnIn');i.focus();
+      const done=()=>{const m=LS.get('charNames',{});if(i.value.trim())m[cur.name]=i.value.trim();LS.set('charNames',m);renderLog2()};i.onkeydown=e=>{if(e.key==='Enter')done()};i.onblur=done};
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
