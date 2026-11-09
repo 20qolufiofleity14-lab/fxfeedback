@@ -1025,7 +1025,7 @@ function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});ret
 /* ---- 節目の手記 ---- */
 function milestones(cur,C){
   const out=[],day=cur.start?Math.floor((new Date(todayStr())-new Date(cur.start))/864e5)+1:1;
-  STAGES.forEach(st=>{if(day>=st.d)out.push({id:'age'+st.d,t:`${st.d}歳・${st.n}になった`,q:st.d===1?'この口座で、どんな自分でいたい？':'ここまでの自分を、ひとことで言うと？'})});
+  [stageOf(day)].forEach(st=>{out.push({id:'age'+st.d,t:`${st.d}歳・${st.n}になった`,q:st.d===1?'この口座で、どんな自分でいたい？':'ここまでの自分を、ひとことで言うと？'})});
   const res=LS.get('dayRes',{}),all=Object.values(res).flat();
   if(all.includes('L'))out.push({id:'firstL',t:'初めての負け',q:'負けた直後、頭の中で何が起きた？'});
   if(Object.values(res).some(a=>a.filter(x=>x==='L').length>=3))out.push({id:'stop3',t:'初めて「今日はここまで」',q:'止まれた？止まれなかった？そのときの気持ちは？'});
@@ -1090,15 +1090,17 @@ function renderAll(){
   {
     // Claudeの判定・自動判定・機械判定（残高と勝敗）のうち、一番慎重なものを採用。手動で上げることはできない
     const rank={great:0,normal:1,stress:2,tilt:3},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState(),m=mechState();
-    const base=cfg.stateTouched?cfg.state:null;
+    const base=(cfg.manual&&cfg.manual.d===todayStr())?cfg.manual.s:null;
     const pick=[c,a,m&&m.s,base].filter(Boolean).sort((x,y)=>rank[y]-rank[x])[0];if(pick)cfg.state=pick;
-    if(m&&m.s==='great'&&!cfg.stateTouched&&rank[c]<=1&&!a)cfg.state='great';
+    if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
   renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();
 }
-$('#states').addEventListener('click',()=>{cfg.stateTouched=todayStr();save()});
-if(cfg.stateTouched&&cfg.stateTouched!==todayStr())cfg.stateTouched=null;
+$('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
+// 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
+let _lastDay=todayStr();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(_lastDay!==todayStr()){_lastDay=todayStr()}renderAll();renderLock()}});
 applyTheme();renderAll();renderLock();
 </script>
 </body>
