@@ -314,6 +314,30 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .grave q{display:block;font-size:12.5px;color:var(--acc2);margin-top:4px;quotes:"「" "」"}
 .stepper{display:flex;gap:6px}.stepper input{text-align:center}
 .stepper button{flex:none;width:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:20px;font-weight:700}
+.fab{position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom) + 92px);width:52px;height:52px;border-radius:50%;border:1.5px solid var(--acc);background:rgba(10,11,14,.92);color:var(--acc);display:grid;place-items:center;z-index:6;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px var(--accdim)}
+.fab svg{width:26px;height:26px}.fab:active{transform:scale(.93)}
+.ckmodal{align-items:center;padding:18px}
+.cksheet{width:100%;max-width:440px;max-height:86vh;overflow:auto}
+.ckh{font-family:Outfit;font-size:12px;letter-spacing:.2em;color:var(--acc);text-align:center;margin-bottom:10px}
+.ckstate{text-align:center;font-size:14px;font-weight:900;margin-bottom:12px}
+.ckstate.stop{color:var(--loss);font-size:20px}
+.cki{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:8px;opacity:0;transform:translateY(14px) scale(.96);animation:ckIn .35s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes ckIn{to{opacity:1;transform:none}}
+.cki .n{font-family:Outfit;font-weight:800;font-size:18px;color:var(--acc);width:20px;flex:none}
+.cki b{display:block;font-size:15px;line-height:1.4}.cki span{display:block;font-size:12px;color:var(--mute);margin-top:3px;line-height:1.5}
+.cki.wip{border-style:dashed}.cki.wip .n{color:var(--mute)}
+.ckclose{text-align:center;font-size:12px;color:var(--mute);margin-top:10px;opacity:0;animation:ckIn .3s forwards}
+.wk{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.wk h5{font-size:15px;font-weight:900;margin-top:2px}
+.wk .wkk{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.08em}
+.wk dl{margin-top:8px}.wk dt{font-size:11px;font-weight:800;margin-top:8px}
+.wk dt.g{color:var(--win)}.wk dt.l{color:var(--loss)}.wk dt.f{color:var(--blue)}.wk dt.n{color:var(--acc)}
+.wk dd{font-size:13px;line-height:1.7}
+.wk .old{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.wk details summary{font-size:12px;color:var(--mute);cursor:pointer;padding:4px 0}
+.nbtn{border-radius:11px;padding:8px 10px;font:inherit;font-weight:900;font-size:13px;border:1.5px solid var(--line);background:var(--bg2);color:var(--mute)}
+.nbtn.on{border-color:var(--blue);color:var(--blue)}
+.ldots .ld.n{background:transparent;border-color:var(--blue)}
 .lostbtn{width:100%;margin-top:12px;border:1.5px solid rgba(255,93,108,.5);background:rgba(255,93,108,.1);color:#ff9aa4;border-radius:14px;padding:13px;font:inherit;font-weight:900;font-size:15px}
 .lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
 .lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
@@ -429,6 +453,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <section class="view" id="v-log2">
   <div class="lg-head"><div class="lg-k">1 / ∞</div><div class="lg-t">口座の一生</div><div class="lg-s">生まれる相場は選べない。選べるのは、どう生きるかだけ。</div></div>
   <div id="lgNow"></div>
+  <div id="lgWeek"></div>
   <div id="lgLine"></div>
   <div id="lgGraves"></div>
 </section>
@@ -510,6 +535,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <button class="btn sm ghost" id="resetBtn">初期状態に戻す</button>
 </div></div>
 
+<button class="fab" id="fabCheck" aria-label="エントリー前チェック"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg></button>
+<div class="modal ckmodal" id="ckModal"><div class="cksheet" id="ckSheet"></div></div>
 <nav><div class="in">
   <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>ホーム</button>
   <button data-v="log2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ログ</button>
@@ -529,6 +556,22 @@ const CLAUDE_DATA={
     {id:'c-20261005-2',date:'2026-10-05',time:'10:04',acct:'あみくも',pair:'USDJPY',dir:'S',lot:1,pips:-21,pnl:-32843}
   ],
   dayNotes:{},
+  noEntry:{},
+  // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
+  checklist:[
+    {t:'上位足（4h）と同じ方向？',s:'4h内部・レンジ上限下限では無理に触らない'},
+    {t:'4h確定から1時間後？',s:'打つ時間を絞ると、決断疲れが減る'},
+    {t:'Ψ・α・リボンは揃ってる？',s:'リボンが整うまで待つ。リボンの中では入らない'},
+    {t:'確認足は出た？',s:'1分足で飛び乗らない。形ができてから'},
+    {t:'損切りの位置とロットは計算どおり？',s:'ロットは重ねない'},
+    {t:'流動性：どこのストップを取りに行く動き？',s:'学習中。分かる範囲で一言',wip:true}
+  ],
+  // 週のまとめ（新しい週が上）。日曜にClaudeが追記
+  weekly:[
+    {week:'11/9〜11/13',title:'導入の週',fought:'',won:'',lost:'',
+     next:'控えめに入る週。倍率は慎重に、1日最大2回まで。まず「ルール通りに1日を終えた」を1回作る。',
+     note:'先週のまとめは、今週の記録が溜まったら日曜に出します。'}
+  ],
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
     {name:'The5ers ブートキャンプ $20K',sizeLabel:'$20K',start:'2026-08-24',end:'2026-09-22',status:'dead',cause:'全体ライン',
@@ -645,7 +688,7 @@ function tagChips(el,date,after){
 
 /* ---------- HOME ---------- */
 let per='a',calM=null;
-(()=>{const l=trades.map(t=>t.date).sort().pop();if(l){const[y,m]=l.split('-').map(Number);calM=new Date(y,m-1,1)}})();
+// カレンダーは今月から開く
 function riskPids(date){const p=new Set(tagsOf(date).map(g=>TAG_PAT[g]).filter(Boolean));if(date===todayStr()){const h=new Date().getHours();if(h>=23||h<5)p.add('tired')}return [...p]}
 function renderHome(){
   const td=todayStr();
@@ -682,10 +725,10 @@ function renderCal(){
   const first=new Date(Y,M,1).getDay(),days=new Date(Y,M+1,0).getDate();
   let h=['日','月','火','水','木','金','土'].map(x=>`<div class="h">${x}</div>`).join('');
   for(let i=0;i<first;i++)h+='<div></div>';
-  const list=vis();
+  const list=vis(),NE=noEntry();
   for(let d=1;d<=days;d++){
     const k=`${Y}-${pad(M+1)}-${pad(d)}`,dt=list.filter(t=>t.date===k),p=dt.reduce((s,t)=>s+t.pnl,0),bad=dt.some(t=>detect(t).length),hasTag=tagsOf(k).length||memoOf(k);
-    h+=`<button class="d ${dt.length?(p>0?'w':p<0?'l':''):''} ${k===todayStr()?'today':''}" data-d="${k}"><span class="dn">${d}</span>${hasTag?'<i class="tg"></i>':''}${dt.length?`<i class="dot" style="background:${bad?'var(--loss)':'var(--win)'}"></i><span class="dp ${p>0?'pos':'neg'}">${short(p)}</span>`:''}</button>`;
+    h+=`<button class="d ${dt.length?(p>0?'w':p<0?'l':''):''} ${k===todayStr()?'today':''}" data-d="${k}"><span class="dn">${d}</span>${hasTag?'<i class="tg"></i>':''}${dt.length?`<i class="dot" style="background:${bad?'var(--loss)':'var(--win)'}"></i><span class="dp ${p>0?'pos':'neg'}">${short(p)}</span>`:(NE[k]?'<span class="dp" style="color:var(--blue)">見送</span>':'')}</button>`;
   }
   $('#cal').innerHTML=h;$$('#cal .d').forEach(b=>b.onclick=()=>openDay(b.dataset.d));
   const ml=list.filter(t=>t.date.startsWith(`${Y}-${pad(M+1)}`)),ms=stats(ml);
@@ -895,6 +938,7 @@ function renderCoach(){
 /* ---- チャレンジ：スライダー残高・勝ち負けボタン・機械判定 ---- */
 const resToday=()=>(LS.get('dayRes',{})[todayStr()]||[]);
 function pushRes(r){const m=LS.get('dayRes',{}),k=todayStr();m[k]=m[k]||[];if(r==='undo')m[k].pop();else m[k].push(r);LS.set('dayRes',m)}
+const noEntry=()=>({...(CLAUDE_DATA.noEntry||{}),...LS.get('noEntry',{})});
 const lossToday=()=>resToday().filter(x=>x==='L').length;
 function chalBal(){const C=CLAUDE_DATA.challenge,l=LS.get('chalBal',null);return l&&l.date>=(C.balanceDate||'')?l.bal:C.balance}
 function setChalBal(v){const d=LS.get('dayStartBal',{});if(d[todayStr()]==null){d[todayStr()]=chalBal()};LS.set('dayStartBal',d);LS.set('chalBal',{bal:v,date:todayStr()});
@@ -925,14 +969,15 @@ function renderChal(){
       <div style="text-align:right"><div class="small">失格まで</div><b class="num" style="font-size:16px">${yen(toFloor)}</b></div></div>
     <input type="range" class="balslider" id="balSl" min="${lo}" max="${hi}" step="1000" value="${bal}" style="--p:${(bal-lo)/(hi-lo)*100}%;--c:${col};--s:${(C.size-lo)/(hi-lo)*100}%">
     <div class="slmarks"><span>失格 ${short(lo)}</span><span>開始 ${short(C.size)}</span><span>合格 ${short(hi)}</span></div>
-    <div class="losses"><div><div class="small">今日の結果</div><div class="ldots">${res.length?res.map(r=>`<i class="ld ${r==='L'?'on':'w'}"></i>`).join(''):'<span>まだなし</span>'}<span class="num">負け ${n}/${max}</span></div></div>
-      <div class="wl"><button id="wBtn" class="wbtn">＋勝</button><button id="lBtn" class="lbtn">＋負</button></div></div>
+    <div class="losses"><div><div class="small">今日の結果</div><div class="ldots">${res.length?res.map(r=>`<i class="ld ${r==='L'?'on':'w'}"></i>`).join(''):(noEntry()[td]?'<i class="ld n"></i><span>見送り</span>':'<span>まだなし</span>')}<span class="num">負け ${n}/${max}</span></div></div>
+      <div class="wl"><button id="nBtn" class="nbtn ${noEntry()[td]?'on':''}">見送り</button><button id="wBtn" class="wbtn">＋勝</button><button id="lBtn" class="lbtn">＋負</button></div></div>
     <div class="mech"><span>機械判定</span><b>${ms.ic} ${ms.name} ×${cfg.mult[m.s]}</b><em>${m.why}</em></div>
     ${n>=max?'<div class="alert"><h5>今日はここまで</h5><p>負けが'+max+'回に届いた。チャートを閉じて、明日に回す。</p></div>':''}
     <div class="small" style="margin-top:6px;text-align:right"><a href="#" id="resUndo" style="color:var(--mute)">直前の結果を取り消す</a></div>`;
   const sl=$('#balSl');
   sl.oninput=()=>{const v=+sl.value,p=(v-lo)/(hi-lo)*100,b2=(v-C.totalFloor)/buf,c2=b2<0.2?'var(--loss)':b2<0.5?'var(--warn)':v>=C.size?'var(--win)':'var(--acc)';sl.style.setProperty('--p',p+'%');sl.style.setProperty('--c',c2);$('#balTxt').textContent=yen(v);$('#balTxt').style.color=c2};
   sl.onchange=()=>{setChalBal(+sl.value);renderAll()};
+  $('#nBtn').onclick=()=>{const m=noEntry();if(m[td])delete m[td];else m[td]=1;LS.set('noEntry',m);renderAll();toast(m[td]?'見送りを記録。待てた日':'見送りを取り消しました')};
   $('#wBtn').onclick=()=>{pushRes('W');renderAll();toast('勝ちを記録')};
   $('#lBtn').onclick=()=>{pushRes('L');LS.set('lockUntil',Date.now()+15*60000);renderAll();renderLock();toast('負けを記録。15分ロック開始')};
   $('#resUndo').onclick=e=>{e.preventDefault();pushRes('undo');renderAll()};
@@ -1066,15 +1111,17 @@ function renderLog2(){
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
     // タイムライン：Claudeのログ＋トレード＋勝ち負けボタンを日ごとに
-    const days=new Set([...myV.map(v=>v.d),...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{}))].filter(d=>!cur.start||d>=cur.start));
+    const days=new Set([...myV.map(v=>v.d),...(cur.log||[]).map(x=>x.d),...ct.map(t=>t.date),...Object.keys(LS.get('dayRes',{})),...Object.keys(noEntry())].filter(d=>!cur.start||d>=cur.start));
     const evs=[...days].sort().reverse().map(d=>{
       const lines=(cur.log||[]).filter(x=>x.d===d).map(x=>x.t),dt=ct.filter(t=>t.date===d),res=(LS.get('dayRes',{})[d]||[]);
       let cls='';const parts=[...lines,...myV.filter(v=>v.d===d).map(v=>`<span class="vq">✎ ${v.t}<br>「${v.a}」</span>`)];
       if(dt.length){const p=dt.reduce((x,t)=>x+t.pnl,0),pats=[...new Set(dt.flatMap(detect))].map(id=>PATTERNS.find(x=>x.id===id).name);
         parts.push(`${dt.length}戦${dt.filter(t=>t.pnl>0).length}勝、${yen(p)}。`+(pats.length?`<em>注意ポイント：${pats.join('、')}</em>`:''));cls=p<0?'bad':'good'}
       else if(res.length){const w=res.filter(x=>x==='W').length;parts.push(`${res.length}戦${w}勝（ボタン記録）。`);cls=w*2>=res.length?'good':'bad'}
+      if(noEntry()[d]&&!dt.length&&!res.length)parts.push('ノーエントリー。待てた日。');
+      if(!parts.length)return '';
       return `<div class="ev ${cls}"><div class="dh">DAY ${dayN(d)} ・ ${d.slice(5).replace('-','/')}（${wd(d)}）</div><div class="tx">${parts.join('<br>')}</div></div>`});
-    $('#lgLine').innerHTML=`<div class="tl">${evs.map((e,i)=>e.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`;
+    $('#lgLine').innerHTML=`<div class="tl">${evs.filter(Boolean).map((e,i)=>e.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`;
   } else {$('#lgNow').innerHTML='';$('#lgLine').innerHTML=''}
   const dead=L.filter(l=>l.status!=='alive');
   const nd=dead.filter(l=>l.status==='dead').length,ng=dead.filter(l=>l.status==='graduated').length,byC={};dead.filter(l=>l.status==='dead'&&l.cause&&l.cause!=='不明').forEach(l=>byC[l.cause]=(byC[l.cause]||0)+1);
@@ -1082,6 +1129,36 @@ function renderLog2(){
     const a=l.start&&l.end?Math.floor((new Date(l.end)-new Date(l.start))/864e5)+1:'?';
     return `<div class="grave"><div class="st">${l.status==='graduated'?sprite('adult','great',3,'crown'):sprite('grave','',3)}</div><div><b>${l.name}</b><div>${a!=='?'?a+'日で':''}${l.status==='graduated'?'合格':'散る'}${l.cause&&l.cause!=='不明'?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
     :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>');
+}
+function renderWeek(){
+  const W=CLAUDE_DATA.weekly||[],el=$('#lgWeek');if(!W.length){el.innerHTML='';return}
+  const one=w=>`<div class="wkk">${w.week} の週</div><h5>${w.title||''}</h5><dl>
+    ${w.fought?`<dt class="f">こう戦った</dt><dd>${w.fought}</dd>`:''}${w.won?`<dt class="g">こう勝った</dt><dd>${w.won}</dd>`:''}${w.lost?`<dt class="l">こう負けた</dt><dd>${w.lost}</dd>`:''}
+    ${w.next?`<dt class="n">${w.fought||w.won||w.lost?'次の週はここに気をつける':'今週の方針'}</dt><dd>${w.next}</dd>`:''}</dl>${w.note?`<div class="small" style="margin-top:8px">${w.note}</div>`:''}`;
+  el.innerHTML=`<div class="wk"><div class="ttl" style="margin-bottom:6px">週のまとめ</div>${one(W[0])}
+    ${W.length>1?`<div class="old">${W.slice(1).map(w=>`<details><summary>${w.week}　${w.title||''}</summary>${one(w)}</details>`).join('')}</div>`:''}</div>`;
+}
+function openCheck(){
+  const L=CLAUDE_DATA.checklist||[],st=STATES.find(x=>x.id===cfg.state),locked=LS.get('lockUntil',0)>Date.now(),C=CLAUDE_DATA.challenge,stop=cfg.state==='tilt'||(C&&lossToday()>=C.selfLosses);
+  let head;
+  if(locked)head=`<div class="ckstate stop">15分ロック中。今は打たない</div>`;
+  else if(stop)head=`<div class="ckstate stop">今日は打たない日</div>`;
+  else head=`<div class="ckstate">${st.ic} ${st.name}　×${cfg.mult[cfg.state]}　<span class="small">ロットは計算画面の数字で</span></div>`;
+  $('#ckSheet').innerHTML=`<div class="ckh">ENTRY CHECK</div>${head}`+(locked||stop?'':L.map((x,i)=>`<div class="cki ${x.wip?'wip':''}" style="animation-delay:${.12+i*.16}s"><div class="n">${i+1}</div><div><b>${x.t}</b><span>${x.s||''}</span></div></div>`).join(''))+
+    `<div class="ckclose" style="animation-delay:${.3+(locked||stop?0:L.length)*.16}s">どこかをタップで閉じる</div>`;
+  $('#ckModal').classList.add('on');
+}
+$('#fabCheck').onclick=openCheck;
+$('#ckModal').addEventListener('click',()=>$('#ckModal').classList.remove('on'));
+// GitHub側が更新されていたら自動で読み込み直す（Claudeの毎日の更新がすぐ出るように）
+async function checkUpdate(){
+  if(!/github\.io$/.test(location.hostname))return;
+  try{const r=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();
+    const a=t.lastIndexOf('<script>'),b=t.lastIndexOf('</'+'script>');if(a<0||b<0)return;
+    const mine=document.scripts[document.scripts.length-1].textContent;
+    if(t.slice(a+8,b).trim()!==mine.trim()){let last=0;try{last=+sessionStorage.getItem('ckR')||0}catch(e){}
+      if(Date.now()-last>60000){try{sessionStorage.setItem('ckR',Date.now())}catch(e){}location.reload()}}
+  }catch(e){}
 }
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
@@ -1095,13 +1172,13 @@ function renderAll(){
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();
 }
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
 let _lastDay=todayStr();
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(_lastDay!==todayStr()){_lastDay=todayStr()}renderAll();renderLock()}});
-applyTheme();renderAll();renderLock();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkUpdate();if(_lastDay!==todayStr()){_lastDay=todayStr()}renderAll();renderLock()}});
+applyTheme();renderAll();renderLock();checkUpdate();
 </script>
 </body>
 </html>
