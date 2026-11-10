@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>COCKPIT LOG — トレードノート</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" href="icon-180-v2.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -342,13 +342,17 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .lock{margin-top:12px;text-align:center;background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.35);border-radius:16px;padding:16px}
 .lock b{display:block;font-family:Outfit;font-size:44px;font-weight:800;color:var(--loss)}
 .lock p{font-size:13px;line-height:1.6;margin-top:4px}
+.brandrow{display:flex;align-items:center;gap:10px}
+.wx{display:inline-flex;align-items:center;gap:4px;font-family:Outfit;font-size:13px;font-weight:700;color:var(--text);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+.wx:empty{display:none}.wx i{font-style:normal;font-size:15px}.wx em{font-style:normal;color:var(--mute);font-weight:500;font-size:11px}
+.clock{font-family:Outfit;color:var(--mute);font-size:12.5px;letter-spacing:.02em}.clock b{color:var(--acc);font-weight:700}
 .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
 .dayhead .big{font-size:30px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><div><h1>COCKPIT<span>.</span>LOG</h1><small id="acctLbl">全口座</small></div>
+<header><div><div class="brandrow"><h1>COCKPIT<span>.</span>LOG</h1><span class="wx" id="wx"></span></div><small class="clock" id="clock"></small></div>
   <button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button></header>
 
 <!-- ===== HOME ===== -->
@@ -1160,10 +1164,22 @@ async function checkUpdate(){
       if(Date.now()-last>60000){try{sessionStorage.setItem('ckR',Date.now())}catch(e){}location.reload()}}
   }catch(e){}
 }
+/* ---- 現在の日時と天気（倉敷） ---- */
+function tickClock(){const d=new Date(),w='日月火水木金土'[d.getDay()];
+  const h=d.getHours(),sess=h>=7&&h<15?'東京':h>=15&&h<21?'欧州':'NY';
+  $('#clock').innerHTML=`${d.getMonth()+1}/${d.getDate()}（${w}）<b>${pad(h)}:${pad(d.getMinutes())}</b>　${sess}時間`;
+  if(typeof _lastDay!=='undefined'&&_lastDay!==todayStr()){_lastDay=todayStr();renderAll()}}
+const WX={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌦',61:'🌧',63:'🌧',65:'🌧',66:'🌧',67:'🌧',71:'🌨',73:'🌨',75:'🌨',77:'🌨',80:'🌦',81:'🌧',82:'⛈',85:'🌨',86:'🌨',95:'⛈',96:'⛈',99:'⛈'};
+async function loadWeather(){
+  const c=LS.get('wx',null);if(c&&Date.now()-c.t<30*60000){showWx(c);return}
+  try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.585&longitude=133.772&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1');
+    const j=await r.json();const o={t:Date.now(),c:j.current.weather_code,tp:Math.round(j.current.temperature_2m),hi:Math.round(j.daily.temperature_2m_max[0]),lo:Math.round(j.daily.temperature_2m_min[0])};
+    LS.set('wx',o);showWx(o)}catch(e){if(c)showWx(c)}
+}
+function showWx(o){$('#wx').innerHTML=`<i>${WX[o.c]||'🌡'}</i>${o.tp}°<em>${o.hi}/${o.lo}</em>`;$('#wx').title='倉敷の天気'}
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
 function renderAll(){
   trades=allTrades();
-  $('#acctLbl').textContent=cfg.acct==='all'?'全口座':cfg.acct;
   {
     // Claudeの判定・自動判定・機械判定（残高と勝敗）のうち、一番慎重なものを採用。手動で上げることはできない
     const rank={great:0,normal:1,stress:2,tilt:3},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState(),m=mechState();
@@ -1177,8 +1193,8 @@ function renderAll(){
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
 let _lastDay=todayStr();
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkUpdate();if(_lastDay!==todayStr()){_lastDay=todayStr()}renderAll();renderLock()}});
-applyTheme();renderAll();renderLock();checkUpdate();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkUpdate();tickClock();loadWeather();if(_lastDay!==todayStr()){_lastDay=todayStr()}renderAll();renderLock()}});
+applyTheme();renderAll();renderLock();checkUpdate();tickClock();setInterval(tickClock,15000);loadWeather();
 </script>
 </body>
 </html>
