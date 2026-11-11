@@ -557,7 +557,9 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 const CLAUDE_DATA={
   trades:[
     {id:'c-20261005-1',date:'2026-10-05',time:'10:03',acct:'あみくも',pair:'USDJPY',dir:'L',lot:1,pips:-8,pnl:-12301},
-    {id:'c-20261005-2',date:'2026-10-05',time:'10:04',acct:'あみくも',pair:'USDJPY',dir:'S',lot:1,pips:-21,pnl:-32843}
+    {id:'c-20261005-2',date:'2026-10-05',time:'10:04',acct:'あみくも',pair:'USDJPY',dir:'S',lot:1,pips:-21,pnl:-32843},
+    {id:'c-20261111-1',date:'2026-11-11',time:'',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837'},
+    {id:'c-20261111-2',date:'2026-11-11',time:'',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865'}
   ],
   dayNotes:{},
   noEntry:{},
@@ -595,19 +597,19 @@ const CLAUDE_DATA={
     {name:'Fintokei クリスタル STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'全体はまだ7割残っていたのに、1日で終わった'},
     {name:'Fintokei ブロンズ STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'1日で日次も全体も使い切った'},
     {name:'Fintokei 速攻プロ シルバー',sizeLabel:'500万',size:5000000,start:'2026-11-08',end:null,status:'alive',cause:'',epitaph:'',
-     log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'}]}
+     log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'},{d:'2026-11-11',t:'初陣。ドル円ロング2戦2勝、+19,250円（手数料込みで残高5,017,344円）。'}]}
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
-  challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5000000,target:300000,
-    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,selfLosses:3,selfR:2,balanceDate:'2026-11-08'},
+  challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5017344,target:300000,
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,selfLosses:3,selfR:2,balanceDate:'2026-11-11'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-08',state:'normal',grade:'C',
-    headline:'リセット期間。まずは「待てた」を積み上げる',
-    reason:'過去14口座を振り返ると、STEP1を突破した3口座は3つとも次で散り、The5ersも目標の98%から2週間で失格。死因の多くは「1日で日次ラインまで行く」日。今回の速攻プロ（500万・バッファ17.5万円）は1ステップなので、勝ち始めた後と、荒れた1日をどう止めるかが合否を決める。',
-    good:['1か月トレードを空けて、仕組みづくりに時間を使えている','過去のノートで自分のパターンを言語化できている'],
-    watch:['1日で日次ラインまで行く荒れた日（過去の死因の中心）','勝ち始めた後・目標が見えた後の緩み'],
-    focus:'負けたら「負けた」ボタンで15分ロック。1日2敗か−2Rで終了。',
-    mind:{who:'Mark Douglas',text:'1回のトレードの結果に意味はない。大事なのは、同じルールで何十回と繰り返せるかどうか。負けは「想定内の1回」として受け流す。'}}
+  coach:{date:'2026-11-11',week:'11/9〜11/13週',state:'normal',grade:'B',
+    headline:'初陣は2戦2勝。ここから「勝った後」が本番',
+    reason:'速攻プロの初トレードは、ドル円ロング2本で+19,250円（手数料込み+17,344円）。まだ2回なので、勝ち方の傾向はこれから。気になるのは2つ：ロット1.0は、今の設定（リスク5%・×0.75）で計算すると損切り約6.5pips以下でないと収まらない量であること、2本がほぼ同じ価格の買いで、重ねエントリーだったかどうか。過去の口座は勝ち始めた後に崩れているので、倍率は上げずに通常のまま。',
+    good:['初日に負けずに終えて、すぐ記録を送ってくれた','欲張らず、小さく利確して終えている'],
+    watch:['ロット1.0が計算どおりだったか（損切り幅の確認）','同じ方向に2本重ねていないか'],
+    focus:'次のエントリーは、ロット画面の数字をそのまま打つ。勝った翌日こそ倍率は通常のまま。',
+    mind:{who:'Mark Douglas',text:'勝った直後は「次も勝てる」と感じやすい。でも次の1回は、今日の勝ちとは無関係な、新しい1回。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
