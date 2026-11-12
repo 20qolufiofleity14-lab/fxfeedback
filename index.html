@@ -132,6 +132,7 @@ header small{color:var(--mute);font-size:12px;display:block}
 .lotout{text-align:center;padding:10px 0 4px}
 .lotout .big{font-size:56px;color:var(--acc)}
 .lotout .unit{font-size:16px;color:var(--mute);margin-left:4px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.quick span{background:var(--card2,#1a1d24);border-radius:10px;padding:6px 8px;font-family:var(--num,inherit);font-size:13px;display:flex;justify-content:space-between}.quick b{color:var(--mute);font-weight:500}
 .lotrows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .lotrows div{background:var(--bg2);border-radius:12px;padding:10px;text-align:center}
 .lotrows b{display:block;font-family:Outfit;font-size:17px;font-weight:800}
@@ -604,7 +605,7 @@ const CLAUDE_DATA={
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
   challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5113599,target:300000,
-    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,selfLosses:3,selfR:2,balanceDate:'2026-11-11'},
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,maxLossPct:0.5,selfLosses:3,selfR:2,balanceDate:'2026-11-11'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-12',week:'11/9〜11/13週',state:'tilt',grade:'A',
     headline:'休むと決められた日',
@@ -790,7 +791,9 @@ function renderLot(){
   $('#riskChips').innerHTML=[2,3,5,7,10].map(v=>`<button class="chip ${+Aa.risk===v?'on':''}" data-v="${v}">${v}%</button>`).join('');
   $$('#riskChips .chip').forEach(b=>b.onclick=()=>{Aa.risk=+b.dataset.v;save();renderAll()});
   // calc
-  const buf=Math.max(0,A.bal-A.floor),base=buf*A.risk/100,mult=cfg.mult[cfg.state],risk=base*mult,sl=Number(cfg.lSl)||0;
+  const C=CLAUDE_DATA.challenge,isChal=cfg.lotAcct===C.acct,bal=isChal?chalBal():A.bal;
+  const cap=isChal&&C.maxLossPct?C.size*C.maxLossPct/100:0; // 口座全体に対する1回の損失上限（絶対に超えない）
+  const buf=Math.max(0,bal-A.floor),base=buf*A.risk/100,mult=cfg.mult[cfg.state],raw=base*mult,capped=cap&&raw>cap,risk=capped?cap:raw,sl=Number(cfg.lSl)||0;
   let perLot; // 1lotあたりの損失（口座通貨）
   if(cfg.lPair==='USDJPY'){const jpy=sl*1000;perLot=A.cur==='JPY'?jpy:jpy/A.rate}
   else{const usd=sl*100;perLot=A.cur==='USD'?usd:usd*A.rate}
@@ -799,11 +802,14 @@ function renderLot(){
   if(mult===0){$('#lotOut').innerHTML=`<div class="stop" style="margin-top:14px"><b>今日は打たない</b><div class="small" style="margin-top:6px">負けてトレードしたくなったら、MT5デモで戦う。</div></div>`;return}
   $('#lotOut').innerHTML=`<div class="lotout"><span class="big num">${lot.toFixed(2)}</span><span class="unit">lot</span></div>
     <div class="lotrows">
-      <div><b class="num">${money(-risk,A.cur)}</b><span>この1回のリスク</span></div>
+      <div><b class="num">${money(-risk,A.cur)}</b><span>この1回のリスク${capped?'（上限で止めた）':''}</span></div>
+      ${cap?`<div><b class="num" style="color:var(--warn)">${money(-cap,A.cur)}</b><span>1回の損失の上限（口座の${C.maxLossPct}%）</span></div>`:''}
       <div><b class="num">${money(buf,A.cur)}</b><span>破綻までのバッファ</span></div>
       <div><b class="num">${lives}回</b><span>通常リスクで耐えられる連敗</span></div>
       <div><b class="num">${sl?(cfg.lPair==='USDJPY'?sl+'pips':'$'+sl):'—'}</b><span>損切り幅</span></div>
-    </div>`;
+    </div>
+    ${(()=>{const tb=pres.map(v=>{const pl=cfg.lPair==='USDJPY'?(A.cur==='JPY'?v*1000:v*1000/A.rate):(A.cur==='USD'?v*100:v*100*A.rate);return `<span><b>${cfg.lPair==='USDJPY'?v+'p':'$'+v}</b>${(Math.floor(risk/pl*100)/100).toFixed(2)}</span>`}).join('');return `<div class="small" style="margin-top:12px">早見表（目測の練習用・今の状態）</div><div class="quick">${tb}</div>`})()}
+`;
 }
 $('#lSl').oninput=e=>{cfg.lSl=e.target.value;save();renderLot()};
 const slStep=()=>cfg.lPair==='USDJPY'?1:0.5;
