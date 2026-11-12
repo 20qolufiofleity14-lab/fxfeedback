@@ -312,6 +312,15 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .ev .tx{font-size:14px;line-height:1.75;margin-top:2px}
 .ev .tx em{font-style:normal;color:var(--mute);font-size:12px;display:block;margin-top:2px}
 @keyframes evIn{to{opacity:1;transform:none}}
+.fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 10px}
+.fold summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}.fold summary::-webkit-details-marker{display:none}
+.fold summary b{font-size:14px}.fold summary span{font-size:11.5px;color:var(--mute);text-align:right}.fold summary span i{font-style:normal}.fold summary::after{content:"›";color:var(--mute);font-size:18px;transition:.2s}.fold[open] summary::after{transform:rotate(90deg)}
+.fold .tl{margin:12px 0 0}.fold.graves .grave{background:var(--bg,#0d0f14)}
+.route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
+.rt-h{font-weight:800;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}.rt-h em{font-style:normal;font-weight:400;font-size:11px;color:var(--mute)}
+.rt-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 8px}.rt{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;opacity:.45}.rt.on{opacity:1;border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}
+.rt b{display:block;font-size:18px}.rt span{display:block;font-size:11.5px;font-weight:700;margin-top:2px}.rt small{display:block;font-size:9.5px;color:var(--mute);margin-top:2px}
+.rt-dots{display:flex;align-items:center;gap:4px;margin-bottom:6px}.rt-dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line)}.rt-dots i.k{background:var(--win);border-color:var(--win)}.rt-dots i.x{background:var(--loss);border-color:var(--loss)}.rt-dots span{font-size:11px;color:var(--mute);margin-left:6px}
 .grave{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
 .grave .st{font-size:26px;flex:none}
 .grave b{font-size:13px}.grave div div{font-size:11.5px;color:var(--mute);margin-top:2px}
@@ -573,6 +582,8 @@ const CLAUDE_DATA={
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足'],memo:'夜勤明けで遅かった。暴走リスクが高いと自分で判断して休み。目線予想とインジケーター開発だけ。'}},
   noEntry:{'2026-11-12':1},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
+  // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
+  ruleLog:{'2026-11-11':0},
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
@@ -1075,13 +1086,29 @@ function spriteRects(key,mood,extra){
 }
 /* ---- 年齢ごとのシーン（ドット絵アニメ） ---- */
 const R=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
-function scene(stageKey,day,mood){
+function scene(stageKey,day,mood,route){
   const W=64,H=30,spr=(k,x,y,cls,shirt,md)=>`<g transform="translate(${x},${y})"><g class="${cls||''}">${spriteRects(k,md||mood).replace(/var\(--acc\)/g,shirt||'var(--acc)')}</g></g>`;
   const room=(wall)=>R(0,0,W,H,wall||'#1d2230')+R(0,24,W,6,'#2a2f3d')+R(0,24,W,.8,'#3a4052');
   const out=(sky,grass)=>R(0,0,W,H,sky)+R(0,23,W,7,grass)+R(0,23,W,.8,'#4f8f45');
   const win=(x,moon)=>R(x,3,10,9,'#2c3550')+R(x+1,4,8,7,moon?'#3b4a72':'#7fb3e6')+(moon?`<circle cx="${x+7}" cy="6" r="1.4" fill="#f5e7a1"/>`:'');
   let b='';
-  if(day<3){b=room()+win(50,1)+`<g class="sc-mobile"><line x1="22" y1="0" x2="22" y2="4" stroke="#8a93a3" stroke-width=".4"/>${R(18,4,8,.6,'#8a93a3')}${R(17.5,4.6,1.4,1.4,'#e9b949')}${R(21.3,4.6,1.4,1.4,'#5aa9ff')}${R(25,4.6,1.4,1.4,'#36d399')}</g>`+
+  if(route==='boss'&&day>=BRANCH_DAY){
+    if(day<28)b=room('#22262f')+win(4)+R(24,17,30,2,'#a0703a')+R(26,19,1.5,5,'#8b5a2b')+R(51,19,1.5,5,'#8b5a2b')+R(30,11,10,6,'#0b0e14')+R(31,12,8,4,'#2c3e66')+R(46,4,14,6,'#f4efe4')+`<text x="48" y="8.4" class="sc-chalk" style="fill:#333">創業</text>`+spr('adult',40,5,'sc-nod','#2c3e66','normal')+R(8,19,8,5,'#8b5a2b')+R(9,17,6,2,'#c9b88f');
+    else if(day<33)b=room('#202733')+R(18,3,28,9,'#f4efe4')+`<text x="21" y="9" class="sc-chalk" style="fill:#333">チーム結成</text>`+spr('adult',6,8,'sc-hop','#5a7bd6','great')+spr('adult',26,8,'sc-breathe','#2c3e66','great')+spr('adult',46,8,'sc-hop','#c46a8a','great');
+    else if(day>=37&&day<42)b=out('#7fb3e6','#6b7280')+R(34,2,22,21,'#c9d4e2')+R(34,2,22,1,'#9aa3ad')+[4,8,12,16].map(y=>[37,42,47,52].map(x=>R(x,y,2.4,2.4,'#2c3e66')).join('')).join('')+R(43,19,4,4,'#3b2a1e')+`<g class="sc-glow">${R(36,-1,18,2.4,'#e9b949')}</g>`+spr('adult',10,7,'sc-breathe','#2c3e66','great')+`<circle cx="8" cy="5" r="2.6" fill="#ffd34d"/>`;
+    else if(day>=42&&day<47)b=room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#e9b949')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">社長</text>`+spr('adult',34,2,'sc-breathe','#3a2a5a','great')+R(4,6,8,10,'#3a2a1e')+R(5,7,6,8,'#36d399')+`<text x="6" y="5" class="sc-note">★</text>`;
+  }
+  else if(route==='slum'&&day>=BRANCH_DAY){
+    const rain=`<g class="sc-twinkle">${[6,15,24,33,42,51,60].map((x,i)=>R(x,2+i%3*4,.4,2.4,'#6b7a94')).join('')}</g>`;
+    if(day<28)b=room('#23262b')+R(4,3,56,3,'#3d8b3a')+`<text x="22" y="5.6" class="sc-chalk">24H OPEN</text>`+R(20,16,30,8,'#9aa3ad')+R(20,16,30,1,'#c9d4e2')+R(42,11,6,5,'#3a4052')+spr('adult',26,4,'sc-nod','#3d8b3a','stress')+R(6,10,8,14,'#2c3550')+[11,14,17,20].map(y=>R(7,y,6,.6,'#5d6670')).join('');
+    else if(day<33)b=R(0,0,W,H,'#3a3348')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,22,W,8,'#2a2733')+R(44,10,14,12,'#4a4458')+R(46,13,10,9,'#2a2733')+`<g class="sc-walk">${spr('adult',0,7,'','#6b6f78','stress')}${R(9,13,5,4,'#8b5a2b')}</g>`;
+    else if(day<42)b=R(0,0,W,H,'#14161c')+R(0,0,18,24,'#2a2d36')+R(46,0,18,24,'#262932')+[3,9,15].map(y=>R(4,y,3,3,'#3b4a72')+R(50,y,3,3,'#1d2230')).join('')+R(0,24,W,6,'#1d1f26')+R(36,17,6,7,'#5d6670')+R(35.5,16,7,1.4,'#8a93a3')+spr('adult',20,7,'sc-breathe','#4a4e57','stress')+rain;
+    else if(day<51)b=out('#8b97a8','#5c6b52')+R(6,14,3,9,'#5a4a3a')+`<circle cx="7.5" cy="12" r="5" fill="#55654f"/>`+R(24,18,26,1.6,'#8b5a2b')+R(24,14,26,1.2,'#8b5a2b')+R(26,19,1.5,5,'#5d6670')+R(47,19,1.5,5,'#5d6670')+spr('adult',30,5,'sc-nod','#4a4e57','stress')+R(42,15,5,3.4,'#e8e2d0');
+    else if(day<59)b=R(0,0,W,H,'#101218')+R(0,0,14,24,'#22252d')+R(0,24,W,6,'#1a1c22')+R(34,15,8,9,'#4a4e57')+R(33.5,14,9,1.2,'#6b6f78')+`<g class="sc-glow">${R(35,10,6,4,'#ff8a3d')+R(36.5,8,3,3,'#ffd34d')}<circle cx="38" cy="12" r="9" fill="#ff8a3d" opacity=".12"/></g>`+spr('elder',16,7,'sc-breathe','#4a4e57','stress')+`<g class="sc-twinkle">${[[50,4],[58,8],[44,7]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`;
+    else b=R(0,0,W,H,'#12151f')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,23,W,7,'#232a24')+R(18,18,28,1.6,'#8b5a2b')+R(20,19,1.5,5,'#5d6670')+R(43,19,1.5,5,'#5d6670')+`<g class="sc-breathe">${R(21,14.6,4,3,'#f2c9a0')+R(21,14,4,1,'#9aa3ad')+R(25,15,18,3,'#4a4e57')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`;
+  }
+  if(b){}
+  else if(day<3){b=room()+win(50,1)+`<g class="sc-mobile"><line x1="22" y1="0" x2="22" y2="4" stroke="#8a93a3" stroke-width=".4"/>${R(18,4,8,.6,'#8a93a3')}${R(17.5,4.6,1.4,1.4,'#e9b949')}${R(21.3,4.6,1.4,1.4,'#5aa9ff')}${R(25,4.6,1.4,1.4,'#36d399')}</g>`+
     `<g class="sc-rock">${R(12,22,20,2,'#8b5a2b')}${R(13,10,1,12,'#a0703a')}${R(30,10,1,12,'#a0703a')}${R(14,18,16,4,'#f4efe4')}${spr('baby',16,3)}${R(13,15,18,.8,'#a0703a')}${[15,18,21,24,27].map(x=>R(x,15.5,.8,3,'#a0703a')).join('')}</g><text x="40" y="18" class="sc-z">z</text><text x="43" y="14" class="sc-z d2">z</text>`}
   else if(day<6){b=out('#7fb3e6','#5aa64e')+`<circle cx="54" cy="6" r="3" fill="#ffd34d"/>`+R(6,14,3,9,'#7a5230')+`<circle cx="7.5" cy="12" r="5" fill="#3d8b3a"/>`+spr('child',22,8,'sc-hop')+`<g class="sc-ball"><circle cx="40" cy="21" r="1.8" fill="#ff5d6c"/></g>`}
   else if(day<9){b=room()+R(4,3,30,13,'#264d3a')+R(4,3,30,1,'#8b5a2b')+R(4,15,30,1,'#8b5a2b')+`<text x="7" y="9" class="sc-chalk">1+1=2</text><text x="7" y="13.5" class="sc-chalk">買い→待つ</text>`+
@@ -1112,7 +1139,18 @@ function scene(stageKey,day,mood){
     `<g class="sc-breathe">${R(15,12.6,4,3,'#f2c9a0')+R(15,12,4,1,'#9aa3ad')+R(16,13.8,.8,.5,'#111')+R(18,13.8,.8,.5,'#111')+R(20,14.6,26,3.4,'#7f9fd6')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`}
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges">${b}</svg>`;
 }
-function stageOf(day){let st=STAGES[0];STAGES.forEach(x=>{if(day>=x.d)st=x});return st}
+const ROUTES={boss:{ic:'👑',n:'社長ルート',c:'var(--acc)',cond:'8割以上'},mid:{ic:'💼',n:'会社員ルート',c:'var(--blue)',cond:'5割以上'},slum:{ic:'🌧',n:'路地裏ルート',c:'var(--mute)',cond:'5割未満'}};
+const RSTAGES={
+  boss:[{k:'adult',d:23,n:'起業（小さな事務所）'},{k:'adult',d:28,n:'初めての社員'},{k:'adult',d:33,n:'海外進出'},{k:'adult',d:37,n:'自社ビル'},{k:'adult',d:42,n:'社長'},{k:'adult',d:47,n:'講演に呼ばれる'},{k:'elder',d:51,n:'会長'},{k:'elder',d:55,n:'世界一周'},{k:'elder',d:59,n:'最期のとき（家族に囲まれて）'}],
+  slum:[{k:'adult',d:23,n:'アルバイト暮らし'},{k:'adult',d:28,n:'日雇いの仕事'},{k:'adult',d:33,n:'路地裏'},{k:'adult',d:42,n:'公園のベンチ'},{k:'elder',d:51,n:'路地裏のたき火'},{k:'elder',d:59,n:'最期のとき（ベンチで）'}]};
+const BRANCH_DAY=23;
+function routeInfo(){
+  const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),Rl=CLAUDE_DATA.ruleLog||{};
+  const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,rate=n?kept/n:0;
+  return {ds,n,kept,rate,id:n<3?null:rate>=.8?'boss':rate>=.5?'mid':'slum',dots:ds.map(d=>Rl[d]?1:0)};
+}
+function routeNow(day){const r=routeInfo();return day>=BRANCH_DAY?(r.id||'mid'):'mid'}
+function stageOf(day,route){let L=STAGES;if(route&&RSTAGES[route]&&day>=BRANCH_DAY)L=[...STAGES.filter(x=>x.d<BRANCH_DAY),...RSTAGES[route]];let st=L[0];L.forEach(x=>{if(day>=x.d)st=x});return st}
 /* ---- 節目の手記 ---- */
 function milestones(cur,C){
   const out=[],day=cur.start?Math.floor((new Date(todayStr())-new Date(cur.start))/864e5)+1:1;
@@ -1144,15 +1182,20 @@ function renderLog2(){
     const ct=trades.filter(t=>t.acct===C.acct),clean=ct.length?ct.filter(t=>!detect(t).length).length/ct.length:1;
     const calm={great:1,normal:.75,stress:.4,tilt:.1}[cfg.state];
     const prog=Math.max(0,Math.min(1,(bal-C.size)/C.target));
+    const rt=routeNow(dayN(td)||1),ri=routeInfo(),dn=dayN(td)||1,tend=ri.id;
     const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
       ['規律',clean,'var(--win)',Math.round(clean*100)+'%'],['平常心',calm,'var(--blue)',Math.round(calm*100)+'%'],['目標',prog,'var(--win)',Math.round(prog*100)+'%']];
     $('#lgNow').innerHTML=`<div class="lg-now"><div class="nm">${cur.name}　${cur.sizeLabel}円口座</div>
-      <div class="scene-wrap">${scene(stageOf(dayN(td)||1).k,dayN(td)||1,cfg.state)}</div>
+      <div class="scene-wrap">${scene(stageOf(dayN(td)||1,rt).k,dayN(td)||1,cfg.state,rt)}</div>
       <div class="chara-row"><div class="cname" id="cname">${charName(cur)}<button id="cnEdit">✎</button></div>
-        <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
+        <div><div class="day">Day ${dayN(td)||1}<small> / ${C.days}</small></div><div class="age">${dayN(td)||1}歳・${stageOf(dayN(td)||1,rt).n}　<span>${STATES.find(x=>x.id===cfg.state).ic} ${STATES.find(x=>x.id===cfg.state).name}</span></div></div></div>
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="mbar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
     $('#cnEdit').onclick=()=>{const box=$('#cname');box.innerHTML=`<input type="text" id="cnIn" value="${charName(cur)==='名前をつける'?'':charName(cur)}" placeholder="この口座のキャラ名" style="padding:6px 8px;font-size:14px">`;const i=$('#cnIn');i.focus();
       const done=()=>{const m=LS.get('charNames',{});if(i.value.trim())m[cur.name]=i.value.trim();LS.set('charNames',m);renderLog2()};i.onkeydown=e=>{if(e.key==='Enter')done()};i.onblur=done};
+    $('#lgNow').insertAdjacentHTML('beforeend',`<div class="route"><div class="rt-h">人生ルート <em>${dn<BRANCH_DAY?`分岐は${BRANCH_DAY}歳（あと${BRANCH_DAY-dn}日）`:'ルールを守るほど上のルートへ'}</em></div>
+      <div class="rt-row">${['boss','mid','slum'].map(k=>`<div class="rt ${tend===k?'on':''}" style="--rc:${ROUTES[k].c}"><b>${ROUTES[k].ic}</b><span>${ROUTES[k].n}</span><small>守れた日 ${ROUTES[k].cond}</small></div>`).join('')}</div>
+      <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）</span></div>
+      <div class="small">${ri.n<3?`まだ判定前（3日分たまってから）。今は${ri.n}日分。`:dn<BRANCH_DAY?`今のままだと → <b style="color:${ROUTES[tend].c}">${ROUTES[tend].ic} ${ROUTES[tend].n}</b>。${BRANCH_DAY}歳で分かれる。`:`今は <b style="color:${ROUTES[tend].c}">${ROUTES[tend].ic} ${ROUTES[tend].n}</b>。`}　勝ち負けは関係なし。守った日が増えれば、何歳からでもルートは上がる。</div></div>`);
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
@@ -1165,16 +1208,20 @@ function renderLog2(){
         parts.push(`${dt.length}戦${dt.filter(t=>t.pnl>0).length}勝、${yen(p)}。`+(pats.length?`<em>注意ポイント：${pats.join('、')}</em>`:''));cls=p<0?'bad':'good'}
       else if(res.length){const w=res.filter(x=>x==='W').length;parts.push(`${res.length}戦${w}勝（ボタン記録）。`);cls=w*2>=res.length?'good':'bad'}
       if(noEntry()[d]&&!dt.length&&!res.length)parts.push('ノーエントリー。待てた日。');
-      if(!parts.length)return '';
-      return `<div class="ev ${cls}"><div class="dh">DAY ${dayN(d)} ・ ${d.slice(5).replace('-','/')}（${wd(d)}）</div><div class="tx">${parts.join('<br>')}</div></div>`});
-    $('#lgLine').innerHTML=`<div class="tl">${evs.filter(Boolean).map((e,i)=>e.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`;
+      if(!parts.length)return null;
+      const P=dt.reduce((x,t)=>x+t.pnl,0),mon=new Date(d+'T00:00');mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
+      return {d,wk:`${mon.getMonth()+1}/${mon.getDate()}`,n:dt.length,w:dt.filter(t=>t.pnl>0).length,p:P,kept:(CLAUDE_DATA.ruleLog||{})[d],html:`<div class="ev ${cls}"><div class="dh">DAY ${dayN(d)} ・ ${d.slice(5).replace('-','/')}（${wd(d)}）</div><div class="tx">${parts.join('<br>')}</div></div>`}}).filter(Boolean);
+    const recent=evs.slice(0,3),older=evs.slice(3),byW={};older.forEach(e=>(byW[e.wk]=byW[e.wk]||[]).push(e));
+    $('#lgLine').innerHTML=`<div class="tl">${recent.map((e,i)=>e.html.replace('class="ev','style="animation-delay:'+i*0.12+'s" class="ev')).join('')}</div>`+
+      Object.entries(byW).map(([wk,a])=>{const n=a.reduce((x,e)=>x+e.n,0),w=a.reduce((x,e)=>x+e.w,0),p=a.reduce((x,e)=>x+e.p,0),kd=a.filter(e=>e.kept!=null),kk=kd.filter(e=>e.kept).length;
+        return `<details class="fold"><summary><b>${wk}〜の週</b><span>${a.length}日・${n}戦${w}勝・<i class="${p<0?'neg':'pos'}">${yen(p)}</i>${kd.length?`・守れた日 ${kk}/${kd.length}`:''}</span></summary><div class="tl">${a.map(e=>e.html).join('')}</div></details>`}).join('');
   } else {$('#lgNow').innerHTML='';$('#lgLine').innerHTML=''}
   const dead=L.filter(l=>l.status!=='alive');
   const nd=dead.filter(l=>l.status==='dead').length,ng=dead.filter(l=>l.status==='graduated').length,byC={};dead.filter(l=>l.status==='dead'&&l.cause&&l.cause!=='不明').forEach(l=>byC[l.cause]=(byC[l.cause]||0)+1);
-  $('#lgGraves').innerHTML=`<div class="ttl" style="margin-top:6px">これまでの一生 <em>散った${nd}・突破${ng}</em></div><div class="small" style="margin:-4px 0 10px">死因：${Object.entries(byC).map(([k,v])=>k+' '+v).join('／')}　※突破した${ng}口座は、すべて次のステップで散っている</div>`+(dead.length?dead.map(l=>{
+  $('#lgGraves').innerHTML=`<details class="fold graves"><summary><b>これまでの一生</b><span>散った${nd}・突破${ng}（タップで開く）</span></summary><div class="small" style="margin:8px 0 10px">死因：${Object.entries(byC).map(([k,v])=>k+' '+v).join('／')}　※突破した${ng}口座は、すべて次のステップで散っている</div>`+(dead.length?dead.map(l=>{
     const a=l.start&&l.end?Math.floor((new Date(l.end)-new Date(l.start))/864e5)+1:'?';
     return `<div class="grave"><div class="st">${l.status==='graduated'?sprite('adult','great',3,'crown'):sprite('grave','',3)}</div><div><b>${l.name}</b><div>${a!=='?'?a+'日で':''}${l.status==='graduated'?'合格':'散る'}${l.cause&&l.cause!=='不明'?'　死因：'+l.cause:''}</div>${l.epitaph?`<q>${l.epitaph}</q>`:''}</div></div>`}).join('')
-    :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>');
+    :'<div class="small">過去の口座のダッシュボードを送ってくれたら、ここに一生の記録が並びます。</div>')+'</details>';
 }
 function renderWeek(){
   const W=CLAUDE_DATA.weekly||[],el=$('#lgWeek');if(!W.length){el.innerHTML='';return}
