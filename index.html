@@ -559,9 +559,9 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
    ========================================================= */
 const CLAUDE_DATA={
   trades:[
-    {id:'c-20261111-1',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
-    {id:'c-20261111-2',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
-    {id:'c-20261111-3',date:'2026-11-11',time:'',state:'stress',tags:['夜トレ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
+    {id:'c-20261111-1',date:'2026-11-11',time:'',exit:'09:55',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
+    {id:'c-20261111-2',date:'2026-11-11',time:'',exit:'10:36',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
+    {id:'c-20261111-3',date:'2026-11-11',time:'',exit:'23:32',state:'stress',tags:['夜トレ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足'],memo:'夜勤明けで遅かった。暴走リスクが高いと自分で判断して休み。目線予想とインジケーター開発だけ。'}},
   noEntry:{'2026-11-12':1},
@@ -679,7 +679,7 @@ function detect(t){
   if(+t.date.slice(8)>=28) p.add('news');
   return [...p];
 }
-const session=t=>{const m=mins(t);if(m==null)return '—';const h=m/60;return h>=7&&h<15?'東京':h>=15&&h<21?'欧州':'NY'};
+const session=t=>{let m=mins(t);if(m==null&&t.exit){const[h,mm]=t.exit.split(':').map(Number);m=h*60+mm}if(m==null)return '未入力';const h=m/60;return h>=7&&h<15?'東京':h>=15&&h<21?'欧州':'NY'};
 const accts=()=>[...new Set([...Object.keys(cfg.accounts),...trades.map(t=>t.acct).filter(Boolean)])];
 const vis=()=>trades.filter(t=>cfg.acct==='all'||t.acct===cfg.acct).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
 function stats(list){
@@ -841,13 +841,13 @@ function renderAna(){
   $('#tiles').innerHTML=T.map(([v,l])=>`<div class="tile"><b class="num">${v}</b><span>${l}</span></div>`).join('');
   let keys,label,fn;
   if(barMode==='wd'){keys=[1,2,3,4,5];label=['月','火','水','木','金'];fn=t=>new Date(t.date+'T00:00').getDay()}
-  else if(barMode==='hr'){keys=['東京','欧州','NY'];label=keys;fn=session}
+  else if(barMode==='hr'){keys=['東京','欧州','NY'];if(list.some(t=>session(t)==='未入力'))keys.push('未入力');label=keys;fn=session}
   else if(barMode==='pair'){keys=[...new Set(list.map(t=>t.pair))];label=keys;fn=t=>t.pair}
   else if(barMode==='conf'){keys=['高','中','低','未入力'];label=keys;fn=t=>t.conf||'未入力'}
   else {keys=[...STATES.map(s=>s.id),''];label=[...STATES.map(s=>s.name),'未入力'];fn=t=>stOf(t)}
-  const vals=keys.map(k=>list.filter(t=>fn(t)===k).reduce((x,t)=>x+t.pnl,0)),mx=Math.max(1,...vals.map(Math.abs));
-  $('#barVal').innerHTML=vals.map(v=>`<span class="${v>0?'pos':v<0?'neg':''}">${short(v)}</span>`).join('');
-  $('#bars').innerHTML=vals.map(v=>`<div class="barcol"><div class="bar" style="height:${Math.abs(v)/mx*50}%;${v>=0?'bottom:50%':'top:50%'};background:${v>=0?'var(--win)':'var(--loss)'}"></div></div>`).join('')+'<div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line)"></div>';
+  const grp=keys.map(k=>{const g=list.filter(t=>fn(t)===k);return {n:g.length,w:g.filter(t=>t.pnl>0).length,l:g.filter(t=>t.pnl<0).length}}),mx=Math.max(1,...grp.map(g=>g.n));
+  $('#barVal').innerHTML=grp.map(g=>`<span>${g.n?`<b style="color:var(--text);font-size:12px">${g.n}回</b><br>${g.w}勝${g.l}敗`:'0'}</span>`).join('');
+  $('#bars').innerHTML=grp.map(g=>{const H=v=>v/mx*100,e=g.n-g.w-g.l;return `<div class="barcol"><div class="bar" style="bottom:0;height:${H(g.w)}%;background:var(--win);border-radius:${g.l||e?'0 0 4px 4px':'4px'}"></div><div class="bar" style="bottom:${H(g.w)}%;height:${H(e)}%;background:var(--mute);opacity:.5;border-radius:0"></div><div class="bar" style="bottom:${H(g.w+e)}%;height:${H(g.l)}%;background:var(--loss);border-radius:${g.w||e?'4px 4px 0 0':'4px'}"></div></div>`}).join('');
   $('#barLbl').innerHTML=label.map(l=>`<span>${l}</span>`).join('');
   const used=[...new Set(list.flatMap(condsOf))];
   const rows=used.map(g=>{const st=stats(list.filter(t=>condsOf(t).includes(g)));return {g,...st}}).sort((a,b)=>a.pnl-b.pnl);
