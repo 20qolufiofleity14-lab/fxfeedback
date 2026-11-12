@@ -1113,6 +1113,12 @@ function scene(stageKey,day,mood,route){
     bonfire:()=>R(0,0,W,H,'#101218')+R(0,0,14,24,'#22252d')+R(0,24,W,6,'#1a1c22')+R(34,15,8,9,'#4a4e57')+R(33.5,14,9,1.2,'#6b6f78')+`<g class="sc-glow">${R(35,10,6,4,'#ff8a3d')+R(36.5,8,3,3,'#ffd34d')}<circle cx="38" cy="12" r="9" fill="#ff8a3d" opacity=".12"/></g>`+spr('elder',16,7,'sc-breathe','#4a4e57','stress')+`<g class="sc-twinkle">${[[50,4],[58,8],[44,7]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`,
     benchN:()=>R(0,0,W,H,'#12151f')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,23,W,7,'#232a24')+R(18,18,28,1.6,'#8b5a2b')+R(20,19,1.5,5,'#5d6670')+R(43,19,1.5,5,'#5d6670')+`<g class="sc-breathe">${R(21,14.6,4,3,'#f2c9a0')+R(21,14,4,1,'#9aa3ad')+R(25,15,18,3,'#4a4e57')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`,
     library:()=>room('#23262f')+R(2,2,24,21,'#5b3a24')+[3,9,15].map((y,j)=>R(3,y,22,5,'#2a2420')+[0,1,2,3,4,5,6,7].map(i=>R(4+i*2.6,y+.6,1.8,4.2,['#c0392b','#5aa9ff','#e9b949','#36d399','#b48cf2','#e38a5a','#f4efe4','#7fb08a'][(i+j*3)%8])).join('')).join('')+R(32,18,26,2,'#a0703a')+R(34,20,1.5,4,'#8b5a2b')+R(55,20,1.5,4,'#8b5a2b')+R(50,12,4,6,'#c0392b')+R(49.4,14,5,1,'#e9b949')+R(40,16.6,7,1.4,'#f4efe4')+`<g class="sc-glow"><circle cx="44" cy="12" r="7" fill="#ffd34d" opacity=".1"/></g>`+spr('adult',34,5,'sc-nod',null,'normal')+`<g class="sc-pen">${R(46,14.5,.8,3,'#e9b949')}</g>`,
+    blocks:()=>room('#2a2f3d')+win(48)+spr('child',14,8,'sc-nod',null,'great')+[[34,20,'#c0392b'],[38,20,'#5aa9ff'],[42,20,'#e9b949'],[36,16,'#36d399'],[40,16,'#b48cf2'],[38,12,'#e38a5a']].map(([x,y,c])=>R(x,y,3.8,3.8,c)).join('')+`<text x="44" y="10" class="sc-note">★</text>`,
+    test100:()=>room()+R(4,3,30,13,'#264d3a')+R(4,3,30,1,'#8b5a2b')+R(4,15,30,1,'#8b5a2b')+`<text x="7" y="10" class="sc-chalk">よくできました</text>`+spr('child',38,8,'sc-hop',null,'great')+`<g class="sc-cheers">${R(50,8,9,11,'#f4efe4')}<text x="51" y="15" class="sc-chalk" style="fill:#c0392b">100</text></g>`,
+    award:()=>room('#232a3a')+R(14,2,36,6,'#c0392b')+`<text x="22" y="6.4" class="sc-chalk">表彰式</text>`+R(8,22,48,2,'#8b5a2b')+spr('adult',8,6,'sc-breathe','#2c3e66','normal')+spr('child',30,8,'sc-hop',null,'great')+`<g class="sc-glow">${R(46,13,5,5,'#e9b949')+R(47.6,18,1.8,2,'#e9b949')+R(46,20,5,1.4,'#8b5a2b')}</g>`,
+    tantrum:()=>room('#2a2f3d')+win(48,1)+spr('child',22,8,'sc-hop','#6b6f78','tilt')+R(8,21,4,3,'#5aa9ff')+R(40,22,3,2,'#e9b949')+R(46,20.6,3.4,3.4,'#c0392b')+`<g class="sc-twinkle">${R(20,14,.8,2,'#5aa9ff')+R(35,15,.8,2,'#5aa9ff')}</g>`,
+    hallway:()=>R(0,0,W,H,'#2a2f3d')+R(0,24,W,6,'#5b4636')+R(6,4,14,20,'#8b5a2b')+R(8,6,10,7,'#7fb3e6')+`<text x="24" y="9" class="sc-chalk">1ねん2くみ</text>`+spr('child',30,8,'sc-breathe','#6b6f78','stress')+R(46,19,5,5,'#5d6670')+R(45.6,18.4,5.8,1,'#8a93a3'),
+    gamekid:()=>room('#14121f')+win(4,1)+R(40,10,14,10,'#0b0e14')+`<g class="sc-glow">${R(41,11,12,8,'#b48cf2')}<circle cx="47" cy="15" r="11" fill="#b48cf2" opacity=".1"/></g>`+R(38,20,18,3,'#3a2a1e')+spr('child',20,9,'sc-nod','#6b6f78','stress')+R(31,18,3,1.6,'#c9d4e2')+`<text x="8" y="20" class="sc-z">z</text>`,
     arcade:()=>room('#1a1326')+`<text x="24" y="6" class="sc-chalk" style="fill:#ff5d6c">GAME</text>`+[6,44].map(x=>R(x,8,12,16,'#2c2350')+R(x+1,9,10,1,'#b48cf2')+`<g class="sc-glow">${R(x+2,11,8,6,x<20?'#36d399':'#ff5d6c')}</g>`+R(x+4,19,1,2,'#c9d4e2')+R(x+7,19.6,2,1,'#e9b949')).join('')+spr('adult',26,7,'sc-hop','#6b6f78','great')+`<text x="20" y="12" class="sc-note">♪</text>`};
   let dd=day;const stg=route&&route!=='mid'?stageOf(day,route):null;
   if(stg&&stg.sc){if(stg.sc.startsWith('d:'))dd=+stg.sc.slice(2);else if(stg.sc==='bed')dd=59;else if(SC[stg.sc])b=SC[stg.sc]()}
@@ -1166,14 +1172,14 @@ const RSTAGES={
   founder:mk([[23,'adult','起業（小さな事務所）','garage'],[28,'adult','初めての社員','team'],[33,'adult','海外進出','d:33'],[42,'adult','講演に呼ばれる','d:47'],[51,'elder','後進を育てる','teach'],[55,'elder','シニア旅行','d:55'],[59,'elder','最期のとき','bed']]),
   boss:mk([[23,'adult','起業（小さな事務所）','garage'],[28,'adult','初めての社員','team'],[33,'adult','海外進出','d:33'],[37,'adult','自社ビル','tower'],[42,'adult','社長','ceo'],[47,'adult','講演に呼ばれる','d:47'],[51,'elder','会長','ceo'],[55,'elder','船で世界一周','cruise'],[59,'elder','最期のとき（家族に囲まれて）','bed']])};
 // 13〜22歳の学生時代：頑張りで場面が変わる
-const STUDY={hi:mk([[13,'adult','中学生（図書館で猛勉強）','library'],[16,'adult','高校生（進学校）','library'],[19,'adult','大学生（難関大・講義）','d:19'],[21,'adult','大学生（研究室）','library']]),
-  lo:mk([[13,'adult','中学生（ゲーセン通い）','arcade'],[16,'adult','高校生（サボりがち）','arcade'],[19,'adult','大学生（講義に出ない）','arcade'],[21,'adult','大学生（飲み会ばかり）','d:21']])};
-const STUDY_DAY=13,BRANCH_DAY=23;
+const STUDY={hi:mk([[3,'child','幼児（積み木に夢中）','blocks'],[6,'child','小学校 低学年（テストで100点）','test100'],[9,'child','小学校 高学年（表彰される）','award'],[13,'adult','中学生（図書館で猛勉強）','library'],[16,'adult','高校生（進学校）','library'],[19,'adult','大学生（難関大・講義）','d:19'],[21,'adult','大学生（研究室）','library']]),
+  lo:mk([[3,'child','幼児（だだをこねる）','tantrum'],[6,'child','小学校 低学年（廊下に立たされる）','hallway'],[9,'child','小学校 高学年（夜ふかしゲーム）','gamekid'],[13,'adult','中学生（ゲーセン通い）','arcade'],[16,'adult','高校生（サボりがち）','arcade'],[19,'adult','大学生（講義に出ない）','arcade'],[21,'adult','大学生（飲み会ばかり）','d:21']])};
+const STUDY_DAY=3,BRANCH_DAY=23;
 function routeInfo(){
   const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),Rl=CLAUDE_DATA.ruleLog||{};
   const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,rate=n?kept/n:0;
-  const rank=n<3?null:Math.max(1,Math.min(10,Math.floor(rate*10+1e-9)));
-  return {ds,n,kept,rate,rank,id:rank?ROUTES[rank-1].id:null,track:n<3?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
+  const rank=n<2?null:Math.max(1,Math.min(10,Math.floor(rate*10+1e-9)));
+  return {ds,n,kept,rate,rank,id:rank?ROUTES[rank-1].id:null,track:n<2?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
 }
 // その日の年齢で、いま歩いている道（共通／学生の頑張り／ルート）
 function routeNow(day){const r=routeInfo();if(day>=BRANCH_DAY)return r.id||'mid';if(day>=STUDY_DAY&&r.track)return r.track;return 'mid'}
@@ -1223,12 +1229,12 @@ function renderLog2(){
     $('#cnEdit').onclick=()=>{const box=$('#cname');box.innerHTML=`<input type="text" id="cnIn" value="${charName(cur)==='名前をつける'?'':charName(cur)}" placeholder="この口座のキャラ名" style="padding:6px 8px;font-size:14px">`;const i=$('#cnIn');i.focus();
       const done=()=>{const m=LS.get('charNames',{});if(i.value.trim())m[cur.name]=i.value.trim();LS.set('charNames',m);renderLog2()};i.onkeydown=e=>{if(e.key==='Enter')done()};i.onblur=done};
     const cr=ri.id?RT(ri.id):null,nx=ri.rank&&ri.rank<10?ROUTES[ri.rank]:null;
-    const phase=dn<STUDY_DAY?`子ども時代（共通）。${STUDY_DAY}歳から学生時代の頑張りが絵に出る`:dn<BRANCH_DAY?`学生時代：${ri.track==='hi'?'📚 猛勉強中':ri.track==='lo'?'🎮 遊びがち':'ふつうの学生'}。${BRANCH_DAY}歳で進路が決まる`:'ルールを守った日で、道は毎日変わる';
+    const phase=dn<STUDY_DAY?`生まれたばかり。${STUDY_DAY}歳から、口座の扱い方で育ち方が変わる`:dn<BRANCH_DAY?`${dn<13?'子ども':'学生'}時代：${ri.track==='hi'?'🌱 すくすく育っている':ri.track==='lo'?'🌀 ちょっと荒れ気味':'ふつうに成長中'}。最初から丁寧に守るほど、良い道へ。${BRANCH_DAY}歳で進路が決まる`:'ルールを守った日で、道は毎日変わる';
     $('#lgNow').insertAdjacentHTML('beforeend',`<details class="fold route" ${dn>=BRANCH_DAY?'open':''}><summary><b>人生ルート</b><span>${cr?`${dn<BRANCH_DAY?'今のままだと ':''}<i style="color:${cr.c}">${cr.ic} ${cr.n}</i>`:'まだ判定前'}</span></summary>
       <div class="small" style="margin:10px 0 8px">${phase}</div>
       <div class="rt-row">${[...ROUTES].reverse().map((r,i)=>`<div class="rt ${ri.id===r.id?'on':''}" style="--rc:${r.c}"><b>${r.ic}</b><span>${r.n}</span><small>${10-i===10?'10割':10-i===1?'2割未満':(10-i)+'割〜'}</small></div>`).join('')}</div>
       <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）</span></div>
-      <div class="small">${ri.n<3?`まだ判定前（3日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
+      <div class="small">${ri.n<3?`まだ判定前（2日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
