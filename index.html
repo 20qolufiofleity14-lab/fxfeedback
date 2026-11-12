@@ -132,7 +132,7 @@ header small{color:var(--mute);font-size:12px;display:block}
 .lotout{text-align:center;padding:10px 0 4px}
 .lotout .big{font-size:56px;color:var(--acc)}
 .lotout .unit{font-size:16px;color:var(--mute);margin-left:4px}
-.rbars{position:relative;display:flex;align-items:flex-end;gap:6px;margin-top:10px;border-bottom:1px solid var(--line)}.rb{flex:1;display:flex;align-items:flex-end;height:100%}.rb i{display:block;width:100%;border-radius:6px 6px 2px 2px;opacity:.9}.rcap{position:absolute;left:0;right:0;border-top:1px dashed var(--warn)}.rcap span{position:absolute;right:0;top:-16px;font-size:10px;color:var(--warn)}.rlbl{display:flex;gap:6px;margin-top:4px}.rlbl span{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.3}
+.rwrap{display:flex;gap:10px;align-items:flex-end}.rbars{position:relative;flex:1;display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px;border-bottom:1px solid var(--line)}.rb{width:10%;display:flex;justify-content:center;align-items:flex-end;height:100%}.rb i{display:block;width:12px;border-radius:6px 6px 2px 2px}.rb em{display:block;width:4px;height:4px;border-radius:50%;background:var(--line);margin-bottom:4px}.rcap{position:absolute;left:0;right:0;border-top:1.5px dashed var(--warn);z-index:2;pointer-events:none}.rcap span{position:absolute;left:0;top:-17px;font-size:10px;color:var(--warn);background:var(--card,#14161c);padding:0 4px;border-radius:4px}.ravg{width:40px;display:flex;align-items:flex-end;justify-content:center;border-left:1px solid var(--line);border-bottom:1px solid var(--line);padding-left:10px}.ravg i{display:block;width:22px;border:2px solid;border-radius:6px 6px 2px 2px}.rlbl{flex:1;display:flex;justify-content:space-between;margin-top:4px}.rlbl span{width:10%;text-align:center;font-size:9px;color:var(--mute)}.ravgl{width:40px;padding-left:10px;font-size:10px;color:var(--mute);text-align:center;line-height:1.3;margin-top:4px}
 .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.quick span{background:var(--card2,#1a1d24);border-radius:10px;padding:6px 8px;font-family:var(--num,inherit);font-size:13px;display:flex;justify-content:space-between}.quick b{color:var(--mute);font-weight:500}
 .lotrows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .lotrows div{background:var(--bg2);border-radius:12px;padding:10px;text-align:center}
@@ -863,14 +863,19 @@ function renderAna(){
   renderRisk();
 }
 function renderRisk(){
-  const C=CLAUDE_DATA.challenge,cap=C.maxLossPct?C.size*C.maxLossPct/100:0;
-  const L=allTrades().filter(t=>t.acct===C.acct&&t.risk>0).sort((a,b)=>(a.date+(a.time||'')+a.id).localeCompare(b.date+(b.time||'')+b.id)).slice(-20);
-  if(!L.length){$('#riskBars').innerHTML='<div class="small">損切り幅が分かったトレードから、ここに並びます。</div>';$('#riskMsg').textContent='';return}
-  const mx=Math.max(cap*1.3,...L.map(t=>t.risk)),H=120,cy=H-cap/mx*H;
-  $('#riskBars').innerHTML=`<div class="rbars" style="height:${H}px">${cap?`<div class="rcap" style="top:${cy}px"><span>上限 ${short(cap)}</span></div>`:''}${L.map(t=>`<div class="rb"><i style="height:${t.risk/mx*H}px;background:${cap&&t.risk>cap?'var(--loss)':'var(--win)'}"></i></div>`).join('')}</div>
-    <div class="rlbl">${L.map(t=>`<span>${t.date.slice(5).replace('-','/')}<br>${short(t.risk)}</span>`).join('')}</div>`;
-  const over=L.filter(t=>cap&&t.risk>cap).length;
-  $('#riskMsg').textContent=over?`上限（口座の${C.maxLossPct}%）を超えたのは ${L.length}回中 ${over}回。緑の棒が並べば、ロットがそろってきた証拠。`:`${L.length}回すべて上限の内側。この形を続ける。`;
+  const C=CLAUDE_DATA.challenge,cap=C.maxLossPct?C.size*C.maxLossPct/100:0,N=10;
+  const all=allTrades().filter(t=>t.acct===C.acct&&t.risk>0).sort((a,b)=>(a.date+(a.time||'')+a.id).localeCompare(b.date+(b.time||'')+b.id));
+  if(!all.length){$('#riskBars').innerHTML='<div class="small">損切り幅が分かったトレードから、ここに並びます。</div>';$('#riskMsg').textContent='';return}
+  const L=all.slice(-N),avg=all.reduce((x,t)=>x+t.risk,0)/all.length,kept=all.filter(t=>!cap||t.risk<=cap).length;
+  const mx=Math.max(cap*1.6,...L.map(t=>t.risk),avg),H=120,y=v=>v/mx*H,col=v=>cap&&v>cap?'var(--loss)':'var(--win)';
+  const slots=[...Array(N-L.length).fill(null),...L];
+  $('#riskBars').innerHTML=`<div class="rwrap"><div class="rbars" style="height:${H}px">
+      ${cap?`<div class="rcap" style="bottom:${y(cap)}px"><span>上限 ${short(cap)}（${C.maxLossPct}%）</span></div>`:''}
+      ${slots.map(t=>`<div class="rb">${t?`<i style="height:${y(t.risk)}px;background:${col(t.risk)}"></i>`:'<em></em>'}</div>`).join('')}
+    </div>
+    <div class="ravg" style="height:${H}px"><i style="height:${y(avg)}px;border-color:${col(avg)};background:${cap&&avg>cap?'rgba(232,85,100,.25)':'rgba(56,211,150,.25)'}"></i></div></div>
+    <div class="rwrap"><div class="rlbl">${slots.map(t=>`<span>${t?t.date.slice(5).replace('-','/'):''}</span>`).join('')}</div><div class="ravgl">平均<br>${short(avg)}</div></div>`;
+  $('#riskMsg').innerHTML=`直近${L.length}回を表示。これまで<b>${all.length}回中${kept}回</b>が上限の内側（守れた率 ${Math.round(kept/all.length*100)}%）。点線の下に緑が並べばOK。`;
 }
 
 
