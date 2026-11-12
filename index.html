@@ -558,7 +558,7 @@ const CLAUDE_DATA={
   trades:[
     {id:'c-20261111-1',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
     {id:'c-20261111-2',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
-    {id:'c-20261111-3',date:'2026-11-11',time:'',state:'stress',acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
+    {id:'c-20261111-3',date:'2026-11-11',time:'',state:'stress',tags:['夜トレ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
   ],
   dayNotes:{'2026-11-12':{tags:['当直明け','睡眠不足'],memo:'夜勤明けで遅かった。暴走リスクが高いと自分で判断して休み。目線予想とインジケーター開発だけ。'}},
   noEntry:{'2026-11-12':1},
@@ -653,6 +653,8 @@ const save=()=>{LS.set('local',local);LS.set('tagList',tagList);LS.set('cfg',cfg
 function allTrades(){const m={};CLAUDE_DATA.trades.forEach(t=>m[t.id]={tf:'',aim:'',conf:'',emo:null,after:'',state:'',good:'',bad:'',...t});
   Object.values(local.trades).forEach(t=>m[t.id]={...(m[t.id]||{}),...t});local.deleted.forEach(id=>delete m[id]);return Object.values(m)}
 const tagsOf=d=>local.dayTags[d]||(CLAUDE_DATA.dayNotes[d]||{}).tags||[];
+// トレードごとのコンディション：その日のタグ＋トレード個別のタグ（Claudeが付ける）
+const condsOf=t=>[...new Set([...tagsOf(t.date),...(t.tags||[])])];
 const memoOf=d=>local.dayMemo[d]??((CLAUDE_DATA.dayNotes[d]||{}).memo||'');
 let trades=allTrades();
 
@@ -670,7 +672,7 @@ function detect(t){
   }
   if(t.state==='tilt') p.add('revenge');
   if(t.pnl<=-100000) p.add('pride');
-  tagsOf(t.date).forEach(g=>{if(TAG_PAT[g]&&TAG_PAT[g]!=='revenge')p.add(TAG_PAT[g])});
+  condsOf(t).forEach(g=>{if(TAG_PAT[g]&&TAG_PAT[g]!=='revenge')p.add(TAG_PAT[g])});
   if(+t.date.slice(8)>=28) p.add('news');
   return [...p];
 }
@@ -839,9 +841,9 @@ function renderAna(){
   $('#barVal').innerHTML=vals.map(v=>`<span class="${v>0?'pos':v<0?'neg':''}">${short(v)}</span>`).join('');
   $('#bars').innerHTML=vals.map(v=>`<div class="barcol"><div class="bar" style="height:${Math.abs(v)/mx*50}%;${v>=0?'bottom:50%':'top:50%'};background:${v>=0?'var(--win)':'var(--loss)'}"></div></div>`).join('')+'<div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line)"></div>';
   $('#barLbl').innerHTML=label.map(l=>`<span>${l}</span>`).join('');
-  const used=[...new Set(list.flatMap(t=>tagsOf(t.date)))];
-  const rows=used.map(g=>{const st=stats(list.filter(t=>tagsOf(t.date).includes(g)));return {g,...st}}).sort((a,b)=>a.pnl-b.pnl);
-  const none=list.filter(t=>!tagsOf(t.date).length),sn=stats(none);
+  const used=[...new Set(list.flatMap(condsOf))];
+  const rows=used.map(g=>{const st=stats(list.filter(t=>condsOf(t).includes(g)));return {g,...st}}).sort((a,b)=>a.pnl-b.pnl);
+  const none=list.filter(t=>!condsOf(t).length),sn=stats(none);
   $('#condTbl').innerHTML=`<tr><th>タグ</th><th>回数</th><th>勝率</th><th>損益</th></tr>`+(rows.length?rows.map(r=>`<tr><td>${r.g}${r.n<5?'<span class="tentative">仮</span>':''}</td><td>${r.n}</td><td>${Math.round(r.win*100)}%</td><td class="${r.pnl<0?'neg':'pos'}">${yen(r.pnl)}</td></tr>`).join(''):`<tr><td colspan="4" class="small" style="font-family:inherit;font-weight:400">カレンダーの日付やホームでコンディションを付けると、ここに溜まっていきます。</td></tr>`)+(none.length?`<tr><td style="color:var(--mute);font-weight:400">タグなし</td><td>${sn.n}</td><td>${Math.round(sn.win*100)}%</td><td>${yen(sn.pnl)}</td></tr>`:'');
 }
 
