@@ -558,12 +558,14 @@ const CLAUDE_DATA={
   trades:[
     {id:'c-20261005-1',date:'2026-10-05',time:'10:03',acct:'あみくも',pair:'USDJPY',dir:'L',lot:1,pips:-8,pnl:-12301},
     {id:'c-20261005-2',date:'2026-10-05',time:'10:04',acct:'あみくも',pair:'USDJPY',dir:'S',lot:1,pips:-21,pnl:-32843},
-    {id:'c-20261111-1',date:'2026-11-11',time:'',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
-    {id:'c-20261111-2',date:'2026-11-11',time:'',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
-    {id:'c-20261111-3',date:'2026-11-11',time:'',acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
+    {id:'c-20261111-1',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
+    {id:'c-20261111-2',date:'2026-11-11',time:'',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
+    {id:'c-20261111-3',date:'2026-11-11',time:'',state:'stress',acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
   ],
   dayNotes:{'2026-11-12':{tags:['当直明け','睡眠不足'],memo:'夜勤明けで遅かった。暴走リスクが高いと自分で判断して休み。目線予想とインジケーター開発だけ。'}},
   noEntry:{'2026-11-12':1},
+  // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
+  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
     {t:'上位足（4h）と同じ方向？',s:'4h内部・レンジ上限下限では無理に触らない'},
@@ -638,6 +640,7 @@ const PATTERNS=[
 const CURES=['負けてトレードしたくなったら、MT5デモで戦う','暴走したら、魚釣りの形をイメージして振り返る','建値を置いていたのは偉かった','4h確定から1時間後に絞ると、決断疲れが減る','逆行したら、リボンが整うまで待つ'];
 const DEF_TAGS=['睡眠不足','仕事疲れ','当直明け','飲み会のあと','テンション高め','イライラ','DD中','指標前','夜トレ','コーヒー','運動した','家族時間◎','スッキリ'];
 const TAG_PAT={'仕事疲れ':'tired','睡眠不足':'tired','当直明け':'tired','夜トレ':'tired','DD中':'dd','指標前':'news','イライラ':'revenge','テンション高め':'revenge','飲み会のあと':'revenge'};
+function stOf(t){if(t.state)return t.state;const L=CLAUDE_DATA.stateLog||{};const ks=Object.keys(L).filter(d=>d<=t.date).sort();return ks.length?L[ks[ks.length-1]]:''}
 const STATES=[{id:'great',ic:'🟢',name:'好調'},{id:'normal',ic:'🔵',name:'通常'},{id:'stress',ic:'🟡',name:'ストレス'},{id:'tilt',ic:'🔴',name:'暴走気味'}];
 
 /* ---------- 状態 ---------- */
@@ -722,7 +725,7 @@ function renderHome(){
   bindRows($('#tradeList'));
 }
 function trRow(t){const ps=detect(t);
-  return `<div class="tr" data-id="${t.id}"><div><div class="a">${t.pair||'—'} <span class="side ${t.dir}">${t.dir==='L'?'BUY':'SELL'}</span> <span class="num" style="font-size:12px;color:var(--mute)">${t.lot??''}${t.lot!=null?'lot':''}</span>${t.state?' '+STATES.find(s=>s.id===t.state).ic:''}</div>
+  return `<div class="tr" data-id="${t.id}"><div><div class="a">${t.pair||'—'} <span class="side ${t.dir}">${t.dir==='L'?'BUY':'SELL'}</span> <span class="num" style="font-size:12px;color:var(--mute)">${t.lot??''}${t.lot!=null?'lot':''}</span>${stOf(t)?' '+STATES.find(s=>s.id===stOf(t)).ic:''}</div>
   <div class="b">${t.date.slice(5).replace('-','/')} ${t.time||''}・${session(t)}${t.tf?'・'+t.tf:''}${t.acct?'・'+t.acct:''}</div>
   ${ps.length?`<div class="a" style="margin-top:5px">${ps.map(id=>`<span class="pt">${PATTERNS.find(p=>p.id===id).name}</span>`).join('')}</div>`:''}</div>
   <div class="p ${t.pnl>0?'pos':t.pnl<0?'neg':''}">${yen(t.pnl)}<small>${t.pips!=null&&t.pips!==''?t.pips+' pips':''}</small></div></div>`}
@@ -833,7 +836,7 @@ function renderAna(){
   else if(barMode==='hr'){keys=['東京','欧州','NY'];label=keys;fn=session}
   else if(barMode==='pair'){keys=[...new Set(list.map(t=>t.pair))];label=keys;fn=t=>t.pair}
   else if(barMode==='conf'){keys=['高','中','低','未入力'];label=keys;fn=t=>t.conf||'未入力'}
-  else {keys=[...STATES.map(s=>s.id),''];label=[...STATES.map(s=>s.name),'未入力'];fn=t=>t.state||''}
+  else {keys=[...STATES.map(s=>s.id),''];label=[...STATES.map(s=>s.name),'未入力'];fn=t=>stOf(t)}
   const vals=keys.map(k=>list.filter(t=>fn(t)===k).reduce((x,t)=>x+t.pnl,0)),mx=Math.max(1,...vals.map(Math.abs));
   $('#barVal').innerHTML=vals.map(v=>`<span class="${v>0?'pos':v<0?'neg':''}">${short(v)}</span>`).join('');
   $('#bars').innerHTML=vals.map(v=>`<div class="barcol"><div class="bar" style="height:${Math.abs(v)/mx*50}%;${v>=0?'bottom:50%':'top:50%'};background:${v>=0?'var(--win)':'var(--loss)'}"></div></div>`).join('')+'<div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line)"></div>';
