@@ -218,6 +218,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .balslider{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:8px;margin:12px 0 4px;
   background:linear-gradient(90deg,var(--c) 0 var(--p),var(--bg2) var(--p) 100%);outline:none;position:relative}
 .balslider::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--c);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.balslider.locked{pointer-events:none}.balslider.locked::-webkit-slider-thumb{opacity:0;width:4px}.balslider.locked::-moz-range-thumb{opacity:0}
+.baledit{background:none;border:1px solid var(--line);color:var(--mute);border-radius:10px;font-size:11px;padding:2px 8px;margin-left:6px;vertical-align:middle}.baledit.on{color:var(--acc);border-color:var(--acc)}
 .balslider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--c)}
 .slmarks{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);font-family:Outfit}
 .ldots .ld.w{background:var(--win);border-color:var(--win)}
@@ -951,6 +953,8 @@ const resToday=()=>(LS.get('dayRes',{})[todayStr()]||[]);
 function pushRes(r){const m=LS.get('dayRes',{}),k=todayStr();m[k]=m[k]||[];if(r==='undo')m[k].pop();else m[k].push(r);LS.set('dayRes',m)}
 const noEntry=()=>({...(CLAUDE_DATA.noEntry||{}),...LS.get('noEntry',{})});
 const lossToday=()=>resToday().filter(x=>x==='L').length;
+let balEdit=false;
+function chalBalDate(){const C=CLAUDE_DATA.challenge,l=LS.get('chalBal',null);return l&&l.date>=(C.balanceDate||'')?l.date:C.balanceDate}
 function chalBal(){const C=CLAUDE_DATA.challenge,l=LS.get('chalBal',null);return l&&l.date>=(C.balanceDate||'')?l.bal:C.balance}
 function setChalBal(v){const d=LS.get('dayStartBal',{});if(d[todayStr()]==null){d[todayStr()]=chalBal()};LS.set('dayStartBal',d);LS.set('chalBal',{bal:v,date:todayStr()});
   if(cfg.accounts[CLAUDE_DATA.challenge.acct])cfg.accounts[CLAUDE_DATA.challenge.acct].bal=v;save()}
@@ -976,9 +980,9 @@ function renderChal(){
   const lo=C.totalFloor,hi=C.size+C.target,col=bp<0.2?'var(--loss)':bp<0.5?'var(--warn)':bal>=C.size?'var(--win)':'var(--acc)';
   const m=mechState(),ms=STATES.find(x=>x.id===m.s);
   el.innerHTML=`<div class="ttl">${C.name} <em>${left}</em></div>
-    <div class="balrow"><div><div class="small">残高（スライドで調整）</div><b class="num" id="balTxt" style="color:${col}">${yen(bal)}</b></div>
+    <div class="balrow"><div><div class="small">残高（${(chalBalDate()||'').slice(5).replace('-','/')} 時点）<button class="baledit ${balEdit?'on':''}" id="balEd">${balEdit?'調整中':'✎ 調整'}</button></div><b class="num" id="balTxt" style="color:${col}">${yen(bal)}</b></div>
       <div style="text-align:right"><div class="small">失格まで</div><b class="num" style="font-size:16px">${yen(toFloor)}</b></div></div>
-    <input type="range" class="balslider" id="balSl" min="${lo}" max="${hi}" step="1000" value="${bal}" style="--p:${(bal-lo)/(hi-lo)*100}%;--c:${col};--s:${(C.size-lo)/(hi-lo)*100}%">
+    <input type="range" class="balslider ${balEdit?'':'locked'}" id="balSl" ${balEdit?'':'disabled'} min="${lo}" max="${hi}" step="1000" value="${bal}" style="--p:${(bal-lo)/(hi-lo)*100}%;--c:${col};--s:${(C.size-lo)/(hi-lo)*100}%">
     <div class="slmarks"><span>失格 ${short(lo)}</span><span>開始 ${short(C.size)}</span><span>合格 ${short(hi)}</span></div>
     <div class="losses"><div><div class="small">今日の結果</div><div class="ldots">${res.length?res.map(r=>`<i class="ld ${r==='L'?'on':'w'}"></i>`).join(''):(noEntry()[td]?'<i class="ld n"></i><span>見送り</span>':'<span>まだなし</span>')}<span class="num">負け ${n}/${max}</span></div></div>
       <div class="wl"><button id="nBtn" class="nbtn ${noEntry()[td]?'on':''}">見送り</button><button id="wBtn" class="wbtn">＋勝</button><button id="lBtn" class="lbtn">＋負</button></div></div>
@@ -987,7 +991,8 @@ function renderChal(){
     <div class="small" style="margin-top:6px;text-align:right"><a href="#" id="resUndo" style="color:var(--mute)">直前の結果を取り消す</a></div>`;
   const sl=$('#balSl');
   sl.oninput=()=>{const v=+sl.value,p=(v-lo)/(hi-lo)*100,b2=(v-C.totalFloor)/buf,c2=b2<0.2?'var(--loss)':b2<0.5?'var(--warn)':v>=C.size?'var(--win)':'var(--acc)';sl.style.setProperty('--p',p+'%');sl.style.setProperty('--c',c2);$('#balTxt').textContent=yen(v);$('#balTxt').style.color=c2};
-  sl.onchange=()=>{setChalBal(+sl.value);renderAll()};
+  sl.onchange=()=>{setChalBal(+sl.value);balEdit=false;renderAll()};
+  $('#balEd').onclick=()=>{balEdit=!balEdit;renderAll()};
   $('#nBtn').onclick=()=>{const m=noEntry();if(m[td])delete m[td];else m[td]=1;LS.set('noEntry',m);renderAll();toast(m[td]?'見送りを記録。待てた日':'見送りを取り消しました')};
   $('#wBtn').onclick=()=>{pushRes('W');renderAll();toast('勝ちを記録')};
   $('#lBtn').onclick=()=>{pushRes('L');LS.set('lockUntil',Date.now()+15*60000);renderAll();renderLock();toast('負けを記録。15分ロック開始')};
