@@ -318,8 +318,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .fold .tl{margin:12px 0 0}.fold.graves .grave{background:var(--bg,#0d0f14)}
 .route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
 .rt-h{font-weight:800;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}.rt-h em{font-style:normal;font-weight:400;font-size:11px;color:var(--mute)}
-.rt-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 8px}.rt{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;opacity:.45}.rt.on{opacity:1;border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}
-.rt b{display:block;font-size:18px}.rt span{display:block;font-size:11.5px;font-weight:700;margin-top:2px}.rt small{display:block;font-size:9.5px;color:var(--mute);margin-top:2px}
+.rt-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:10px 0 8px}.rt{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;opacity:.45}.rt.on{opacity:1;border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}
+.fold.route{margin:10px 0}.rt b{display:block;font-size:16px}.rt span{display:block;font-size:10px;white-space:nowrap;font-weight:700;margin-top:2px}.rt small{display:block;font-size:9.5px;color:var(--mute);margin-top:2px}
 .rt-dots{display:flex;align-items:center;gap:4px;margin-bottom:6px}.rt-dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line)}.rt-dots i.k{background:var(--win);border-color:var(--win)}.rt-dots i.x{background:var(--loss);border-color:var(--loss)}.rt-dots span{font-size:11px;color:var(--mute);margin-left:6px}
 .grave{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
 .grave .st{font-size:26px;flex:none}
@@ -1092,65 +1092,95 @@ function scene(stageKey,day,mood,route){
   const out=(sky,grass)=>R(0,0,W,H,sky)+R(0,23,W,7,grass)+R(0,23,W,.8,'#4f8f45');
   const win=(x,moon)=>R(x,3,10,9,'#2c3550')+R(x+1,4,8,7,moon?'#3b4a72':'#7fb3e6')+(moon?`<circle cx="${x+7}" cy="6" r="1.4" fill="#f5e7a1"/>`:'');
   let b='';
-  if(route==='boss'&&day>=BRANCH_DAY){
-    if(day<28)b=room('#22262f')+win(4)+R(24,17,30,2,'#a0703a')+R(26,19,1.5,5,'#8b5a2b')+R(51,19,1.5,5,'#8b5a2b')+R(30,11,10,6,'#0b0e14')+R(31,12,8,4,'#2c3e66')+R(46,4,14,6,'#f4efe4')+`<text x="48" y="8.4" class="sc-chalk" style="fill:#333">創業</text>`+spr('adult',40,5,'sc-nod','#2c3e66','normal')+R(8,19,8,5,'#8b5a2b')+R(9,17,6,2,'#c9b88f');
-    else if(day<33)b=room('#202733')+R(18,3,28,9,'#f4efe4')+`<text x="21" y="9" class="sc-chalk" style="fill:#333">チーム結成</text>`+spr('adult',6,8,'sc-hop','#5a7bd6','great')+spr('adult',26,8,'sc-breathe','#2c3e66','great')+spr('adult',46,8,'sc-hop','#c46a8a','great');
-    else if(day>=37&&day<42)b=out('#7fb3e6','#6b7280')+R(34,2,22,21,'#c9d4e2')+R(34,2,22,1,'#9aa3ad')+[4,8,12,16].map(y=>[37,42,47,52].map(x=>R(x,y,2.4,2.4,'#2c3e66')).join('')).join('')+R(43,19,4,4,'#3b2a1e')+`<g class="sc-glow">${R(36,-1,18,2.4,'#e9b949')}</g>`+spr('adult',10,7,'sc-breathe','#2c3e66','great')+`<circle cx="8" cy="5" r="2.6" fill="#ffd34d"/>`;
-    else if(day>=42&&day<47)b=room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#e9b949')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">社長</text>`+spr('adult',34,2,'sc-breathe','#3a2a5a','great')+R(4,6,8,10,'#3a2a1e')+R(5,7,6,8,'#36d399')+`<text x="6" y="5" class="sc-note">★</text>`;
-  }
-  else if(route==='slum'&&day>=BRANCH_DAY){
-    const rain=`<g class="sc-twinkle">${[6,15,24,33,42,51,60].map((x,i)=>R(x,2+i%3*4,.4,2.4,'#6b7a94')).join('')}</g>`;
-    if(day<28)b=room('#23262b')+R(4,3,56,3,'#3d8b3a')+`<text x="22" y="5.6" class="sc-chalk">24H OPEN</text>`+R(20,16,30,8,'#9aa3ad')+R(20,16,30,1,'#c9d4e2')+R(42,11,6,5,'#3a4052')+spr('adult',26,4,'sc-nod','#3d8b3a','stress')+R(6,10,8,14,'#2c3550')+[11,14,17,20].map(y=>R(7,y,6,.6,'#5d6670')).join('');
-    else if(day<33)b=R(0,0,W,H,'#3a3348')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,22,W,8,'#2a2733')+R(44,10,14,12,'#4a4458')+R(46,13,10,9,'#2a2733')+`<g class="sc-walk">${spr('adult',0,7,'','#6b6f78','stress')}${R(9,13,5,4,'#8b5a2b')}</g>`;
-    else if(day<42)b=R(0,0,W,H,'#14161c')+R(0,0,18,24,'#2a2d36')+R(46,0,18,24,'#262932')+[3,9,15].map(y=>R(4,y,3,3,'#3b4a72')+R(50,y,3,3,'#1d2230')).join('')+R(0,24,W,6,'#1d1f26')+R(36,17,6,7,'#5d6670')+R(35.5,16,7,1.4,'#8a93a3')+spr('adult',20,7,'sc-breathe','#4a4e57','stress')+rain;
-    else if(day<51)b=out('#8b97a8','#5c6b52')+R(6,14,3,9,'#5a4a3a')+`<circle cx="7.5" cy="12" r="5" fill="#55654f"/>`+R(24,18,26,1.6,'#8b5a2b')+R(24,14,26,1.2,'#8b5a2b')+R(26,19,1.5,5,'#5d6670')+R(47,19,1.5,5,'#5d6670')+spr('adult',30,5,'sc-nod','#4a4e57','stress')+R(42,15,5,3.4,'#e8e2d0');
-    else if(day<59)b=R(0,0,W,H,'#101218')+R(0,0,14,24,'#22252d')+R(0,24,W,6,'#1a1c22')+R(34,15,8,9,'#4a4e57')+R(33.5,14,9,1.2,'#6b6f78')+`<g class="sc-glow">${R(35,10,6,4,'#ff8a3d')+R(36.5,8,3,3,'#ffd34d')}<circle cx="38" cy="12" r="9" fill="#ff8a3d" opacity=".12"/></g>`+spr('elder',16,7,'sc-breathe','#4a4e57','stress')+`<g class="sc-twinkle">${[[50,4],[58,8],[44,7]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`;
-    else b=R(0,0,W,H,'#12151f')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,23,W,7,'#232a24')+R(18,18,28,1.6,'#8b5a2b')+R(20,19,1.5,5,'#5d6670')+R(43,19,1.5,5,'#5d6670')+`<g class="sc-breathe">${R(21,14.6,4,3,'#f2c9a0')+R(21,14,4,1,'#9aa3ad')+R(25,15,18,3,'#4a4e57')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`;
-  }
+  const rain=`<g class="sc-twinkle">${[6,15,24,33,42,51,60].map((x,i)=>R(x,2+i%3*4,.4,2.4,'#6b7a94')).join('')}</g>`;
+  const SC={
+    garage:()=>room('#22262f')+win(4)+R(24,17,30,2,'#a0703a')+R(26,19,1.5,5,'#8b5a2b')+R(51,19,1.5,5,'#8b5a2b')+R(30,11,10,6,'#0b0e14')+R(31,12,8,4,'#2c3e66')+R(46,4,14,6,'#f4efe4')+`<text x="48" y="8.4" class="sc-chalk" style="fill:#333">創業</text>`+spr('adult',40,5,'sc-nod','#2c3e66','normal')+R(8,19,8,5,'#8b5a2b')+R(9,17,6,2,'#c9b88f'),
+    team:()=>room('#202733')+R(18,3,28,9,'#f4efe4')+`<text x="21" y="9" class="sc-chalk" style="fill:#333">チーム結成</text>`+spr('adult',6,8,'sc-hop','#5a7bd6','great')+spr('adult',26,8,'sc-breathe','#2c3e66','great')+spr('adult',46,8,'sc-hop','#c46a8a','great'),
+    tower:()=>out('#7fb3e6','#6b7280')+R(34,2,22,21,'#c9d4e2')+R(34,2,22,1,'#9aa3ad')+[4,8,12,16].map(y=>[37,42,47,52].map(x=>R(x,y,2.4,2.4,'#2c3e66')).join('')).join('')+R(43,19,4,4,'#3b2a1e')+`<g class="sc-glow">${R(36,-1,18,2.4,'#e9b949')}</g>`+spr('adult',10,7,'sc-breathe','#2c3e66','great')+`<circle cx="8" cy="5" r="2.6" fill="#ffd34d"/>`,
+    ceo:()=>room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#e9b949')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">${day>=51?'会長':'社長'}</text>`+spr(day>=51?'elder':'adult',34,2,'sc-breathe','#3a2a5a','great')+R(4,6,8,10,'#3a2a1e')+R(5,7,6,8,'#36d399')+`<text x="6" y="5" class="sc-note">★</text>`,
+    cruise:()=>R(0,0,W,H,'#7fc4ee')+`<circle cx="54" cy="6" r="3" fill="#ffd34d"/>`+`<g class="sc-cloud">${R(4,5,10,2.6,'#fff')+R(6,3.6,6,2,'#fff')}</g>`+R(0,22,W,8,'#2c6fb3')+R(0,22,W,.8,'#7fc4ee')+`<g class="sc-rock">${R(12,17,40,5.4,'#f4efe4')+R(12,21,40,1.4,'#c0392b')+R(18,13,28,4,'#e8eef6')+R(24,9.4,4,3.6,'#c0392b')+R(32,9.4,4,3.6,'#c0392b')+[20,24,28,32,36,40].map(x=>R(x,14.4,1.6,1.4,'#2c3e66')).join('')}</g>`,
+    workshop:()=>room('#2a2420')+[6,10,14].map((x,i)=>R(x,4,1,6-i,'#9aa3ad')+R(x-.6,4,2.2,1.2,'#8b5a2b')).join('')+R(8,18,44,2,'#8b5a2b')+R(10,20,1.5,4,'#5b3a24')+R(49,20,1.5,4,'#5b3a24')+R(36,14.6,9,3.4,'#6b7280')+R(38,13.4,5,1.4,'#9aa3ad')+`<g class="sc-twinkle">${[[40,10],[43,11.6],[37,11]].map(([x,y])=>R(x,y,.9,.9,'#ffd34d')).join('')}</g>`+spr('adult',22,6,'sc-nod','#8b5a2b','normal')+`<g class="sc-pen">${R(34,10,1,5,'#c9b88f')+R(33,9,3,2,'#5d6670')}</g>`,
+    teach:()=>room('#2a2420')+R(8,18,44,2,'#8b5a2b')+R(10,20,1.5,4,'#5b3a24')+R(49,20,1.5,4,'#5b3a24')+spr('elder',12,6,'sc-breathe','#8b5a2b','great')+spr('child',36,10,'sc-nod','#5a7bd6','normal')+R(26,15,7,3,'#6b7280')+`<text x="28" y="8" class="sc-note">♪</text>`,
+    shopf:()=>out('#7fb3e6','#8a8f99')+R(18,6,38,17,'#e8d9b8')+[18,24,30,36,42,48].map((x,i)=>R(x,6,6,3.4,i%2?'#f4efe4':'#c0392b')).join('')+R(22,12,12,7,'#7fb3e6')+R(22,12,12,.8,'#8b5a2b')+R(42,12,8,11,'#5b3a24')+R(48,17,1,1,'#ffd34d')+`<text x="23.5" y="17" class="sc-chalk" style="fill:#333">OPEN</text>`+spr('adult',2,7,'sc-hop','#c0392b','great'),
+    regulars:()=>room('#2a2020')+R(40,3,16,7,'#3a2a1e')+`<text x="42" y="8" class="sc-chalk">本日の一杯</text>`+spr(day>=51?'elder':'adult',26,4,'sc-breathe','#c0392b','great')+R(4,17,56,2.4,'#a0703a')+R(4,19.4,56,4.6,'#5b3a24')+spr('adult',4,8,'sc-nod','#5a7bd6','great')+spr('adult',48,8,'sc-nod','#c46a8a','great')+`<g class="sc-cheers">${R(18,14.4,2.4,2.6,'#f4efe4')+R(44,14.4,2.4,2.6,'#f4efe4')}</g>`,
+    factory:()=>room('#1f242c')+R(0,17,W,2,'#5d6670')+[4,16,28,40,52].map(x=>`<circle cx="${x+3}" cy="20.4" r="1.4" fill="#3a4052"/>`).join('')+`<g class="sc-walk">${R(0,13,5,4,'#c9a36a')+R(0,14.6,5,.6,'#8b5a2b')}</g>`+R(50,2,10,8,'#3a4052')+`<g class="sc-glow">${R(52,4,2,2,'#ff5d6c')+R(56,4,2,2,'#36d399')}</g>`+spr('adult',30,3,'sc-nod','#3d6b8a','normal'),
+    danchi:()=>R(0,0,W,H,'#f0b27a')+`<circle cx="52" cy="8" r="4" fill="#ffcf7a"/>`+R(6,3,40,27,'#b9b2a3')+[6,15].map(y=>[10,20,30,38].map(x=>R(x,y,5,5,'#5d6670')).join('')).join('')+R(14,22,24,1,'#6b7280')+[15,20,25,30,35].map(x=>R(x,22,.8,5,'#6b7280')).join('')+R(16,19.4,3,2.6,'#3d8b3a')+R(33,19,3,3,'#e6a3a3')+spr('elder',20,10,'sc-breathe','#6b6f78','normal'),
+    apt:()=>room('#262a33')+win(46,1)+R(6,20,14,4,'#5b4636')+R(8,12,10,7.6,'#0b0e14')+`<g class="sc-glow">${R(9,13,8,5.6,'#5aa9ff')}</g>`+R(26,20,18,2,'#7a5230')+R(28,22,1.4,2,'#5b3a24')+R(41,22,1.4,2,'#5b3a24')+R(33,18,3,2,'#f4efe4')+spr(day>=51?'elder':'adult',28,6,'sc-nod','#6b6f78','normal'),
+    konbini:()=>room('#23262b')+R(4,3,56,3,'#3d8b3a')+`<text x="22" y="5.6" class="sc-chalk">24H OPEN</text>`+R(20,16,30,8,'#9aa3ad')+R(20,16,30,1,'#c9d4e2')+R(42,11,6,5,'#3a4052')+spr('adult',26,4,'sc-nod','#3d8b3a','stress')+R(6,10,8,14,'#2c3550')+[11,14,17,20].map(y=>R(7,y,6,.6,'#5d6670')).join(''),
+    crate:()=>R(0,0,W,H,'#3a3348')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,22,W,8,'#2a2733')+R(44,10,14,12,'#4a4458')+R(46,13,10,9,'#2a2733')+`<g class="sc-walk">${spr('adult',0,7,'','#6b6f78','stress')}${R(9,13,5,4,'#8b5a2b')}</g>`,
+    alley:()=>R(0,0,W,H,'#14161c')+R(0,0,18,24,'#2a2d36')+R(46,0,18,24,'#262932')+[3,9,15].map(y=>R(4,y,3,3,'#3b4a72')+R(50,y,3,3,'#1d2230')).join('')+R(0,24,W,6,'#1d1f26')+R(36,17,6,7,'#5d6670')+R(35.5,16,7,1.4,'#8a93a3')+spr('adult',20,7,'sc-breathe','#4a4e57','stress')+rain,
+    bench:()=>out('#8b97a8','#5c6b52')+R(6,14,3,9,'#5a4a3a')+`<circle cx="7.5" cy="12" r="5" fill="#55654f"/>`+R(24,18,26,1.6,'#8b5a2b')+R(24,14,26,1.2,'#8b5a2b')+R(26,19,1.5,5,'#5d6670')+R(47,19,1.5,5,'#5d6670')+spr(day>=51?'elder':'adult',30,5,'sc-nod','#4a4e57','stress')+R(42,15,5,3.4,'#e8e2d0'),
+    bonfire:()=>R(0,0,W,H,'#101218')+R(0,0,14,24,'#22252d')+R(0,24,W,6,'#1a1c22')+R(34,15,8,9,'#4a4e57')+R(33.5,14,9,1.2,'#6b6f78')+`<g class="sc-glow">${R(35,10,6,4,'#ff8a3d')+R(36.5,8,3,3,'#ffd34d')}<circle cx="38" cy="12" r="9" fill="#ff8a3d" opacity=".12"/></g>`+spr('elder',16,7,'sc-breathe','#4a4e57','stress')+`<g class="sc-twinkle">${[[50,4],[58,8],[44,7]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`,
+    benchN:()=>R(0,0,W,H,'#12151f')+`<circle cx="52" cy="6" r="2.4" fill="#f5e7a1"/>`+R(0,23,W,7,'#232a24')+R(18,18,28,1.6,'#8b5a2b')+R(20,19,1.5,5,'#5d6670')+R(43,19,1.5,5,'#5d6670')+`<g class="sc-breathe">${R(21,14.6,4,3,'#f2c9a0')+R(21,14,4,1,'#9aa3ad')+R(25,15,18,3,'#4a4e57')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`,
+    library:()=>room('#23262f')+R(2,2,24,21,'#5b3a24')+[3,9,15].map((y,j)=>R(3,y,22,5,'#2a2420')+[0,1,2,3,4,5,6,7].map(i=>R(4+i*2.6,y+.6,1.8,4.2,['#c0392b','#5aa9ff','#e9b949','#36d399','#b48cf2','#e38a5a','#f4efe4','#7fb08a'][(i+j*3)%8])).join('')).join('')+R(32,18,26,2,'#a0703a')+R(34,20,1.5,4,'#8b5a2b')+R(55,20,1.5,4,'#8b5a2b')+R(50,12,4,6,'#c0392b')+R(49.4,14,5,1,'#e9b949')+R(40,16.6,7,1.4,'#f4efe4')+`<g class="sc-glow"><circle cx="44" cy="12" r="7" fill="#ffd34d" opacity=".1"/></g>`+spr('adult',34,5,'sc-nod',null,'normal')+`<g class="sc-pen">${R(46,14.5,.8,3,'#e9b949')}</g>`,
+    arcade:()=>room('#1a1326')+`<text x="24" y="6" class="sc-chalk" style="fill:#ff5d6c">GAME</text>`+[6,44].map(x=>R(x,8,12,16,'#2c2350')+R(x+1,9,10,1,'#b48cf2')+`<g class="sc-glow">${R(x+2,11,8,6,x<20?'#36d399':'#ff5d6c')}</g>`+R(x+4,19,1,2,'#c9d4e2')+R(x+7,19.6,2,1,'#e9b949')).join('')+spr('adult',26,7,'sc-hop','#6b6f78','great')+`<text x="20" y="12" class="sc-note">♪</text>`};
+  let dd=day;const stg=route&&route!=='mid'?stageOf(day,route):null;
+  if(stg&&stg.sc){if(stg.sc.startsWith('d:'))dd=+stg.sc.slice(2);else if(stg.sc==='bed')dd=59;else if(SC[stg.sc])b=SC[stg.sc]()}
   if(b){}
-  else if(day<3){b=room()+win(50,1)+`<g class="sc-mobile"><line x1="22" y1="0" x2="22" y2="4" stroke="#8a93a3" stroke-width=".4"/>${R(18,4,8,.6,'#8a93a3')}${R(17.5,4.6,1.4,1.4,'#e9b949')}${R(21.3,4.6,1.4,1.4,'#5aa9ff')}${R(25,4.6,1.4,1.4,'#36d399')}</g>`+
+  else if(dd<3){b=room()+win(50,1)+`<g class="sc-mobile"><line x1="22" y1="0" x2="22" y2="4" stroke="#8a93a3" stroke-width=".4"/>${R(18,4,8,.6,'#8a93a3')}${R(17.5,4.6,1.4,1.4,'#e9b949')}${R(21.3,4.6,1.4,1.4,'#5aa9ff')}${R(25,4.6,1.4,1.4,'#36d399')}</g>`+
     `<g class="sc-rock">${R(12,22,20,2,'#8b5a2b')}${R(13,10,1,12,'#a0703a')}${R(30,10,1,12,'#a0703a')}${R(14,18,16,4,'#f4efe4')}${spr('baby',16,3)}${R(13,15,18,.8,'#a0703a')}${[15,18,21,24,27].map(x=>R(x,15.5,.8,3,'#a0703a')).join('')}</g><text x="40" y="18" class="sc-z">z</text><text x="43" y="14" class="sc-z d2">z</text>`}
-  else if(day<6){b=out('#7fb3e6','#5aa64e')+`<circle cx="54" cy="6" r="3" fill="#ffd34d"/>`+R(6,14,3,9,'#7a5230')+`<circle cx="7.5" cy="12" r="5" fill="#3d8b3a"/>`+spr('child',22,8,'sc-hop')+`<g class="sc-ball"><circle cx="40" cy="21" r="1.8" fill="#ff5d6c"/></g>`}
-  else if(day<9){b=room()+R(4,3,30,13,'#264d3a')+R(4,3,30,1,'#8b5a2b')+R(4,15,30,1,'#8b5a2b')+`<text x="7" y="9" class="sc-chalk">1+1=2</text><text x="7" y="13.5" class="sc-chalk">買い→待つ</text>`+
+  else if(dd<6){b=out('#7fb3e6','#5aa64e')+`<circle cx="54" cy="6" r="3" fill="#ffd34d"/>`+R(6,14,3,9,'#7a5230')+`<circle cx="7.5" cy="12" r="5" fill="#3d8b3a"/>`+spr('child',22,8,'sc-hop')+`<g class="sc-ball"><circle cx="40" cy="21" r="1.8" fill="#ff5d6c"/></g>`}
+  else if(dd<9){b=room()+R(4,3,30,13,'#264d3a')+R(4,3,30,1,'#8b5a2b')+R(4,15,30,1,'#8b5a2b')+`<text x="7" y="9" class="sc-chalk">1+1=2</text><text x="7" y="13.5" class="sc-chalk">買い→待つ</text>`+
     spr('child',40,6,'sc-nod')+R(36,18,22,2,'#a0703a')+R(38,20,1.5,4,'#8b5a2b')+R(54,20,1.5,4,'#8b5a2b')+R(42,16.6,7,1.4,'#f4efe4')+`<g class="sc-pen">${R(48,14.5,.8,3,'#e9b949')}</g>`}
-  else if(day<13){b=out('#9cc8ef','#5aa64e')+R(46,12,3,11,'#7a5230')+`<circle cx="47.5" cy="10" r="6" fill="#3d8b3a"/>`+R(4,18,8,5,'#d9d9d9')+R(4,17,8,1,'#b0b0b0')+`<g class="sc-run">${spr('child',14,8)}</g>`+`<g class="sc-ball2"><circle cx="34" cy="21.5" r="1.5" fill="#f4efe4"/></g>`}
-  else if(day<16){b=room('#1a1a2b')+win(4,1)+R(30,16,28,2,'#5b4636')+R(32,18,1.5,6,'#4a3426')+R(55,18,1.5,6,'#4a3426')+R(50,11,1,5,'#c9b88f')+R(48,10,5,1.5,'#ffd34d')+`<g class="sc-glow"><circle cx="50.5" cy="13" r="6" fill="#ffd34d" opacity=".12"/></g>`+spr('adult',36,1,'sc-nod')+`<text x="22" y="10" class="sc-note">♪</text>`}
-  else if(day<19){b=`<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a5a"/><stop offset=".7" stop-color="#e38a5a"/></linearGradient></defs>`+R(0,0,W,H,'url(#dusk)')+`<circle cx="48" cy="18" r="4" fill="#ffcf7a"/>`+R(0,22,W,8,'#3a3348')+R(0,22,W,.6,'#55506a')+`<g class="sc-walk">${spr('adult',0,7)}${R(9,15,3,3,'#4a3426')}</g>`}
-  else if(day<21){b=room('#232030')+R(14,2,36,11,'#2f3d33')+R(14,2,36,.8,'#8b5a2b')+`<text x="17" y="7.5" class="sc-chalk">リスクリワード</text><text x="17" y="11" class="sc-chalk">期待値＝勝率×RR</text>`+
+  else if(dd<13){b=out('#9cc8ef','#5aa64e')+R(46,12,3,11,'#7a5230')+`<circle cx="47.5" cy="10" r="6" fill="#3d8b3a"/>`+R(4,18,8,5,'#d9d9d9')+R(4,17,8,1,'#b0b0b0')+`<g class="sc-run">${spr('child',14,8)}</g>`+`<g class="sc-ball2"><circle cx="34" cy="21.5" r="1.5" fill="#f4efe4"/></g>`}
+  else if(dd<16){b=room('#1a1a2b')+win(4,1)+R(30,16,28,2,'#5b4636')+R(32,18,1.5,6,'#4a3426')+R(55,18,1.5,6,'#4a3426')+R(50,11,1,5,'#c9b88f')+R(48,10,5,1.5,'#ffd34d')+`<g class="sc-glow"><circle cx="50.5" cy="13" r="6" fill="#ffd34d" opacity=".12"/></g>`+spr('adult',36,1,'sc-nod')+`<text x="22" y="10" class="sc-note">♪</text>`}
+  else if(dd<19){b=`<defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a5a"/><stop offset=".7" stop-color="#e38a5a"/></linearGradient></defs>`+R(0,0,W,H,'url(#dusk)')+`<circle cx="48" cy="18" r="4" fill="#ffcf7a"/>`+R(0,22,W,8,'#3a3348')+R(0,22,W,.6,'#55506a')+`<g class="sc-walk">${spr('adult',0,7)}${R(9,15,3,3,'#4a3426')}</g>`}
+  else if(dd<21){b=room('#232030')+R(14,2,36,11,'#2f3d33')+R(14,2,36,.8,'#8b5a2b')+`<text x="17" y="7.5" class="sc-chalk">リスクリワード</text><text x="17" y="11" class="sc-chalk">期待値＝勝率×RR</text>`+
     spr('adult',6,8,'sc-nod','#5a7bd6','normal')+spr('adult',26,8,'sc-breathe')+spr('adult',46,8,'sc-nod','#c46a8a','normal')+R(2,18,60,2,'#a0703a')}
-  else if(day<23){b=room('#2a2020')+R(48,3,12,8,'#3a2a1e')+`<text x="49.5" y="8.5" class="sc-chalk">居酒屋</text>`+spr('adult',4,6,'sc-breathe','#5a7bd6','great')+spr('adult',20,6,'sc-hop')+spr('adult',36,6,'sc-breathe','#c46a8a','great')+R(2,18,50,2,'#a0703a')+
+  else if(dd<23){b=room('#2a2020')+R(48,3,12,8,'#3a2a1e')+`<text x="49.5" y="8.5" class="sc-chalk">居酒屋</text>`+spr('adult',4,6,'sc-breathe','#5a7bd6','great')+spr('adult',20,6,'sc-hop')+spr('adult',36,6,'sc-breathe','#c46a8a','great')+R(2,18,50,2,'#a0703a')+
     `<g class="sc-cheers">${R(14,14,2.4,3,'#ffd34d')+R(14,13.4,2.4,.8,'#f4efe4')+R(30,14,2.4,3,'#ffd34d')+R(30,13.4,2.4,.8,'#f4efe4')}</g>`}
-  else if(day<28){b=room('#202733')+win(4)+R(26,8,16,10,'#0b0e14')+R(27,9,14,8,'#2c3e66')+[10,12,14].map(y=>R(29,y,10,.6,'#8fb3e8')).join('')+R(22,18,40,2,'#c9b88f')+R(24,20,1.5,4,'#9a8a6a')+R(59,20,1.5,4,'#9a8a6a')+spr('adult',44,6,'sc-nod','#2c3e66','normal')+R(52,15,1.5,3,'#ff5d6c')}
-  else if(day<33){b=room('#202733')+R(4,3,22,15,'#f4efe4')+`<polyline points="6,15 10,13 14,13.5 18,9 23,5" fill="none" stroke="#36d399" stroke-width="1"/>`+`<text x="6" y="6.5" class="sc-chalk" style="fill:#333">昇給!</text>`+
+  else if(dd<28){b=room('#202733')+win(4)+R(26,8,16,10,'#0b0e14')+R(27,9,14,8,'#2c3e66')+[10,12,14].map(y=>R(29,y,10,.6,'#8fb3e8')).join('')+R(22,18,40,2,'#c9b88f')+R(24,20,1.5,4,'#9a8a6a')+R(59,20,1.5,4,'#9a8a6a')+spr('adult',44,6,'sc-nod','#2c3e66','normal')+R(52,15,1.5,3,'#ff5d6c')}
+  else if(dd<33){b=room('#202733')+R(4,3,22,15,'#f4efe4')+`<polyline points="6,15 10,13 14,13.5 18,9 23,5" fill="none" stroke="#36d399" stroke-width="1"/>`+`<text x="6" y="6.5" class="sc-chalk" style="fill:#333">昇給!</text>`+
     spr('adult',34,6,'sc-hop','#2c3e66','great')+`<g class="sc-cheers">${R(46,12,6,4,'#f4efe4')+R(46,12,6,1,'#ff5d6c')}</g>`+`<text x="44" y="6" class="sc-note">★</text>`}
-  else if(day<37){b=`<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#bfe0ff"/></linearGradient></defs>`+R(0,0,W,H,'url(#sky2)')+
+  else if(dd<37){b=`<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#bfe0ff"/></linearGradient></defs>`+R(0,0,W,H,'url(#sky2)')+
     `<g class="sc-cloud">${R(4,6,10,3,'#fff')+R(6,4.5,6,2,'#fff')+R(40,20,12,3,'#fff')+R(43,18.5,6,2,'#fff')}</g>`+
     `<g class="sc-plane">${R(18,12,26,4,'#e8eef6')+R(42,12.5,3,3,'#e8eef6')+R(26,8,6,4,'#c9d4e2')+R(26,16,6,4,'#c9d4e2')+R(16,10,3,6,'#c9d4e2')+[22,25,28,31,34,37].map(x=>R(x,13,1.4,1.2,'#2c3e66')).join('')}</g>`}
-  else if(day<42){b=room('#202733')+R(30,3,28,14,'#f4efe4')+R(30,3,28,.8,'#9aa3ad')+`<text x="32" y="8" class="sc-chalk" style="fill:#333">損切りは経費</text><text x="32" y="12.5" class="sc-chalk" style="fill:#c0392b">ルール＞感情</text>`+
+  else if(dd<42){b=room('#202733')+R(30,3,28,14,'#f4efe4')+R(30,3,28,.8,'#9aa3ad')+`<text x="32" y="8" class="sc-chalk" style="fill:#333">損切りは経費</text><text x="32" y="12.5" class="sc-chalk" style="fill:#c0392b">ルール＞感情</text>`+
     spr('adult',16,6,'sc-breathe','#2c3e66','normal')+R(26,12,6,.8,'#8b5a2b')+spr('child',2,10,'sc-nod','#5a7bd6','normal')}
-  else if(day<47){b=room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#c9b88f')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">部長</text>`+spr('adult',34,2,'sc-breathe','#3a2a5a','great')+R(14,14,3,2,'#f4efe4')}
-  else if(day<51){b=room('#141a26')+R(28,2,32,17,'#f4efe4')+`<text x="30" y="6.5" class="sc-chalk" style="fill:#333">口座の生存と規律</text>`+[0,1,2,3,4].map(i=>R(32+i*5,16-[3,5,4,8,10][i],3,[3,5,4,8,10][i],'#5aa9ff')).join('')+
+  else if(dd<47){b=room('#2a2420')+win(48)+R(10,16,40,3,'#5b3a24')+R(12,19,2,5,'#4a2a18')+R(46,19,2,5,'#4a2a18')+R(20,13,12,3,'#c9b88f')+`<text x="21.5" y="15.4" class="sc-chalk" style="fill:#333">部長</text>`+spr('adult',34,2,'sc-breathe','#3a2a5a','great')+R(14,14,3,2,'#f4efe4')}
+  else if(dd<51){b=room('#141a26')+R(28,2,32,17,'#f4efe4')+`<text x="30" y="6.5" class="sc-chalk" style="fill:#333">口座の生存と規律</text>`+[0,1,2,3,4].map(i=>R(32+i*5,16-[3,5,4,8,10][i],3,[3,5,4,8,10][i],'#5aa9ff')).join('')+
     R(14,16,8,8,'#5b4636')+spr('adult',12,2,'sc-breathe','#2c3e66','normal')+[2,6,10,48,52].map(x=>`<circle cx="${x+4}" cy="27" r="2.2" fill="#3a4052"/>`).join('')}
-  else if(day<55){b=room('#2a2420')+`<text x="18" y="6" class="sc-chalk" style="font-size:3.4px;fill:#f5d78a">おつかれさまでした</text>`+spr('elder',24,8,'sc-breathe','#3a2a5a','great')+
+  else if(dd<55){b=room('#2a2420')+`<text x="18" y="6" class="sc-chalk" style="font-size:3.4px;fill:#f5d78a">おつかれさまでした</text>`+spr('elder',24,8,'sc-breathe','#3a2a5a','great')+
     `<g class="sc-cheers">${R(34,13,4,5,'#3d8b3a')+`<circle cx="35" cy="12.5" r="1.4" fill="#ff5d6c"/><circle cx="37.5" cy="12" r="1.4" fill="#ffd34d"/><circle cx="36" cy="10.6" r="1.4" fill="#f4a3c4"/>`}</g>`+spr('adult',4,8,'sc-hop','#5a7bd6','great')+spr('adult',48,8,'sc-hop','#c46a8a','great')}
-  else if(day<59){b=R(0,0,W,H,'#9cc8ef')+[[2,'#e38a5a'],[12,'#f5d78a'],[22,'#8fc1a9'],[32,'#e6a3a3'],[42,'#c9b88f'],[52,'#9fb3d9']].map(([x,c])=>R(x,6,9,17,c)+R(x+1,4,7,2,'#7a3a2a')+R(x+2,9,2,3,'#3b4a72')+R(x+5,9,2,3,'#3b4a72')+R(x+2,15,2,3,'#3b4a72')+R(x+5,15,2,3,'#3b4a72')).join('')+R(0,23,W,7,'#b9a88a')+R(0,23,W,.6,'#8a7a5a')+
+  else if(dd<59){b=R(0,0,W,H,'#9cc8ef')+[[2,'#e38a5a'],[12,'#f5d78a'],[22,'#8fc1a9'],[32,'#e6a3a3'],[42,'#c9b88f'],[52,'#9fb3d9']].map(([x,c])=>R(x,6,9,17,c)+R(x+1,4,7,2,'#7a3a2a')+R(x+2,9,2,3,'#3b4a72')+R(x+5,9,2,3,'#3b4a72')+R(x+2,15,2,3,'#3b4a72')+R(x+5,15,2,3,'#3b4a72')).join('')+R(0,23,W,7,'#b9a88a')+R(0,23,W,.6,'#8a7a5a')+
     `<g class="sc-walk2">${spr('elder',0,7,'','#2c3e66','great')}${spr('elder',10,7,'','#c46a8a','great')}</g>`}
   else{b=room('#151a28')+win(46,1)+`<g class="sc-twinkle">${[[8,4],[20,7],[32,3]].map(([x,y])=>R(x,y,.8,.8,'#f5e7a1')).join('')}</g>`+R(10,18,40,4,'#5b4636')+R(10,14,4,8,'#5b4636')+R(14,16,34,3,'#f4efe4')+R(14,14.6,6,2.4,'#fff')+
     `<g class="sc-breathe">${R(15,12.6,4,3,'#f2c9a0')+R(15,12,4,1,'#9aa3ad')+R(16,13.8,.8,.5,'#111')+R(18,13.8,.8,.5,'#111')+R(20,14.6,26,3.4,'#7f9fd6')}</g>`+`<text x="44" y="12" class="sc-z">z</text>`}
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges">${b}</svg>`;
 }
-const ROUTES={boss:{ic:'👑',n:'社長ルート',c:'var(--acc)',cond:'8割以上'},mid:{ic:'💼',n:'会社員ルート',c:'var(--blue)',cond:'5割以上'},slum:{ic:'🌧',n:'路地裏ルート',c:'var(--mute)',cond:'5割未満'}};
+const ROUTES=[
+  {id:'slum',ic:'🌧',n:'路地裏',c:'#8a93a3'},{id:'day',ic:'📦',n:'日雇い',c:'#9aa3ad'},{id:'part',ic:'🏪',n:'アルバイト',c:'#7fb08a'},{id:'temp',ic:'🏭',n:'派遣社員',c:'#7fa3c4'},
+  {id:'mid',ic:'💼',n:'会社員',c:'#5aa9ff'},{id:'craft',ic:'🔨',n:'職人',c:'#d9a05b'},{id:'shop',ic:'☕',n:'店主',c:'#e38a5a'},{id:'mgr',ic:'🏢',n:'部長',c:'#b48cf2'},
+  {id:'founder',ic:'🚀',n:'起業家',c:'#36d399'},{id:'boss',ic:'👑',n:'社長',c:'#e9b949'}];
+const RT=id=>ROUTES.find(r=>r.id===id);
+const mk=(a)=>a.map(([d,k,n,sc])=>({d,k,n,sc}));
+// 23歳からのルート別の人生。sc＝ドット絵の場面
 const RSTAGES={
-  boss:[{k:'adult',d:23,n:'起業（小さな事務所）'},{k:'adult',d:28,n:'初めての社員'},{k:'adult',d:33,n:'海外進出'},{k:'adult',d:37,n:'自社ビル'},{k:'adult',d:42,n:'社長'},{k:'adult',d:47,n:'講演に呼ばれる'},{k:'elder',d:51,n:'会長'},{k:'elder',d:55,n:'世界一周'},{k:'elder',d:59,n:'最期のとき（家族に囲まれて）'}],
-  slum:[{k:'adult',d:23,n:'アルバイト暮らし'},{k:'adult',d:28,n:'日雇いの仕事'},{k:'adult',d:33,n:'路地裏'},{k:'adult',d:42,n:'公園のベンチ'},{k:'elder',d:51,n:'路地裏のたき火'},{k:'elder',d:59,n:'最期のとき（ベンチで）'}]};
-const BRANCH_DAY=23;
+  slum:mk([[23,'adult','その日暮らし','konbini'],[28,'adult','仕事が続かない','crate'],[33,'adult','路地裏','alley'],[42,'adult','公園のベンチ','bench'],[51,'elder','路地裏のたき火','bonfire'],[59,'elder','最期のとき（ベンチで）','benchN']]),
+  day:mk([[23,'adult','日雇いの仕事','crate'],[33,'adult','現場を転々と','crate'],[42,'adult','安宿ぐらし','apt'],[51,'elder','公園のベンチ','bench'],[59,'elder','最期のとき','bed']]),
+  part:mk([[23,'adult','コンビニの夜勤','konbini'],[33,'adult','バイトリーダー','konbini'],[42,'adult','小さなアパート','apt'],[51,'elder','つつましい老後','apt'],[59,'elder','最期のとき','bed']]),
+  temp:mk([[23,'adult','工場のライン','factory'],[33,'adult','契約更新','factory'],[42,'adult','ライン長','factory'],[51,'elder','団地のベランダ','danchi'],[59,'elder','最期のとき','bed']]),
+  craft:mk([[23,'adult','弟子入り','workshop'],[28,'adult','一人前の職人','workshop'],[37,'adult','指名が入る','workshop'],[47,'adult','親方','teach'],[51,'elder','弟子に技を伝える','teach'],[59,'elder','最期のとき','bed']]),
+  shop:mk([[23,'adult','修業時代','workshop'],[28,'adult','自分の店をひらく','shopf'],[37,'adult','行列のできる店','shopf'],[47,'adult','常連に囲まれる','regulars'],[51,'elder','看板じいさん','regulars'],[59,'elder','最期のとき','bed']]),
+  mgr:mk([[23,'adult','新社会人','d:23'],[28,'adult','最年少で昇進','d:28'],[33,'adult','海外出張','d:33'],[37,'adult','部長','d:42'],[47,'adult','学会発表','d:47'],[51,'elder','定年退職','d:51'],[55,'elder','シニア旅行','d:55'],[59,'elder','最期のとき','bed']]),
+  founder:mk([[23,'adult','起業（小さな事務所）','garage'],[28,'adult','初めての社員','team'],[33,'adult','海外進出','d:33'],[42,'adult','講演に呼ばれる','d:47'],[51,'elder','後進を育てる','teach'],[55,'elder','シニア旅行','d:55'],[59,'elder','最期のとき','bed']]),
+  boss:mk([[23,'adult','起業（小さな事務所）','garage'],[28,'adult','初めての社員','team'],[33,'adult','海外進出','d:33'],[37,'adult','自社ビル','tower'],[42,'adult','社長','ceo'],[47,'adult','講演に呼ばれる','d:47'],[51,'elder','会長','ceo'],[55,'elder','船で世界一周','cruise'],[59,'elder','最期のとき（家族に囲まれて）','bed']])};
+// 13〜22歳の学生時代：頑張りで場面が変わる
+const STUDY={hi:mk([[13,'adult','中学生（図書館で猛勉強）','library'],[16,'adult','高校生（進学校）','library'],[19,'adult','大学生（難関大・講義）','d:19'],[21,'adult','大学生（研究室）','library']]),
+  lo:mk([[13,'adult','中学生（ゲーセン通い）','arcade'],[16,'adult','高校生（サボりがち）','arcade'],[19,'adult','大学生（講義に出ない）','arcade'],[21,'adult','大学生（飲み会ばかり）','d:21']])};
+const STUDY_DAY=13,BRANCH_DAY=23;
 function routeInfo(){
   const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),Rl=CLAUDE_DATA.ruleLog||{};
   const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,rate=n?kept/n:0;
-  return {ds,n,kept,rate,id:n<3?null:rate>=.8?'boss':rate>=.5?'mid':'slum',dots:ds.map(d=>Rl[d]?1:0)};
+  const rank=n<3?null:Math.max(1,Math.min(10,Math.floor(rate*10+1e-9)));
+  return {ds,n,kept,rate,rank,id:rank?ROUTES[rank-1].id:null,track:n<3?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
 }
-function routeNow(day){const r=routeInfo();return day>=BRANCH_DAY?(r.id||'mid'):'mid'}
-function stageOf(day,route){let L=STAGES;if(route&&RSTAGES[route]&&day>=BRANCH_DAY)L=[...STAGES.filter(x=>x.d<BRANCH_DAY),...RSTAGES[route]];let st=L[0];L.forEach(x=>{if(day>=x.d)st=x});return st}
+// その日の年齢で、いま歩いている道（共通／学生の頑張り／ルート）
+function routeNow(day){const r=routeInfo();if(day>=BRANCH_DAY)return r.id||'mid';if(day>=STUDY_DAY&&r.track)return r.track;return 'mid'}
+function stageOf(day,route){let L=STAGES;
+  if(route&&RSTAGES[route]&&day>=BRANCH_DAY)L=[...STAGES.filter(x=>x.d<BRANCH_DAY),...RSTAGES[route]];
+  else if(route&&STUDY[route]&&day>=STUDY_DAY)L=[...STAGES.filter(x=>x.d<STUDY_DAY||x.d>=BRANCH_DAY),...STUDY[route]].sort((a,b)=>a.d-b.d);
+  let st=L[0];L.forEach(x=>{if(day>=x.d)st=x});return st}
 /* ---- 節目の手記 ---- */
 function milestones(cur,C){
   const out=[],day=cur.start?Math.floor((new Date(todayStr())-new Date(cur.start))/864e5)+1:1;
@@ -1192,10 +1222,13 @@ function renderLog2(){
       <div class="meters">${M.map(([n,v,c,t])=>`<div class="mt"><span>${n}</span><div class="mbar"><i style="width:${v*100}%;background:${c}"></i></div><b>${t}</b></div>`).join('')}</div></div>`;
     $('#cnEdit').onclick=()=>{const box=$('#cname');box.innerHTML=`<input type="text" id="cnIn" value="${charName(cur)==='名前をつける'?'':charName(cur)}" placeholder="この口座のキャラ名" style="padding:6px 8px;font-size:14px">`;const i=$('#cnIn');i.focus();
       const done=()=>{const m=LS.get('charNames',{});if(i.value.trim())m[cur.name]=i.value.trim();LS.set('charNames',m);renderLog2()};i.onkeydown=e=>{if(e.key==='Enter')done()};i.onblur=done};
-    $('#lgNow').insertAdjacentHTML('beforeend',`<div class="route"><div class="rt-h">人生ルート <em>${dn<BRANCH_DAY?`分岐は${BRANCH_DAY}歳（あと${BRANCH_DAY-dn}日）`:'ルールを守るほど上のルートへ'}</em></div>
-      <div class="rt-row">${['boss','mid','slum'].map(k=>`<div class="rt ${tend===k?'on':''}" style="--rc:${ROUTES[k].c}"><b>${ROUTES[k].ic}</b><span>${ROUTES[k].n}</span><small>守れた日 ${ROUTES[k].cond}</small></div>`).join('')}</div>
+    const cr=ri.id?RT(ri.id):null,nx=ri.rank&&ri.rank<10?ROUTES[ri.rank]:null;
+    const phase=dn<STUDY_DAY?`子ども時代（共通）。${STUDY_DAY}歳から学生時代の頑張りが絵に出る`:dn<BRANCH_DAY?`学生時代：${ri.track==='hi'?'📚 猛勉強中':ri.track==='lo'?'🎮 遊びがち':'ふつうの学生'}。${BRANCH_DAY}歳で進路が決まる`:'ルールを守った日で、道は毎日変わる';
+    $('#lgNow').insertAdjacentHTML('beforeend',`<details class="fold route" ${dn>=BRANCH_DAY?'open':''}><summary><b>人生ルート</b><span>${cr?`${dn<BRANCH_DAY?'今のままだと ':''}<i style="color:${cr.c}">${cr.ic} ${cr.n}</i>`:'まだ判定前'}</span></summary>
+      <div class="small" style="margin:10px 0 8px">${phase}</div>
+      <div class="rt-row">${[...ROUTES].reverse().map((r,i)=>`<div class="rt ${ri.id===r.id?'on':''}" style="--rc:${r.c}"><b>${r.ic}</b><span>${r.n}</span><small>${10-i===10?'10割':10-i===1?'2割未満':(10-i)+'割〜'}</small></div>`).join('')}</div>
       <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）</span></div>
-      <div class="small">${ri.n<3?`まだ判定前（3日分たまってから）。今は${ri.n}日分。`:dn<BRANCH_DAY?`今のままだと → <b style="color:${ROUTES[tend].c}">${ROUTES[tend].ic} ${ROUTES[tend].n}</b>。${BRANCH_DAY}歳で分かれる。`:`今は <b style="color:${ROUTES[tend].c}">${ROUTES[tend].ic} ${ROUTES[tend].n}</b>。`}　勝ち負けは関係なし。守った日が増えれば、何歳からでもルートは上がる。</div></div>`);
+      <div class="small">${ri.n<3?`まだ判定前（3日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
