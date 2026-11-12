@@ -132,6 +132,7 @@ header small{color:var(--mute);font-size:12px;display:block}
 .lotout{text-align:center;padding:10px 0 4px}
 .lotout .big{font-size:56px;color:var(--acc)}
 .lotout .unit{font-size:16px;color:var(--mute);margin-left:4px}
+.rbars{position:relative;display:flex;align-items:flex-end;gap:6px;margin-top:10px;border-bottom:1px solid var(--line)}.rb{flex:1;display:flex;align-items:flex-end;height:100%}.rb i{display:block;width:100%;border-radius:6px 6px 2px 2px;opacity:.9}.rcap{position:absolute;left:0;right:0;border-top:1px dashed var(--warn)}.rcap span{position:absolute;right:0;top:-16px;font-size:10px;color:var(--warn)}.rlbl{display:flex;gap:6px;margin-top:4px}.rlbl span{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.3}
 .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.quick span{background:var(--card2,#1a1d24);border-radius:10px;padding:6px 8px;font-family:var(--num,inherit);font-size:13px;display:flex;justify-content:space-between}.quick b{color:var(--mute);font-weight:500}
 .lotrows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .lotrows div{background:var(--bg2);border-radius:12px;padding:10px;text-align:center}
@@ -398,6 +399,12 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   </div>
 
   <div class="card">
+    <div class="ttl">1回のリスク <em>同時に持った分も合計</em></div>
+    <div id="riskBars"></div>
+    <div class="small" style="margin-top:8px" id="riskMsg"></div>
+  </div>
+
+  <div class="card">
     <div class="ttl">コンディション別の成績 <em>バイオリズム</em></div>
     <table class="tbl" id="condTbl"></table>
     <div class="small" style="margin-top:8px">「仮」＝5回未満。偶然の可能性が高いので、まだ法則として扱わない。</div>
@@ -559,9 +566,9 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
    ========================================================= */
 const CLAUDE_DATA={
   trades:[
-    {id:'c-20261111-1',date:'2026-11-11',time:'',exit:'09:55',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
-    {id:'c-20261111-2',date:'2026-11-11',time:'',exit:'10:36',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
-    {id:'c-20261111-3',date:'2026-11-11',time:'',exit:'23:32',state:'stress',tags:['夜トレ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
+    {id:'c-20261111-1',risk:50000,date:'2026-11-11',time:'',exit:'09:55',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:7.1,pnl:7100,good:'決済 09:55（日本時間）158.766→158.837',bad:'指示どおり。損切り25pips・2本で合計1%（バッファの26%）'},
+    {id:'c-20261111-2',risk:50000,date:'2026-11-11',time:'',exit:'10:36',state:'normal',acct:'Fintokei速攻',pair:'USDJPY',dir:'L',lot:1,pips:12.2,pnl:12150,good:'決済 10:36（日本時間）158.765→158.8865',bad:'1本目と同時保有（指示どおり）'},
+    {id:'c-20261111-3',risk:34240,date:'2026-11-11',time:'',exit:'23:32',state:'stress',tags:['夜トレ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'S',lot:0.2,pips:'',pnl:96446,good:'決済 23:32（日本時間）4056.28→4026.08（$30.2）。損切り・利確を最初に置いて放置できた（約2.8R）。最安値まで狙わず、欲張らずに手前で利確',bad:'損切り4067（$10.7幅）→最大約3.4万円のリスク（アプリ計算の約7倍）'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足'],memo:'夜勤明けで遅かった。暴走リスクが高いと自分で判断して休み。目線予想とインジケーター開発だけ。'}},
   noEntry:{'2026-11-12':1},
@@ -853,7 +860,19 @@ function renderAna(){
   const rows=used.map(g=>{const st=stats(list.filter(t=>condsOf(t).includes(g)));return {g,...st}}).sort((a,b)=>a.pnl-b.pnl);
   const none=list.filter(t=>!condsOf(t).length),sn=stats(none);
   $('#condTbl').innerHTML=`<tr><th>タグ</th><th>回数</th><th>勝率</th><th>損益</th></tr>`+(rows.length?rows.map(r=>`<tr><td>${r.g}${r.n<5?'<span class="tentative">仮</span>':''}</td><td>${r.n}</td><td>${Math.round(r.win*100)}%</td><td class="${r.pnl<0?'neg':'pos'}">${yen(r.pnl)}</td></tr>`).join(''):`<tr><td colspan="4" class="small" style="font-family:inherit;font-weight:400">カレンダーの日付やホームでコンディションを付けると、ここに溜まっていきます。</td></tr>`)+(none.length?`<tr><td style="color:var(--mute);font-weight:400">タグなし</td><td>${sn.n}</td><td>${Math.round(sn.win*100)}%</td><td>${yen(sn.pnl)}</td></tr>`:'');
+  renderRisk();
 }
+function renderRisk(){
+  const C=CLAUDE_DATA.challenge,cap=C.maxLossPct?C.size*C.maxLossPct/100:0;
+  const L=allTrades().filter(t=>t.acct===C.acct&&t.risk>0).sort((a,b)=>(a.date+(a.time||'')+a.id).localeCompare(b.date+(b.time||'')+b.id)).slice(-20);
+  if(!L.length){$('#riskBars').innerHTML='<div class="small">損切り幅が分かったトレードから、ここに並びます。</div>';$('#riskMsg').textContent='';return}
+  const mx=Math.max(cap*1.3,...L.map(t=>t.risk)),H=120,cy=H-cap/mx*H;
+  $('#riskBars').innerHTML=`<div class="rbars" style="height:${H}px">${cap?`<div class="rcap" style="top:${cy}px"><span>上限 ${short(cap)}</span></div>`:''}${L.map(t=>`<div class="rb"><i style="height:${t.risk/mx*H}px;background:${cap&&t.risk>cap?'var(--loss)':'var(--win)'}"></i></div>`).join('')}</div>
+    <div class="rlbl">${L.map(t=>`<span>${t.date.slice(5).replace('-','/')}<br>${short(t.risk)}</span>`).join('')}</div>`;
+  const over=L.filter(t=>cap&&t.risk>cap).length;
+  $('#riskMsg').textContent=over?`上限（口座の${C.maxLossPct}%）を超えたのは ${L.length}回中 ${over}回。緑の棒が並べば、ロットがそろってきた証拠。`:`${L.length}回すべて上限の内側。この形を続ける。`;
+}
+
 
 /* ---------- PATTERNS ---------- */
 function renderPat(){
