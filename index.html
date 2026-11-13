@@ -312,6 +312,13 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .ev .tx{font-size:14px;line-height:1.75;margin-top:2px}
 .ev .tx em{font-style:normal;color:var(--mute);font-size:12px;display:block;margin-top:2px}
 @keyframes evIn{to{opacity:1;transform:none}}
+.exp{margin:12px 0;border:1.5px solid #5aa9ff;border-radius:20px;padding:14px 16px;background:linear-gradient(160deg,rgba(90,169,255,.12),rgba(90,169,255,.02))}
+.exp-k{font-size:11px;letter-spacing:.08em;color:#5aa9ff;font-weight:800;display:flex;justify-content:space-between}.exp-k em{font-style:normal;font-weight:500;color:var(--mute);letter-spacing:0}
+.exp h4{font-size:17px;margin:6px 0 4px}.exp p{font-size:12.5px;color:var(--mute);line-height:1.6;margin:0 0 10px}
+.exp-days{display:flex;gap:6px;margin-bottom:8px}.ed{flex:1;text-align:center}.ed i{display:block;height:22px;border-radius:7px;border:1px solid var(--line);background:transparent}
+.ed.k i{background:var(--win);border-color:var(--win)}.ed.x i{background:var(--loss);border-color:var(--loss)}.ed.n i{background:var(--line)}.ed.q i{border-style:dashed;border-color:var(--warn)}.ed.td i{box-shadow:0 0 0 2px #5aa9ff}
+.ed span{font-size:10px;color:var(--mute)}.exp-lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 2px 0 6px}.exp-lg i.k{background:var(--win)}.exp-lg i.x{background:var(--loss)}.exp-lg i.n{background:var(--line)}
+.exp details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:6px}.exp-past{padding:8px 0;border-top:1px solid var(--line);margin-top:8px}
 .fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 10px}
 .fold summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}.fold summary::-webkit-details-marker{display:none}
 .fold summary b{font-size:14px}.fold summary span{font-size:11.5px;color:var(--mute);text-align:right}.fold summary span i{font-style:normal}.fold summary::after{content:"›";color:var(--mute);font-size:18px;transition:.2s}.fold[open] summary::after{transform:rotate(90deg)}
@@ -371,6 +378,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <!-- ===== HOME ===== -->
 <section class="view on" id="v-home">
   <div id="homeCoach"></div>
+  <div id="homeExp"></div>
   <div class="card" id="chal"></div>
 
   <div class="card">
@@ -477,6 +485,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <div class="lg-head"><div class="lg-k">1 / ∞</div><div class="lg-t">口座の一生</div><div class="lg-s">生まれる相場は選べない。選べるのは、どう生きるかだけ。</div></div>
   <div id="lgNow"></div>
   <div id="lgWeek"></div>
+  <div id="lgExp"></div>
   <div id="lgLine"></div>
   <div id="lgGraves"></div>
 </section>
@@ -588,6 +597,12 @@ const CLAUDE_DATA={
   noEntry:{},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
+  // 今週の実験（一度に1つだけ）。新しいものが先頭。Claudeが週ごとに入れ替え、結果を書く
+  experiments:[
+    {start:'2026-11-13',end:'2026-11-19',title:'ロットの上限だけ守る',
+     rule:'時間も回数も縛らない。1回の損失が上限（口座の0.5%＝2.5万円、復帰日は約3,600円）を超えるロットでは打たない。これ1つだけ。',
+     why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
+     check:'risk',result:''}],
   ruleLog:{'2026-11-11':0,'2026-11-12':0},
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
@@ -1312,6 +1327,22 @@ async function loadWeather(){
 }
 function showWx(o){$('#wx').innerHTML=`<i>${WX[o.c]||'🌡'}</i>${o.tp}°<em>${o.hi}/${o.lo}</em>`;$('#wx').title='倉敷の天気'}
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
+function renderExp(){
+  const E=CLAUDE_DATA.experiments||[],C=CLAUDE_DATA.challenge,cap=C.size*(C.maxLossPct||0.5)/100,td=todayStr();
+  if(!E.length){$('#homeExp').innerHTML='';$('#lgExp').innerHTML='';return}
+  const x=E[0],days=[];for(let d=new Date(x.start+'T00:00');d<=new Date(x.end+'T00:00');d.setDate(d.getDate()+1)){const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');days.push(k)}
+  const dayRes=d=>{const ts=allTrades().filter(t=>t.acct===C.acct&&t.date===d);if(!ts.length)return d>td?'f':'n';if(ts.some(t=>t.risk>cap))return 'x';if(ts.every(t=>t.risk>0))return 'k';return 'q'};
+  const R=days.map(d=>({d,r:dayRes(d)})),done=R.filter(o=>o.r==='k'||o.r==='x'),kept=done.filter(o=>o.r==='k').length;
+  const lbl={k:'守れた',x:'超えた',n:'トレードなし',q:'損切り幅を確認中',f:''};
+  const wd=d=>'日月火水木金土'[new Date(d+'T00:00').getDay()];
+  $('#homeExp').innerHTML=`<div class="exp"><div class="exp-k">今週の実験 <em>${x.start.slice(5).replace('-','/')}〜${x.end.slice(5).replace('-','/')}</em></div>
+    <h4>${x.title}</h4><p>${x.rule}</p>
+    <div class="exp-days">${R.map(o=>`<div class="ed ${o.r}${o.d===td?' td':''}"><i></i><span>${wd(o.d)}</span></div>`).join('')}</div>
+    <div class="small">${done.length?`トレードした日 ${done.length}日中 ${kept}日 守れた`:'まだ結果なし'}　<span class="exp-lg"><i class="k"></i>守れた <i class="x"></i>超えた <i class="n"></i>なし</span></div>
+    <details><summary>なぜこの実験？</summary><div class="small" style="margin-top:6px">${x.why}</div></details></div>`;
+  const past=E.slice(1);
+  $('#lgExp').innerHTML=past.length?`<details class="fold"><summary><b>これまでの実験</b><span>${past.length}件</span></summary>${past.map(p=>`<div class="exp-past"><b>${p.start.slice(5).replace('-','/')}〜 ${p.title}</b><div class="small">${p.result||'結果はまだ'}</div></div>`).join('')}</details>`:'';
+}
 function renderAll(){
   trades=allTrades();
   {
@@ -1322,7 +1353,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();
 }
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
