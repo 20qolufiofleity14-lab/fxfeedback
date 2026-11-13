@@ -122,7 +122,7 @@ header small{color:var(--mute);font-size:12px;display:block}
 .tbl td:first-child{font-family:"Noto Sans JP";font-weight:700}
 .tentative{font-size:9.5px;color:var(--warn);border:1px solid var(--warn);border-radius:5px;padding:0 4px;margin-left:4px;font-family:"Noto Sans JP"}
 /* lot */
-.states{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.states{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .state{border:1.5px solid var(--line);background:var(--bg2);border-radius:14px;padding:10px 2px;text-align:center;font:inherit;color:var(--text)}
 .state b{display:block;font-size:20px}
 .state span{font-size:11px;font-weight:700;display:block;margin-top:2px}
@@ -582,14 +582,14 @@ const CLAUDE_DATA={
     {id:'c-20261112-2',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-3131,good:'ロットは小さかった（3本合計で上限の内側）',bad:'負けの9分後に入り直し、0.05×3本を重ねた（取り返し）'},
     {id:'c-20261112-3',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-4633,good:'',bad:'3本重ねの2本目'},
     {id:'c-20261112-4',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-4665,good:'',bad:'3本重ねの3本目'},
-    {id:'c-20261113-1',date:'2026-11-13',time:'',exit:'08:46',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.3,pips:'',pnl:61676,good:'決済 08:46（日本時間）3869.49→3882.35（+$12.9）',bad:'夜のうちに持った0.3lot。損切り幅は未確認'}
+    {id:'c-20261113-1',date:'2026-11-12',time:'',exit:'翌08:46',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.3,pips:'',pnl:61676,good:'決済 08:46（日本時間）3869.49→3882.35（+$12.9）',bad:'夜のうちに持った0.3lot。損切り幅は未確認'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足','眠気'],memo:'夜勤明けで休むと決めたが、夜うとうとしながらゴールドを打ってしまった。本人いわく「これが自分が終わる理由」。'}},
   noEntry:{},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
   ruleLog:{'2026-11-11':0,'2026-11-12':0},
-  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'tilt'},
+  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
     {t:'上位足（4h）と同じ方向？',s:'4h内部・レンジ上限下限では無理に触らない'},
@@ -630,13 +630,13 @@ const CLAUDE_DATA={
   challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5122974,target:300000,
     dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,maxLossPct:0.5,selfLosses:3,selfR:2,balanceDate:'2026-11-13'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-13',week:'11/9〜11/13週',state:'tilt',grade:'D',
-    headline:'眠気に負けた夜。でも、すぐに見せてくれた',
-    reason:'休むと決めた夜勤明けの夜、うとうとした状態でゴールドを打った。1本目は−3.7万円で上限2.5万円を超え、その9分後に3本重ねて入り直している（取り返し）。朝のプラスで残高は守れたけど、これは運に助けられた形。崩れたのは意志が弱いからではなく、眠い時間にMT5が手の届く所にあったから。今日は打たず、夜の環境を変える日にする。',
-    good:['隠さずに、すぐ全部見せてくれた','3本重ねは各0.05と小さく、合計は上限の内側だった'],
-    watch:['眠いとき・夜遅くにMT5を開く','負けた直後の入り直し（9分後）'],
-    focus:'今日は打たない。寝る前にスマホのMT5からログアウトしておく。眠い指では、ログインし直せない。',
-    mind:{who:'Jared Tendler',text:'疲れた頭は、最後に覚えた技術から手放す。意志で戦わず、疲れた時に打てない環境を作る。'}}
+  coach:{date:'2026-11-13',week:'11/9〜11/13週',state:'recover',grade:'—',
+    headline:'復帰日。小さく、ひとつずつ積む',
+    reason:'11/12の夜はD（休むと決めた夜に、眠いまま打った）。でも0か100かでは前に進めないので、今日は止めずに「復帰日」にする。ロットは×0.25に絞り、1回の損失は約3,600円まで。勝ち負けではなく、ルール通りに打って終われたら「守れた日」になる。',
+    good:['崩れた翌日に、0か100かではなく段階で戻ると自分で決めた','ロットと損切りを先に決めてから打つ'],
+    watch:['ゴールドは0.01、ドル円は0.1より大きくしない','眠気を感じたら、その時点で終わり（ログアウト）'],
+    focus:'ゴールド0.01lot・ドル円0.1lotだけ。打つ前に左下のエントリーチェックを開く。3敗したら今日は終わり。',
+    mind:{who:'Jared Tendler',text:'崩れた後は、小さく正しく打つ回数で自信を取り戻す。大きく取り返す1回では戻らない。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -665,14 +665,15 @@ const CURES=['負けてトレードしたくなったら、MT5デモで戦う','
 const DEF_TAGS=['睡眠不足','仕事疲れ','当直中','当直明け','眠気','飲み会のあと','テンション高め','イライラ','DD中','指標前','夜トレ','コーヒー','運動した','家族時間◎','スッキリ'];
 const TAG_PAT={'仕事疲れ':'tired','睡眠不足':'tired','当直明け':'tired','当直中':'tired','眠気':'tired','夜トレ':'tired','DD中':'dd','指標前':'news','イライラ':'revenge','テンション高め':'revenge','飲み会のあと':'revenge'};
 function stOf(t){if(t.state)return t.state;const L=CLAUDE_DATA.stateLog||{};const ks=Object.keys(L).filter(d=>d<=t.date).sort();return ks.length?L[ks[ks.length-1]]:''}
-const STATES=[{id:'great',ic:'🟢',name:'好調'},{id:'normal',ic:'🔵',name:'通常'},{id:'stress',ic:'🟡',name:'ストレス'},{id:'tilt',ic:'🔴',name:'暴走気味'}];
+const STATES=[{id:'great',ic:'🟢',name:'好調'},{id:'normal',ic:'🔵',name:'通常'},{id:'stress',ic:'🟡',name:'ストレス'},{id:'recover',ic:'🟠',name:'復帰日'},{id:'tilt',ic:'🔴',name:'暴走気味'}];
 
 /* ---------- 状態 ---------- */
 let local=LS.get('local',{trades:{},deleted:[],dayTags:{},dayMemo:{}});
 let tagList=LS.get('tagList',DEF_TAGS);
 let cfg=LS.get('cfg',{maxLotJ:1,maxLotG:0.1,cool:15,theme:'a',acct:'all',
-  mult:{great:1,normal:0.75,stress:0.5,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
+  mult:{great:1,normal:0.75,stress:0.5,recover:0.25,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
   accounts:{'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+if(cfg.mult&&cfg.mult.recover==null)cfg.mult.recover=0.25;
 if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
 if(cfg.accounts['Fintokei速攻']&&cfg.accounts['Fintokei速攻'].floor===4850000)cfg.accounts['Fintokei速攻'].floor=4825000;
 const save=()=>{LS.set('local',local);LS.set('tagList',tagList);LS.set('cfg',cfg)};
@@ -1221,7 +1222,7 @@ function renderLog2(){
   if(cur){
     const bal=chalBal(),buf=C.size-C.totalFloor,bp=Math.max(0,Math.min(1,(bal-C.totalFloor)/buf));
     const ct=trades.filter(t=>t.acct===C.acct),clean=ct.length?ct.filter(t=>!detect(t).length).length/ct.length:1;
-    const calm={great:1,normal:.75,stress:.4,tilt:.1}[cfg.state];
+    const calm={great:1,normal:.75,stress:.4,recover:.25,tilt:.1}[cfg.state];
     const prog=Math.max(0,Math.min(1,(bal-C.size)/C.target));
     const rt=routeNow(dayN(td)||1),ri=routeInfo(),dn=dayN(td)||1,tend=ri.id;
     const M=[['バッファ',bp,bp<.2?'var(--loss)':bp<.5?'var(--warn)':'var(--acc)',Math.round(bp*100)+'%'],
@@ -1315,7 +1316,7 @@ function renderAll(){
   trades=allTrades();
   {
     // Claudeの判定・自動判定・機械判定（残高と勝敗）のうち、一番慎重なものを採用。手動で上げることはできない
-    const rank={great:0,normal:1,stress:2,tilt:3},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState(),m=mechState();
+    const rank={great:0,normal:1,stress:2,recover:3,tilt:4},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState(),m=mechState();
     const base=(cfg.manual&&cfg.manual.d===todayStr())?cfg.manual.s:null;
     const pick=[c,a,m&&m.s,base].filter(Boolean).sort((x,y)=>rank[y]-rank[x])[0];if(pick)cfg.state=pick;
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
