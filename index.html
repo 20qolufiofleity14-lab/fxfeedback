@@ -320,7 +320,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .exp-days{display:flex;gap:6px;margin-bottom:8px}.ed{flex:1;text-align:center}.ed i{display:block;height:22px;border-radius:7px;border:1px solid var(--line);background:transparent}
 .ed.k i{background:var(--win);border-color:var(--win)}.ed.x i{background:var(--loss);border-color:var(--loss)}.ed.n i{background:var(--line)}.ed.q i{border-style:dashed;border-color:var(--warn)}.ed.td i{box-shadow:0 0 0 2px #5aa9ff}
 .ed span{font-size:10px;color:var(--mute)}.exp-lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 2px 0 6px}.exp-lg i.k{background:var(--win)}.exp-lg i.x{background:var(--loss)}.exp-lg i.n{background:var(--line)}
-.exp details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:6px}.unl{margin:4px 0 12px;border:1px dashed var(--line);border-radius:16px;padding:12px 14px}.unl-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.unl-h b{font-size:13.5px}.unl-h span{font-size:15px;color:#5aa9ff;font-weight:800}.unl .mbar{height:8px;margin-bottom:6px;border-radius:5px;background:var(--bg2);overflow:hidden}.unl .mbar i{display:block;height:100%;border-radius:5px}
+.exp details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:6px}.unl-c{font-size:13px;margin-top:4px}.unl-r{margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--mute);line-height:1.6}.unl details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:8px}
+.unl{margin:4px 0 12px;border:1px dashed var(--line);border-radius:16px;padding:12px 14px}.unl-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.unl-h b{font-size:13.5px}.unl-h span{font-size:15px;color:#5aa9ff;font-weight:800}.unl .mbar{height:8px;margin-bottom:6px;border-radius:5px;background:var(--bg2);overflow:hidden}.unl .mbar i{display:block;height:100%;border-radius:5px}
 .exp-past{padding:8px 0;border-top:1px solid var(--line);margin-top:8px}
 .fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 10px}
 .fold summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}.fold summary::-webkit-details-marker{display:none}
@@ -603,7 +604,9 @@ const CLAUDE_DATA={
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
   // ごほうびの条件（本人が決めたもの）。sinceの日から、上限内のロットで打てたトレードが連続何回か
-  unlock:{title:'The5ersの口座を1つ買う',need:20,since:'2026-11-13',note:'月末の引き落としが終わってから、1〜2万円の口座を1つまで'},
+  unlock:{title:'The5ers プログロース$10Kを追加',cond:'Fintokeiで合格して、出金できたら',need:20,since:'2026-11-13',
+    rules:['年末のゴールドは、今のFintokei口座でいつものロット上限で取る（新しい口座は買わない）','Fintokeiの20日ルールを守る','口座が飛んだら、次の月1見直し会まで買い直さない','買うのは月末のカード引き落としの後。予算は1〜2万円の口座まで'],
+    note:'11/13 家計の相談で決めたこと'},
   // 今週の実験（一度に1つだけ）。新しいものが先頭。Claudeが週ごとに入れ替え、結果を書く
   experiments:[
     {start:'2026-11-13',end:'2026-11-19',title:'ロットの上限だけ守る',
@@ -1353,9 +1356,12 @@ function renderExp(){
   if(U){const ts=allTrades().filter(t=>t.acct===C.acct&&t.date>=U.since).sort((a,b)=>(a.date+(a.exit||a.time||'')+a.id).localeCompare(b.date+(b.exit||b.time||'')+b.id));
     let st=0,pend=0;for(const t of ts){if(!(t.risk>0)){pend++;continue}if(t.risk>cap)st=0;else st++}
     const p=Math.min(1,st/U.need);
-    $('#homeExp').insertAdjacentHTML('beforeend',`<div class="unl"><div class="unl-h"><b>🔓 ${U.title}</b><span class="num">${st} / ${U.need}</span></div>
+    $('#homeExp').insertAdjacentHTML('beforeend',`<div class="unl"><div class="unl-h"><b>🔓 ${U.title}</b></div>
+      <div class="unl-c">条件：<b>${U.cond}</b></div>
+      <div class="unl-h" style="margin:10px 0 6px"><span class="small">合格への土台：上限内ロットの連続記録</span><span class="num">${st} / ${U.need}</span></div>
       <div class="mbar"><i style="width:${p*100}%;background:${p>=1?'var(--acc)':'#5aa9ff'}"></i></div>
-      <div class="small">上限内のロットで打てたトレードが<b>${U.need}回連続</b>で解禁。超えたら0からやり直し。${pend?`（損切り幅の確認待ち ${pend}回）`:''}<br>${p>=1?'🎉 条件クリア。':''}${U.note}</div></div>`)}
+      <div class="small">超えたら0から。${pend?`（損切り幅の確認待ち ${pend}回）`:''}</div>
+      <details><summary>決めたルール（${U.note}）</summary><ul class="unl-r">${U.rules.map(r=>`<li>${r}</li>`).join('')}</ul></details></div>`)}
   const past=E.slice(1);
   $('#lgExp').innerHTML=past.length?`<details class="fold"><summary><b>これまでの実験</b><span>${past.length}件</span></summary>${past.map(p=>`<div class="exp-past"><b>${p.start.slice(5).replace('-','/')}〜 ${p.title}</b><div class="small">${p.result||'結果はまだ'}</div></div>`).join('')}</details>`:'';
 }
