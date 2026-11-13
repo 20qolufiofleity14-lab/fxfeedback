@@ -324,7 +324,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 10px}
 .fold summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}.fold summary::-webkit-details-marker{display:none}
 .fold summary b{font-size:14px}.fold summary span{font-size:11.5px;color:var(--mute);text-align:right}.fold summary span i{font-style:normal}.fold summary::after{content:"›";color:var(--mute);font-size:18px;transition:.2s}.fold[open] summary::after{transform:rotate(90deg)}
-.fold .tl{margin:12px 0 0}.fold.graves .grave{background:var(--bg,#0d0f14)}
+.fold .tl{margin:12px 0 0}.anafold{margin:12px 0}.anafold>.card{margin:12px 0 0;border:none;padding:12px 0 0;background:none;box-shadow:none}.fold.graves .grave{background:var(--bg,#0d0f14)}
 .route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
 .rt-h{font-weight:800;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}.rt-h em{font-style:normal;font-weight:400;font-size:11px;color:var(--mute)}
 .rt-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:10px 0 8px}.rt{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;opacity:.45}.rt.on{opacity:1;border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}
@@ -390,6 +390,13 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   </div>
 
   <div class="card">
+    <div class="ttl">1回のリスク <em>同時に持った分も合計</em></div>
+    <div id="riskBars"></div>
+    <div class="small" style="margin-top:8px" id="riskMsg"></div>
+  </div>
+
+  <details class="fold anafold"><summary><b>成績の分析</b><span>勝率・曜日・時間帯・ブレのコスト・コンディション</span></summary>
+  <div class="card">
     <div class="seg" id="perSeg"><button data-p="m">今月</button><button data-p="y">今年</button><button data-p="a" class="on">全期間</button></div>
     <div class="pie-row">
       <div class="pie" id="pie"><b id="pieTxt">0%</b></div>
@@ -418,16 +425,11 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   </div>
 
   <div class="card">
-    <div class="ttl">1回のリスク <em>同時に持った分も合計</em></div>
-    <div id="riskBars"></div>
-    <div class="small" style="margin-top:8px" id="riskMsg"></div>
-  </div>
-
-  <div class="card">
     <div class="ttl">コンディション別の成績 <em>バイオリズム</em></div>
     <table class="tbl" id="condTbl"></table>
     <div class="small" style="margin-top:8px">「仮」＝5回未満。偶然の可能性が高いので、まだ法則として扱わない。</div>
   </div>
+  </details>
 </section>
 
 <!-- ===== CALENDAR ===== -->
@@ -689,7 +691,8 @@ let local=LS.get('local',{trades:{},deleted:[],dayTags:{},dayMemo:{}});
 let tagList=LS.get('tagList',DEF_TAGS);
 let cfg=LS.get('cfg',{maxLotJ:1,maxLotG:0.1,cool:15,theme:'a',acct:'all',
   mult:{great:1,normal:0.75,stress:0.5,recover:0.25,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
-  accounts:{'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},'あみくも':{bal:2000000,floor:1800000,cur:'JPY',risk:2,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+  accounts:{'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+if(cfg.accounts&&cfg.accounts['あみくも']){delete cfg.accounts['あみくも'];if(cfg.lotAcct==='あみくも')cfg.lotAcct='Fintokei速攻'}
 if(cfg.mult&&cfg.mult.recover==null)cfg.mult.recover=0.25;
 if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
 if(cfg.accounts['Fintokei速攻']&&cfg.accounts['Fintokei速攻'].floor===4850000)cfg.accounts['Fintokei速攻'].floor=4825000;
