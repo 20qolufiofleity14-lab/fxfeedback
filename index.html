@@ -64,7 +64,9 @@ header small{color:var(--mute);font-size:12px;display:block}
 .cal .d .dp{font-family:Outfit;font-size:9.5px;font-weight:700;text-align:right}
 .cal .d.w{background:rgba(54,211,153,.16)}.cal .d.l{background:rgba(255,93,108,.16)}
 .cal .d.today{outline:1.5px solid var(--acc)}
-.cal .d .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%}
+.cal .d .sig{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%}.cal .d .bang{position:absolute;top:1px;right:14px;font-size:10px;color:var(--loss);font-weight:900}
+.sg-great{background:#36d399;box-shadow:0 0 6px #36d399}.sg-normal{background:#5aa9ff;box-shadow:0 0 6px #5aa9ff}.sg-stress{background:#f5c542;box-shadow:0 0 6px #f5c542}.sg-recover{background:#ff9a3d;box-shadow:0 0 6px #ff9a3d}.sg-tilt{background:#ff5d6c;box-shadow:0 0 6px #ff5d6c}
+i.lg{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 2px 0 4px;vertical-align:middle}
 .cal .d .tg{position:absolute;top:4px;right:12px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
 .calnav{display:flex;gap:8px;align-items:center}
 .calnav button{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:8px;width:30px;height:28px}
@@ -434,7 +436,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div class="ttl"><span>カレンダー</span><span class="calnav"><button id="cPrev">‹</button><span class="num" id="cLbl" style="font-size:13px"></span><button id="cNext">›</button></span></div>
     <div class="cal" id="cal"></div>
     <div class="monthsum"><span>月間収支 <b class="num" id="mPnl">¥0</b></span><span>勝率 <b class="num" id="mWin">0%</b></span><span>取引 <b class="num" id="mN">0</b></span></div>
-    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加　●赤＝注意ポイントあり　●緑＝ルール通り　●金＝タグあり</div>
+    <div class="small" style="margin-top:8px">日付をタップ → その日の記録・追加<br>信号＝その日の判定　<i class="lg sg-great"></i>好調 <i class="lg sg-normal"></i>通常 <i class="lg sg-stress"></i>ストレス <i class="lg sg-recover"></i>復帰日 <i class="lg sg-tilt"></i>休み　<b style="color:var(--loss)">!</b>＝注意ポイントあり</div>
   </div>
   <div class="card">
     <div class="ttl"><span>トレード一覧 <em id="logCnt"></em></span><button class="chip" id="addTradeBtn">＋ 記録</button></div>
@@ -772,6 +774,7 @@ function trRow(t){const ps=detect(t);
   ${ps.length?`<div class="a" style="margin-top:5px">${ps.map(id=>`<span class="pt">${PATTERNS.find(p=>p.id===id).name}</span>`).join('')}</div>`:''}</div>
   <div class="p ${t.pnl>0?'pos':t.pnl<0?'neg':''}">${yen(t.pnl)}<small>${t.pips!=null&&t.pips!==''?t.pips+' pips':''}</small></div></div>`}
 function bindRows(el){[...el.querySelectorAll('.tr')].forEach(r=>r.onclick=()=>openAdd(r.dataset.id))}
+function dayState(k){const C=CLAUDE_DATA.challenge,L=CLAUDE_DATA.stateLog||{};if(C&&C.start&&k<C.start)return '';if(k>todayStr())return '';const ks=Object.keys(L).filter(d=>d<=k).sort();return ks.length?L[ks[ks.length-1]]:''}
 function renderCal(){
   const d0=calM||new Date(),Y=d0.getFullYear(),M=d0.getMonth();
   $('#cLbl').textContent=`${Y}.${pad(M+1)}`;
@@ -781,7 +784,7 @@ function renderCal(){
   const list=vis(),NE=noEntry();
   for(let d=1;d<=days;d++){
     const k=`${Y}-${pad(M+1)}-${pad(d)}`,dt=list.filter(t=>t.date===k),p=dt.reduce((s,t)=>s+t.pnl,0),bad=dt.some(t=>detect(t).length),hasTag=tagsOf(k).length||memoOf(k);
-    h+=`<button class="d ${dt.length?(p>0?'w':p<0?'l':''):''} ${k===todayStr()?'today':''}" data-d="${k}"><span class="dn">${d}</span>${hasTag?'<i class="tg"></i>':''}${dt.length?`<i class="dot" style="background:${bad?'var(--loss)':'var(--win)'}"></i><span class="dp ${p>0?'pos':'neg'}">${short(p)}</span>`:(NE[k]?'<span class="dp" style="color:var(--blue)">見送</span>':'')}</button>`;
+    h+=`<button class="d ${dt.length?(p>0?'w':p<0?'l':''):''} ${k===todayStr()?'today':''}" data-d="${k}"><span class="dn">${d}</span>${(()=>{const st=k===todayStr()?cfg.state:dayState(k);return st?`<i class="sig sg-${st}"></i>`:''})()}${bad?'<b class="bang">!</b>':''}${dt.length?`<span class="dp ${p>0?'pos':'neg'}">${short(p)}</span>`:(NE[k]?'<span class="dp" style="color:var(--blue)">見送</span>':'')}</button>`;
   }
   $('#cal').innerHTML=h;$$('#cal .d').forEach(b=>b.onclick=()=>openDay(b.dataset.d));
   const ml=list.filter(t=>t.date.startsWith(`${Y}-${pad(M+1)}`)),ms=stats(ml);
