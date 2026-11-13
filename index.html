@@ -684,6 +684,7 @@ const PATTERNS=[
  {id:'pride',name:'大きな損失（プライドの金額割れ）',quote:'10万単位の損失に心がついていけてない',a:'大きな含み損・損失',b:'この金額を負けたまま終われない',d:'損失額ではなく、ルール通りに切れたかで自分を評価する。'},
  {id:'step2',name:'合格・突破の直後',quote:'（過去口座のデータより）',a:'STEP1を突破した・目標が目前',b:'もう勝てる、取り切りたい',d:'突破した日から3日は倍率を1段下げる。勝った後こそ「同じことを繰り返すだけ」。',evidence:'STEP1を突破した3口座は、3つともSTEP2で散っている。The5ersも目標の98%まで行ってから2週間で失格。'},
  {id:'confident',name:'「これなら勝てる」の自信',quote:'小さい甘えが出ちゃう。これなら勝てるやろうって',a:'サインがきれいに出た・形が良く見える',b:'これなら勝てる、少し大きく張ってもいい',d:'自信がある時ほどロット画面を見る。自信は本物でいい、でもロットは自信と別の場所で決める。',evidence:'11/11、自信のあるロングで1lotを2本重ね、最大5万円（バッファの26%）を背負った。本人いわく、このパターンからの崩れは過去にも多い。'},
+ {id:'fomo',name:'機会損失への焦り',quote:'分かりやすい場面で参加できないのが焦る（年末のゴールド）',a:'動きやすい相場・アノマリーの季節・他の人が取っている',b:'今入らないと取り逃す。口座を増やせばもっと取れる',d:'相場は毎年来る。取り逃しは損失ではない。今の口座で、いつものロットで取れる分だけ取る。',evidence:'11/13、年末ゴールドを前に新しい口座を買いたい気持ちが出た。家計の相談で「今の口座で、いつものロット上限で取る」と決めた。'},
  {id:'news',name:'指標・月末',quote:'指標負けが続きすぎ',a:'指標の前・月末',b:'動くから取れそう',d:'指標の前後は様子見。動いたあとの形ができるまで待つ。'}
 ];
 const CURES=['負けてトレードしたくなったら、MT5デモで戦う','暴走したら、魚釣りの形をイメージして振り返る','建値を置いていたのは偉かった','4h確定から1時間後に絞ると、決断疲れが減る','逆行したら、リボンが整うまで待つ'];
@@ -1357,10 +1358,11 @@ function renderExp(){
     let st=0,pend=0;for(const t of ts){if(!(t.risk>0)){pend++;continue}if(t.risk>cap)st=0;else st++}
     const p=Math.min(1,st/U.need);
     $('#homeExp').insertAdjacentHTML('beforeend',`<div class="unl"><div class="unl-h"><b>🔓 ${U.title}</b></div>
-      <div class="unl-c">条件：<b>${U.cond}</b></div>
-      <div class="unl-h" style="margin:10px 0 6px"><span class="small">合格への土台：上限内ロットの連続記録</span><span class="num">${st} / ${U.need}</span></div>
+      <div class="unl-h" style="margin:10px 0 6px"><span class="small">${p>=1?'✅':'①'} 実績：上限内ロットで${U.need}回連続</span><span class="num">${st} / ${U.need}</span></div>
       <div class="mbar"><i style="width:${p*100}%;background:${p>=1?'var(--acc)':'#5aa9ff'}"></i></div>
       <div class="small">超えたら0から。${pend?`（損切り幅の確認待ち ${pend}回）`:''}</div>
+      <div class="unl-c" style="margin-top:8px">${U.done2?'✅':'②'} 実績：<b>${U.cond}</b></div>
+      <div class="small" style="margin-top:4px">①と②の両方がそろって、初めて買える。</div>
       <details><summary>決めたルール（${U.note}）</summary><ul class="unl-r">${U.rules.map(r=>`<li>${r}</li>`).join('')}</ul></details></div>`)}
   const past=E.slice(1);
   $('#lgExp').innerHTML=past.length?`<details class="fold"><summary><b>これまでの実験</b><span>${past.length}件</span></summary>${past.map(p=>`<div class="exp-past"><b>${p.start.slice(5).replace('-','/')}〜 ${p.title}</b><div class="small">${p.result||'結果はまだ'}</div></div>`).join('')}</details>`:'';
