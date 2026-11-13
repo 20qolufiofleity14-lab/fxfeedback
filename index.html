@@ -326,7 +326,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .diary details summary{font-size:12px;color:#8b5a2b;cursor:pointer;margin-top:10px}
 .creed{margin:12px 0;border-radius:18px;padding:14px 16px;background:linear-gradient(135deg,rgba(233,185,73,.14),rgba(233,185,73,.03));border:1px solid rgba(233,185,73,.35)}
 .creed.sm{margin:10px 0 12px;padding:10px 12px}.cr-k{font-size:11px;letter-spacing:.1em;color:var(--acc);font-weight:800;margin-bottom:8px}
-.cr-steps{display:flex;flex-wrap:wrap;align-items:center;gap:4px 2px;font-size:12.5px;font-weight:700}.cr-steps span{padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.05)}.cr-steps span.now{background:var(--acc);color:#111}.cr-steps i{font-style:normal;color:var(--mute);margin:0 2px}
+.cr-steps{display:flex;flex-wrap:wrap;align-items:center;gap:4px 2px;font-size:12.5px;font-weight:700}.cr-steps span{padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.05)}.cr-steps span.now{background:var(--acc);color:#111}.cr-steps span.done{background:rgba(54,211,153,.25)}.cr-steps span small{display:block;font-size:10px;font-weight:500;opacity:.75;margin-top:1px}.cr-steps i{font-style:normal;color:var(--mute);margin:0 2px}
 .cr-n{font-size:12px;color:var(--mute);line-height:1.7;margin-top:10px}
 .unl-c{font-size:13px;margin-top:4px}.unl-r{margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--mute);line-height:1.6}.unl details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:8px}
 .unl{margin:4px 0 12px;border:1px dashed var(--line);border-radius:16px;padding:12px 14px}.unl-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.unl-h b{font-size:13.5px}.unl-h span{font-size:15px;color:#5aa9ff;font-weight:800}.unl .mbar{height:8px;margin-bottom:6px;border-radius:5px;background:var(--bg2);overflow:hidden}.unl .mbar i{display:block;height:100%;border-radius:5px}
@@ -1361,8 +1361,14 @@ async function loadWeather(){
 }
 function showWx(o){$('#wx').innerHTML=`<i>${WX[o.c]||'🌡'}</i>${o.tp}°<em>${o.hi}/${o.lo}</em>`;$('#wx').title='倉敷の天気'}
 function applyTheme(){document.body.className=cfg.theme==='c'?'t-c':''}
+function lotStreak(){const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{since:'2000-01-01',need:20},cap=C.size*(C.maxLossPct||0.5)/100;
+  const ts=allTrades().filter(t=>t.acct===C.acct&&t.date>=U.since).sort((a,b)=>(a.date+(a.exit||a.time||'')+a.id).localeCompare(b.date+(b.exit||b.time||'')+b.id));let st=0;for(const t of ts){if(!(t.risk>0))continue;if(t.risk>cap)st=0;else st++}return st}
 function creedHTML(small){const K=CLAUDE_DATA.creed;if(!K)return '';
-  return `<div class="creed ${small?'sm':''}"><div class="cr-k">原点</div><div class="cr-steps">${K.steps.map((t,i)=>`<span class="${i===0?'now':''}">${t}</span>`).join('<i>→</i>')}</div>${small?'':`<div class="cr-n">${K.note}</div>`}</div>`}
+  const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},bal=chalBal(),st=lotStreak(),start=new Date(C.start+'T00:00'),dn=Math.floor((new Date(todayStr()+'T00:00')-start)/864e5)+1;
+  const pr=Math.max(0,Math.min(1,(bal-C.size)/C.target));
+  const sub=[`連続 ${st}/${U.need}`,`生存 ${dn}日目`,`目標まで ${Math.round(pr*100)}%`,'その先へ'];
+  const cur=st<U.need?0:pr<1?2:3;
+  return `<div class="creed ${small?'sm':''}"><div class="cr-k">原点</div><div class="cr-steps">${K.steps.map((t,i)=>`<span class="${i===cur?'now':i<cur?'done':''}">${t}<small>${sub[i]}</small></span>`).join('<i>→</i>')}</div>${small?'':`<div class="cr-n">${K.note}</div>`}</div>`}
 function renderExp(){
   const E=CLAUDE_DATA.experiments||[],C=CLAUDE_DATA.challenge,cap=C.size*(C.maxLossPct||0.5)/100,td=todayStr();
   if(!E.length){$('#homeExp').innerHTML='';$('#lgExp').innerHTML='';return}
