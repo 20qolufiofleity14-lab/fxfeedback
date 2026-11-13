@@ -320,7 +320,11 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .exp-days{display:flex;gap:6px;margin-bottom:8px}.ed{flex:1;text-align:center}.ed i{display:block;height:22px;border-radius:7px;border:1px solid var(--line);background:transparent}
 .ed.k i{background:var(--win);border-color:var(--win)}.ed.x i{background:var(--loss);border-color:var(--loss)}.ed.n i{background:var(--line)}.ed.q i{border-style:dashed;border-color:var(--warn)}.ed.td i{box-shadow:0 0 0 2px #5aa9ff}
 .ed span{font-size:10px;color:var(--mute)}.exp-lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin:0 2px 0 6px}.exp-lg i.k{background:var(--win)}.exp-lg i.x{background:var(--loss)}.exp-lg i.n{background:var(--line)}
-.exp details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:6px}.creed{margin:12px 0;border-radius:18px;padding:14px 16px;background:linear-gradient(135deg,rgba(233,185,73,.14),rgba(233,185,73,.03));border:1px solid rgba(233,185,73,.35)}
+.exp details summary{font-size:11.5px;color:#5aa9ff;cursor:pointer;margin-top:6px}.diary{margin:10px 0;border-radius:18px;padding:14px 16px;background:#f6efe0;color:#3b2f22;background-image:repeating-linear-gradient(transparent 0 27px,rgba(90,120,170,.18) 27px 28px)}
+.dy-k{font-size:12px;font-weight:800;letter-spacing:.06em;color:#8b5a2b;margin-bottom:8px}.dy-h{font-size:13px;font-weight:800;margin-bottom:4px}.dy-h span{font-weight:400;font-size:11px;color:#8a7a62;margin-left:6px}
+.dy-t{font-size:14.5px;line-height:28px;font-family:"Klee One","Hiragino Maru Gothic ProN","Zen Maru Gothic",sans-serif}.dy-e+.dy-e{margin-top:14px;padding-top:10px;border-top:1px dashed rgba(139,90,43,.3)}
+.diary details summary{font-size:12px;color:#8b5a2b;cursor:pointer;margin-top:10px}
+.creed{margin:12px 0;border-radius:18px;padding:14px 16px;background:linear-gradient(135deg,rgba(233,185,73,.14),rgba(233,185,73,.03));border:1px solid rgba(233,185,73,.35)}
 .creed.sm{margin:10px 0 12px;padding:10px 12px}.cr-k{font-size:11px;letter-spacing:.1em;color:var(--acc);font-weight:800;margin-bottom:8px}
 .cr-steps{display:flex;flex-wrap:wrap;align-items:center;gap:4px 2px;font-size:12.5px;font-weight:700}.cr-steps span{padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.05)}.cr-steps span.now{background:var(--acc);color:#111}.cr-steps i{font-style:normal;color:var(--mute);margin:0 2px}
 .cr-n{font-size:12px;color:var(--mute);line-height:1.7;margin-top:10px}
@@ -657,6 +661,12 @@ const CLAUDE_DATA={
     {name:'Fintokei クリスタル STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'全体はまだ7割残っていたのに、1日で終わった'},
     {name:'Fintokei ブロンズ STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'1日で日次も全体も使い切った'},
     {name:'Fintokei 速攻プロ シルバー',sizeLabel:'500万',size:5000000,start:'2026-11-08',end:null,status:'alive',cause:'',epitaph:'',
+     // キャラ自身の日記（その年齢の言葉で）。Claudeがトレードの日を元に毎日書く
+     diary:[
+       {d:'2026-11-08',t:'あー。うー。\nきょう、うまれた。\nあったかい。'},
+       {d:'2026-11-11',t:'きょうね、こうえんで ブランコを すっごく たかく こいだの。2かいも！\nたのしかった。\nでも ママに「あぶないよ」って いわれた。\nほんとは ちょっとだけ こわかった。'},
+       {d:'2026-11-12',t:'ねむいのに ずっと おきてて、よる こっそり おそとに いっちゃった。\nまっくらで ころんで、ひざが いたい。\nくやしくて、ともだちの おもちゃも とっちゃって、けんかした。ないちゃった。\nあさ、パパが ばんそうこうを はってくれた。'},
+       {d:'2026-11-13',t:'きょうから しょうがくせい。ランドセルが おもい。\nきのうの ひざ、まだ ちょっと いたい。\nせんせいが「ちいさい いっぽで いいんだよ」って いってた。\nきょうは ゆっくり あるいてみる。'}],
      log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'},{d:'2026-11-11',t:'初陣。ドル円ロング2戦2勝、+19,250円。ただし1lot×2本の重ね・損切り25pipsで、最大5万円のリスクを背負っていた。夜はゴールドのショート0.2lotで+96,446円。1日で残高5,113,599円、目標30万円の約38%まで来た。'},{d:'2026-11-12',t:'夜勤明けで休むと決めた。でも夜、うとうとしながらゴールドを打った。0.2lotで−36,619円、9分後に0.05lot×3本を重ねて−12,429円。'},{d:'2026-11-12',t:'誓い：「人に恥じないトレード」。プロの目で見ても落ち度がない戦い方をする。1回の損失は口座の0.5%まで、取り返したい気持ちが湧いてもルールで打つ。'},{d:'2026-11-13',t:'夜のうちに持ったゴールド0.3lotが朝+61,676円で決済。残高5,122,974円。結果はプラスでも、眠いまま打った夜だった。'}]}
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
@@ -1277,6 +1287,9 @@ function renderLog2(){
       <div class="rt-row">${[...ROUTES].reverse().map((r,i)=>`<div class="rt ${ri.id===r.id?'on':''}" style="--rc:${r.c}"><b>${r.ic}</b><span>${r.n}</span><small>${10-i===10?'10割':10-i===1?'2割未満':(10-i)+'割〜'}</small></div>`).join('')}</div>
       <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）</span></div>
       <div class="small">${ri.n<3?`まだ判定前（2日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
+    const DY=(cur.diary||[]).slice().sort((a,b)=>b.d.localeCompare(a.d)),nm=charName(cur)==='名前をつける'?'この子':charName(cur);
+    const dEnt=e=>`<div class="dy-e"><div class="dy-h">${dayN(e.d)}さいの日記 <span>${e.d.slice(5).replace('-','/')}（${wd(e.d)}）</span></div><div class="dy-t">${e.t.replace(/\n/g,'<br>')}</div></div>`;
+    if(DY.length)$('#lgNow').insertAdjacentHTML('beforeend',`<div class="diary"><div class="dy-k">📓 ${nm}の日記</div>${dEnt(DY[0])}${DY.length>1?`<details><summary>これまでの日記（${DY.length-1}日分）</summary>${DY.slice(1).map(dEnt).join('')}</details>`:''}</div>`);
     const vr=renderVoices(cur,C);$('#lgNow').insertAdjacentHTML('beforeend',vr.html);
     if(vr.open){$('#vaSave').onclick=()=>{const t=$('#vaTx').value.trim();if(!t){toast('ひとことでOK');return}vr.save(t);toast('手記を残しました');renderLog2()};$('#vaSkip').onclick=()=>{const a=$('.voice-ask');if(a)a.remove()}}
     const myV=Object.values((LS.get('voices',{})[cur.name])||{}).concat((cur.voices||[]));
