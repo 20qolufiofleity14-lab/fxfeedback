@@ -766,6 +766,7 @@ const CLAUDE_DATA={
     dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-16',days:60,maxLossPct:0.5,selfLosses:1,selfR:2,balanceDate:'2026-11-16'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
   coach:{date:'2026-11-16',week:'11/16〜11/20週',state:'tilt',grade:'A',
+    next:'stress',
     headline:'2回目の誕生日。初日は打たないと決めた',
     reason:'新しい口座の初日。仕事でバタバタした日に、自分で「今日はノートレード」と決められた。前の口座が教えてくれたのは、崩れるのは負けた直後のイライラの中だということ。だから、疲れた日に打たないのは正しい始まり方。',
     good:['疲れた日を自分で見抜いて、打たないと決めた','前の口座の振り返りから、すぐに始めている'],
@@ -802,7 +803,7 @@ const CURES=['負けてトレードしたくなったら、MT5デモで戦う','
 const DEF_TAGS=['睡眠不足','仕事疲れ','当直中','当直明け','眠気','飲み会のあと','テンション高め','イライラ','DD中','指標前','夜トレ','コーヒー','運動した','家族時間◎','スッキリ'];
 const TAG_PAT={'仕事疲れ':'tired','睡眠不足':'tired','当直明け':'tired','当直中':'tired','眠気':'tired','夜トレ':'tired','DD中':'dd','指標前':'news','イライラ':'revenge','テンション高め':'revenge','飲み会のあと':'revenge'};
 function stOf(t){if(t.state)return t.state;const L=CLAUDE_DATA.stateLog||{};const ks=Object.keys(L).filter(d=>d<=t.date).sort();return ks.length?L[ks[ks.length-1]]:''}
-const STATES=[{id:'great',ic:'🟢',name:'好調'},{id:'normal',ic:'🔵',name:'通常'},{id:'stress',ic:'🟡',name:'ストレス'},{id:'recover',ic:'🟠',name:'復帰日'},{id:'tilt',ic:'🔴',name:'暴走気味'}];
+const STATES=[{id:'great',ic:'🟢',name:'好調'},{id:'normal',ic:'🔵',name:'通常'},{id:'stress',ic:'🟡',name:'ストレス'},{id:'recover',ic:'🟠',name:'復帰日'},{id:'tilt',ic:'🔴',name:'打たない日'}];
 
 /* ---------- 状態 ---------- */
 let local=LS.get('local',{trades:{},deleted:[],dayTags:{},dayMemo:{}});
@@ -1130,7 +1131,7 @@ $('#cNext').onclick=()=>{const d=calM||new Date();calM=new Date(d.getFullYear(),
 
 function renderCoach(){
   const c=CLAUDE_DATA.coach;if(!c){$('#coachBox').innerHTML='';$('#homeCoach').innerHTML='';return}
-  const s=STATES.find(x=>x.id===c.state),d=new Date(c.date+'T00:00'),upd=`${d.getMonth()+1}/${d.getDate()} 更新`;
+  const s=STATES.find(x=>x.id===coachState()),d=new Date(c.date+'T00:00'),ag=coachAge(),upd=`${d.getMonth()+1}/${d.getDate()} 更新`+(ag>0?`（${ag}日前の判定）`:'');
   $('#coachBox').innerHTML=`<div class="coach"><div class="ch"><span>CLAUDEの判定</span><span>${upd}</span></div>
     <div class="cs">${s.ic} ${s.name}　<span class="num" style="font-size:15px;color:var(--mute)">×${cfg.mult[s.id]}</span></div>
     ${c.focus?`<div class="cf">▶ ${c.focus}</div>`:''}</div>`;
@@ -1501,9 +1502,18 @@ function renderSort(){applyHomeOrder();const el=$('#homeSort'),o=homeOrder(),nm=
   const r=$('#hsR');if(r)r.onclick=()=>{LS.set('homeOrder',null);renderSort()};
   const C=CLAUDE_DATA.challenge,ac=$('#anaAcct');if(ac){ac.innerHTML=[['all','全口座'],[C.acct,'今の口座だけ']].map(([v,l])=>`<button class="chip ${cfg.acct===v?'on':''}" data-a="${v}">${l}</button>`).join('');$$('#anaAcct .chip').forEach(b=>b.onclick=()=>{cfg.acct=b.dataset.a;save();renderAll()})}
 }
+// Claudeの判定が前の日のままのとき：coach.next があればそれを使う（休みの日の🔴を翌日に持ち越さない）
+function coachState(){const c=CLAUDE_DATA.coach;if(!c)return null;return c.date<todayStr()&&c.next?c.next:c.state}
+function coachAge(){const c=CLAUDE_DATA.coach;return c?Math.round((new Date(todayStr()+'T00:00')-new Date(c.date+'T00:00'))/864e5):0}
+function dailyReport(){const td=todayStr(),C=CLAUDE_DATA.challenge,res=(LS.get('dayRes',{})[td]||[]),B=biasToday(),F=(LS.get('feels',{})[td]||[]),tg=tagsOf(td);
+  return ['【COCKPIT 今日の報告】'+td.slice(5).replace('-','/'),'口座：'+C.name,'結果ボタン：'+(res.length?res.map(r=>r==='W'?'勝':'負').join('→'):(noEntry()[td]?'見送り':'なし')),
+    '朝の目線：'+BIAS_P.map(([k,n])=>n+' '+(B[k]?BIAS_L[B[k]]:'未入力')).join('／')+(B.changed?'（途中で変えた）':''),
+    'クールダウン：'+(F.length?F.map(f=>f.t+' '+(f.k==='loss'?'負けた後':'🧊')+'「'+f.f+'」').join('、'):'なし'),
+    'コンディション：'+(tg.length?tg.join('・'):'なし'),'状態：'+STATES.find(x=>x.id===cfg.state).name,'ひとこと：'].join('\n')}
 function renderStatus(){renderHd();renderSort();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
-  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button></div>`;
+  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button><button id="goRep">📋報告</button></div>`;
+  $('#goRep').onclick=()=>{const t=dailyReport();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('今日の報告をコピー。Claudeに貼るだけ')).catch(()=>{window.prompt('コピーしてClaudeに貼る',t)})};
   $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
 }
 let cdTimer=null;
@@ -1571,7 +1581,7 @@ function renderAll(){
   trades=allTrades();
   {
     // Claudeの判定・自動判定・機械判定（残高と勝敗）のうち、一番慎重なものを採用。手動で上げることはできない
-    const rank={great:0,normal:1,stress:2,recover:3,tilt:4},c=CLAUDE_DATA.coach&&CLAUDE_DATA.coach.state,a=suggestState(),m=mechState();
+    const rank={great:0,normal:1,stress:2,recover:3,tilt:4},c=coachState(),a=suggestState(),m=mechState();
     const base=(cfg.manual&&cfg.manual.d===todayStr())?cfg.manual.s:null;
     const pick=[c,a,m&&m.s,base].filter(Boolean).sort((x,y)=>rank[y]-rank[x])[0];if(pick)cfg.state=pick;
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
