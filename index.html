@@ -349,6 +349,32 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .fab{position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom) + 92px);width:52px;height:52px;border-radius:50%;border:1.5px solid var(--acc);background:rgba(10,11,14,.92);color:var(--acc);display:grid;place-items:center;z-index:6;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px var(--accdim)}
 .fab svg{width:26px;height:26px}.fab:active{transform:scale(.93)}
 .ckmodal{align-items:center;padding:18px}
+.fab.r{left:auto;right:14px;border-color:#5aa9ff;color:#5aa9ff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px rgba(90,169,255,.35)}
+.cdsheet{background:var(--card);border:1px solid #5aa9ff;border-radius:24px;padding:22px 18px;text-align:center}
+.cd-k{font-family:Outfit;font-size:12px;letter-spacing:.2em;color:#5aa9ff}.cd-h{font-size:22px;font-weight:900;margin:8px 0 4px}.cd-s{font-size:13px;color:var(--mute);line-height:1.7}
+.cd-ring{width:170px;height:170px;margin:22px auto 10px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(90,169,255,.35),rgba(90,169,255,.05) 70%);border:2px solid #5aa9ff;animation:cdB 10s ease-in-out infinite}
+@keyframes cdB{0%{transform:scale(.6)}40%{transform:scale(1)}100%{transform:scale(.6)}}
+.cd-ring b{font-size:20px;font-weight:800}.cd-t{font-family:Outfit;font-size:30px;font-weight:800;color:#5aa9ff}
+.cd-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0}.cd-chips button{padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;font-size:14px}
+.cd-fact{background:var(--bg2);border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.7;text-align:left;margin:14px 0}
+.cd-btn{width:100%;padding:14px;border-radius:16px;border:none;background:#5aa9ff;color:#0b0e14;font:inherit;font-weight:900;font-size:16px}.cd-skip{background:none;border:none;color:var(--mute);font:inherit;font-size:12px;margin-top:12px;text-decoration:underline}
+.stt{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}.stt span,.stt button{font-size:12px;padding:6px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-family:inherit;white-space:nowrap}
+.stt .go{border-color:var(--win);color:var(--win);font-weight:800}.stt .stop{border-color:var(--loss);color:var(--loss);font-weight:800}.stt button{border-color:var(--acc);color:var(--acc)}
+.bias-r{display:flex;align-items:center;gap:8px;margin-top:10px}.bias-r>b{width:64px;font-size:13.5px}.bias-r .chips{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bias-r .chip{text-align:center}
+.bias-r .chip.on.up{background:var(--win);border-color:var(--win);color:#0b0e14}.bias-r .chip.on.down{background:var(--loss);border-color:var(--loss);color:#fff}.bias-r .chip.on.wait{background:var(--line);color:var(--text)}.bias-r .chip:disabled{opacity:.35}.bias-r .chip.on:disabled{opacity:1}
+.ckbias{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:13.5px;text-align:center}.ckbias b.up{color:var(--win)}.ckbias b.down{color:var(--loss)}
+.ckvow{border:1.5px solid var(--acc);border-radius:16px;padding:12px 14px;margin:10px 0 4px;font-size:14px;font-weight:800;text-align:center;line-height:1.6;background:rgba(233,185,73,.08)}
+.plan{border:1.5px solid var(--acc);border-radius:22px;padding:16px;margin-bottom:14px;background:linear-gradient(170deg,rgba(233,185,73,.10),rgba(233,185,73,.01))}
+.plan>h3{font-size:19px;margin:2px 0 2px}.plan .pk{font-family:Outfit;font-size:11px;letter-spacing:.18em;color:var(--acc)}.plan .fold{background:var(--bg2);margin:10px 0 0}
+.au-d{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.au-d>i{font-style:normal;width:62px;color:var(--mute);flex:none}.au-d b{display:block}.au-d b.loss{color:var(--loss)}.au-d b.warn{color:var(--warn)}.au-d span{font-size:11.5px;color:var(--mute)}
+.au-b{display:flex;align-items:flex-end;gap:6px;height:120px;margin:14px 0 4px;border-bottom:1px solid var(--line)}.au-b>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.au-b i{display:block;width:70%;background:var(--loss);border-radius:5px 5px 0 0;opacity:.85}.au-b em{font-style:normal;font-size:10px;color:var(--loss);margin-bottom:2px}
+.au-l{display:flex;gap:6px}.au-l span{flex:1;text-align:center;font-size:9.5px;color:var(--mute);line-height:1.35}
+.plan ul{margin:10px 0 0;padding-left:18px;font-size:12.5px;line-height:1.75}.plan ul li{margin-bottom:4px}
+.chn{display:flex;flex-direction:column;gap:0;margin-top:10px}.chn div{padding:8px 12px;border-radius:12px;background:var(--card);font-size:13px;font-weight:700}.chn div span{font-weight:400;color:var(--mute);font-size:11.5px;margin-left:8px}.chn i{font-style:normal;text-align:center;color:var(--mute);font-size:12px;line-height:16px}.chn .cutl{color:#5aa9ff;font-weight:900;font-size:11.5px;border:1px dashed #5aa9ff;border-radius:10px;padding:4px;margin:3px 0}
+.wal{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.wal>i{font-style:normal;font-family:Outfit;font-weight:800;font-size:22px;color:var(--acc);width:22px}.wal b{font-size:14px}.wal span{display:block;font-size:12px;color:var(--mute);line-height:1.6;margin-top:2px}
+.ift{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}.ift div{background:var(--card);border-radius:12px;padding:9px 12px;font-size:12.5px;line-height:1.6}.ift em{font-style:normal;color:var(--warn);font-weight:800}.ift b{color:var(--win)}
+.djo{padding:10px 0;border-bottom:1px solid var(--line)}.djo b{font-size:13.5px}.djo em{font-style:normal;font-size:10.5px;color:#5aa9ff;margin-left:8px}.djo span{display:block;font-size:12px;color:var(--mute);line-height:1.65;margin-top:3px}
+.rd{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);opacity:.55}.rd.done{opacity:1}.rd.now{opacity:1}.rd>i{font-style:normal;font-size:22px}.rd b{font-size:13.5px}.rd span{display:block;font-size:11.5px;color:var(--mute)}.rd .mbar{height:6px;border-radius:4px;background:var(--card);overflow:hidden;margin-top:5px}.rd .mbar u{display:block;height:100%;background:var(--acc);border-radius:4px}.rd>div{flex:1}.rd>em{font-style:normal;font-family:Outfit;font-weight:800;font-size:13px;color:var(--acc)}
 .cksheet{width:100%;max-width:440px;max-height:86vh;overflow:auto}
 .ckh{font-family:Outfit;font-size:12px;letter-spacing:.2em;color:var(--acc);text-align:center;margin-bottom:10px}
 .ckstate{text-align:center;font-size:14px;font-weight:900;margin-bottom:12px}
@@ -389,10 +415,12 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 
 <!-- ===== HOME ===== -->
 <section class="view on" id="v-home">
+  <div id="homeStatus"></div>
   <div id="homeCoach"></div>
   <div id="homeExp"></div>
   <div id="homeCreed"></div>
   <div class="card" id="chal"></div>
+  <div class="card" id="biasCard"></div>
 
   <div class="card">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
@@ -507,6 +535,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
+  <div id="planBox"></div>
   <div class="card">
     <div class="ttl">注意ポイント <em>タップで詳しく（ABCD）</em></div>
     <div class="small" style="margin-bottom:4px">A＝きっかけ　B＝頭の中（自分の言葉）　C＝データ　D＝次はこう考える</div>
@@ -583,6 +612,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 </div></div>
 
 <button class="fab" id="fabCheck" aria-label="エントリー前チェック"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg></button>
+<button class="fab r" id="fabCool" aria-label="クールダウン">🧊</button>
+<div class="modal ckmodal" id="cdModal"><div class="cksheet cdsheet" id="cdSheet"></div></div>
 <div class="modal ckmodal" id="ckModal"><div class="cksheet" id="ckSheet"></div></div>
 <nav><div class="in">
   <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>ホーム</button>
@@ -606,12 +637,49 @@ const CLAUDE_DATA={
     {id:'c-20261112-2',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-3131,good:'ロットは小さかった（3本合計で上限の内側）',bad:'負けの9分後に入り直し、0.05×3本を重ねた（取り返し）'},
     {id:'c-20261112-3',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-4633,good:'',bad:'3本重ねの2本目'},
     {id:'c-20261112-4',risk:12429,date:'2026-11-12',time:'',exit:'22:45',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-4665,good:'',bad:'3本重ねの3本目'},
+    {id:'c-20261113-b01',risk:13000,date:'2026-11-13',time:'',exit:'21:47',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.02,pips:'',pnl:-2634,good:'',bad:'復帰日の最初の1本（予定は0.01lot）'},
+    {id:'c-20261113-b02',risk:1944,date:'2026-11-13',time:'',exit:'21:47',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-3457,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b03',date:'2026-11-13',time:'',exit:'21:56',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-2913,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b04',date:'2026-11-13',time:'',exit:'21:56',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-3609,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b05',date:'2026-11-13',time:'',exit:'21:56',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.05,pips:'',pnl:-2745,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b06',date:'2026-11-13',time:'',exit:'22:16',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-4319,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b07',date:'2026-11-13',time:'',exit:'22:16',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-3823,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b08',date:'2026-11-13',time:'',exit:'22:16',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-3999,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b09',date:'2026-11-13',time:'',exit:'22:20',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-5790,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b10',date:'2026-11-13',time:'',exit:'22:21',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-8029,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b11',date:'2026-11-13',time:'',exit:'22:26',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-2751,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b12',date:'2026-11-13',time:'',exit:'22:26',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-2751,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b13',date:'2026-11-13',time:'',exit:'22:26',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-2607,good:'',bad:'負けた後の入り直し・重ね'},
+    {id:'c-20261113-b14',date:'2026-11-13',time:'',exit:'22:26',state:'recover',tags:['夜トレ','イライラ'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.1,pips:'',pnl:-2767,good:'',bad:'負けた後の入り直し・重ね'},
     {id:'c-20261113-1',date:'2026-11-12',time:'',exit:'翌08:46',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.3,pips:'',pnl:61676,good:'決済 08:46（日本時間）3869.49→3882.35（+$12.9）',bad:'夜のうちに持った0.3lot。損切り幅は未確認'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足','眠気'],memo:'夜勤明けで休むと決めたが、夜うとうとしながらゴールドを打ってしまった。本人いわく「これが自分が終わる理由」。'}},
   noEntry:{'2026-11-16':1},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
+  // 作戦書（11/16、1回目の口座の振り返りから）。パターンタブの一番上に出る
+  plan:{updated:'2026-11-16',
+    autopsy:{days:[
+        {d:'11/11',t:'3戦3勝 +115,696円',s:'勝ったが、3回ともリスクは上限（2.5万円）超え',c:'warn'},
+        {d:'11/12 夜',t:'4本 −49,048円',s:'休むと決めた夜。1本目 −36,619円 → 9分後に3本重ね',c:'loss'},
+        {d:'11/13 朝',t:'1本 +61,676円',s:'夜のうちに持った0.3lot。運に助けられた',c:'warn'},
+        {d:'11/13 夜',t:'14本 −52,194円',s:'21:47〜22:26の39分。14本すべて負け',c:'loss'}],
+      bursts:[{t:'21:47',lot:'0.02＋0.05',n:2,p:-6091},{t:'21:56',lot:'0.05×3',n:3,p:-9267},{t:'22:16',lot:'0.1×3',n:3,p:-12141},{t:'22:20',lot:'0.1×2',n:2,p:-13819},{t:'22:26',lot:'0.1×4',n:4,p:-10876}],
+      points:['この夜、1本あたりの負けは最大でも −8,029円。どれも上限2.5万円の内側だった。','口座を終わらせたのは「大きな1敗」ではなく、「39分で14本」という回数。','もし「1敗で終わり」があれば、この夜は最初の −2,634円（重ねた分を入れても −6,091円）で終わっていた。','自分で下目線と言っていた日に、買いで14本入っている。','※スクショの計算では、終了時の残高はまだ開始より上（約507万円）。失格の正式な理由は未確認なので、Fintokeiのダッシュボードで確認する。']},
+    chain:[{t:'負ける',s:'小さくても'},{t:'イライラが体に来る',s:'悔しい・腹が立つ'},{t:'理由が見つかる',s:'「同じ形がまた来た」「上にも行きそう」'},{t:'入り直す',s:'本数が増える'},{t:'ロットが上がる',s:'0.02 → 0.05 → 0.1'},{t:'39分後',s:'口座が終わる'}],
+    cut:'切るのは①と②のあいだ。イライラの中で考えて止まるのは無理。だから、負けた瞬間に考えずにやることを先に決めておく。',
+    walls:[{n:'1',t:'1敗したら、その日は終わり',s:'2本目が存在しなければ、連打は起きない。勝っている間は続けてよい。同時に持った分はまとめて1敗。'},
+      {n:'2',t:'負けたら、まず「＋負」を押す',s:'押すと90秒の呼吸の画面が出る。考える前に、手を動かす先を決めておく。'},
+      {n:'3',t:'ロットはロット画面の数字',s:'1回の損失は口座の0.5%（2.5万円）まで。小さい負けは、心を折らない。'}],
+    ifthen:[['負けたら','「＋負」を押す → 90秒呼吸 → MT5を閉じる'],['「取り返したい」が浮かんだら','右下の🧊を押す。打つのはその後でも遅くない'],['朝の目線と逆に入りたくなったら','見送る。目線を変えるのは明日の朝'],['含み損のポジションに足したくなったら','それは2本目。足さない'],['眠い・横になっている','新規エントリーはしない（決済はOK）'],['勝って、もう1回行きたくなったら','エントリーチェックを最初からもう一度開く'],['大きく勝った日の次の日は','状態を1段下げて打つ'],['口座が飛んだら','月1見直し会まで買い直さない']],
+    dojo:[{t:'朝の目線をタップ',w:'朝・10秒',h:'ホームの「今日の目線」で、上・下・待ちを決める。夜に変えたくなったら、それは見送りのサイン。'},
+      {t:'負けの予行演習',w:'打つ前・10秒',h:'「この1回は負けるかもしれない。負けたら＋負を押して終わり」と心の中で言ってから打つ。先に負けを受け入れておくと、負けた時の衝撃が小さくなる。'},
+      {t:'90秒の波乗り',w:'負けた直後・90秒',h:'イライラは波。ピークは長く続かない。4秒吸って6秒吐く。波が引くまで、何も決めない。'},
+      {t:'気持ちに名前をつける',w:'呼吸のあと・5秒',h:'「イライラ」「悔しい」「取り返したい」。言葉にすると、気持ちと自分の間に少し距離ができる。'},
+      {t:'円ではなく%で言う',w:'負けを見た時',h:'「−2万円」ではなく「−0.4%、予定どおりの経費」。お店の仕入れと同じで、負けはトレードの経費。'},
+      {t:'見送りは筋トレ1回',w:'打たなかった時',h:'見送りボタンを押すたびに、退屈に耐える筋肉が1回分つく。打たない日も前に進んでいる。'},
+      {t:'友達に言う言葉で',w:'自分を責めたくなった時',h:'同じ負け方をした友達に「お前には無理」とは言わない。「次はどうする？」と聞く。自分にも同じ言葉を使う。'}],
+    road:[{ic:'🥉',t:'止まれる人',c:'1敗で止まれた日が3日',k:'stop',need:3},{ic:'🥈',t:'そろえる人',c:'上限内ロットで5回連続',k:'streak',need:5},{ic:'🥇',t:'退屈に強い人',c:'上限内ロットで10回連続',k:'streak',need:10},{ic:'🏅',t:'落ち度のない人',c:'上限内ロットで20回連続',k:'streak',need:20},{ic:'👑',t:'出金した人',c:'合格して、初めての出金',k:'manual',need:1}]},
   // 原点（11/13の対話から）。ホームとエントリーチェックに出す
   creed:{steps:['ロットを守る','口座を飛ばさない','一度、出金まで行く','生涯収支がプラスになる'],
     note:'「早く」が、これまでロットを大きくさせてきた。今日の小さな1回が、生涯収支へのいちばん短い道。3年間の負けで、目線と技術は手に入れた。あとはロットがそろえば、それがお金に変わる。'},
@@ -629,6 +697,8 @@ const CLAUDE_DATA={
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
+    {t:'朝の目線と同じ方向？',s:'下目線の日に買わない。目線を変えるのは明日の朝'},
+    {t:'これは今日の「新しい1本」？',s:'含み損への追加・負けた後の入り直しではない'},
     {t:'上位足（4h）と同じ方向？',s:'4h内部・レンジ上限下限では無理に触らない'},
     {t:'4h確定から1時間後？',s:'打つ時間を絞ると、決断疲れが減る'},
     {t:'Ψ・α・リボンは揃ってる？',s:'リボンが整うまで待つ。リボンの中では入らない'},
@@ -646,7 +716,7 @@ const CLAUDE_DATA={
   lives:[
     {name:'Fintokei 速攻プロ シルバー（2回目）',sizeLabel:'500万',size:5000000,start:'2026-11-16',end:null,status:'alive',cause:'',epitaph:'',
      diary:[{d:'2026-11-16',t:'あー。うー。\nまた、うまれた。\nまえの子の にっきが、まくらもとに おいてあった。'}],
-     log:[{d:'2026-11-16',t:'誕生。前の口座（11/8〜11/13）の記録を引き継いでリスタート。初日は仕事でバタバタだったので、自分で決めてノートレード。'}]},
+     log:[{d:'2026-11-16',t:'誕生。前の口座（11/8〜11/13）の記録を引き継いでリスタート。初日は仕事でバタバタだったので、自分で決めてノートレード。'},{d:'2026-11-16',t:'新しいルール：「1敗したら、その日は終わり」。前の口座は、負けた後の39分・14本で終わった。作戦書を作った。'}]},
     {name:'The5ers ブートキャンプ $20K',sizeLabel:'$20K',start:'2026-08-24',end:'2026-09-22',status:'dead',cause:'全体ライン',
      epitaph:'合格まであと$410から、2週間で全部返した',
      log:[{d:'2026-09-08',t:'残高$21,590で最高値。目標$22,000まであと$410。'},{d:'2026-09-22',t:'$18,766で失格ライン$18,800を割る。勝率36%・PF0.70。'}]},
@@ -663,7 +733,7 @@ const CLAUDE_DATA={
     {name:'Fintokei パール STEP1',sizeLabel:'',status:'dead',cause:'不明',epitaph:'日次87%・全体87%まで削られた'},
     {name:'Fintokei クリスタル STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'全体はまだ7割残っていたのに、1日で終わった'},
     {name:'Fintokei ブロンズ STEP1',sizeLabel:'',status:'dead',cause:'日次ライン',epitaph:'1日で日次も全体も使い切った'},
-    {name:'Fintokei 速攻プロ シルバー',sizeLabel:'500万',size:5000000,start:'2026-11-08',end:'2026-11-13',status:'dead',cause:'確認中',epitaph:'小さく守ると決めた日に、手が先に動いた。この記録は、次の口座のために残す。',
+    {name:'Fintokei 速攻プロ シルバー',sizeLabel:'500万',size:5000000,start:'2026-11-08',end:'2026-11-13',status:'dead',cause:'負け直後の連打',epitaph:'小さく守ると決めた日に、手が先に動いた。この記録は、次の口座のために残す。',
      // キャラ自身の日記（その年齢の言葉で）。Claudeがトレードの日を元に毎日書く
      diary:[
        {d:'2026-11-08',t:'あー。うー。\nきょう、うまれた。\nあったかい。'},
@@ -681,7 +751,7 @@ const CLAUDE_DATA={
     reason:'新しい口座の初日。仕事でバタバタした日に、自分で「今日はノートレード」と決められた。前の口座が教えてくれたのは、崩れるのは負けた直後のイライラの中だということ。だから、疲れた日に打たないのは正しい始まり方。',
     good:['疲れた日を自分で見抜いて、打たないと決めた','前の口座の振り返りから、すぐに始めている'],
     watch:['新しい口座を手にした高揚感（「今度こそ」で張りたくなる）'],
-    focus:'今日はチャートを見るだけ。明日からは「1敗したら、その日は終わり」。勝っている間は続けてよい。',
+    focus:'今日はチャートを見るだけ。パターンタブの「作戦書」を一度読む。明日からは「1敗したら、その日は終わり」。',
     mind:{who:'Jared Tendler',text:'崩れのきっかけが分かっているなら、その瞬間の前に、やることを決めておく。'}}
 };
 
@@ -1092,7 +1162,7 @@ function renderChal(){
   $('#balEd').onclick=()=>{balEdit=!balEdit;renderAll()};
   $('#nBtn').onclick=()=>{const m=noEntry();if(m[td])delete m[td];else m[td]=1;LS.set('noEntry',m);renderAll();toast(m[td]?'見送りを記録。待てた日':'見送りを取り消しました')};
   $('#wBtn').onclick=()=>{pushRes('W');renderAll();toast('勝ちを記録')};
-  $('#lBtn').onclick=()=>{pushRes('L');LS.set('lockUntil',Date.now()+15*60000);renderAll();renderLock();toast('負けを記録。15分ロック開始')};
+  $('#lBtn').onclick=()=>{pushRes('L');LS.set('lockUntil',Date.now()+15*60000);renderAll();renderLock();openCool('loss')};
   $('#resUndo').onclick=e=>{e.preventDefault();pushRes('undo');renderAll()};
 }
 let lockTimer=null;
@@ -1333,13 +1403,14 @@ function openCheck(){
   const L=CLAUDE_DATA.checklist||[],st=STATES.find(x=>x.id===cfg.state),locked=LS.get('lockUntil',0)>Date.now(),C=CLAUDE_DATA.challenge,stop=cfg.state==='tilt'||(C&&lossToday()>=C.selfLosses);
   let head;
   if(locked)head=`<div class="ckstate stop">15分ロック中。今は打たない</div>`;
-  else if(stop)head=`<div class="ckstate stop">今日は打たない日</div>`;
+  else if(stop)head=`<div class="ckstate stop">${C&&lossToday()>=C.selfLosses?'今日は1敗した。ここまで':'今日は打たない日'}</div>`;
   else head=`<div class="ckstate">${st.ic} ${st.name}　×${cfg.mult[cfg.state]}　<span class="small">ロットは計算画面の数字で</span></div>`;
-  $('#ckSheet').innerHTML=`<div class="ckh">ENTRY CHECK</div>${head}${creedHTML(true)}`+(locked||stop?'':L.map((x,i)=>`<div class="cki ${x.wip?'wip':''}" style="animation-delay:${.12+i*.16}s"><div class="n">${i+1}</div><div><b>${x.t}</b><span>${x.s||''}</span></div></div>`).join(''))+
-    `<div class="ckclose" style="animation-delay:${.3+(locked||stop?0:L.length)*.16}s">どこかをタップで閉じる</div>`;
+  $('#ckSheet').innerHTML=`<div class="ckh">ENTRY CHECK</div>${head}${creedHTML(true)}`+(locked||stop?'':`<div class="ckbias">今日の目線　${biasLine()}</div>`)+(locked||stop?'':L.map((x,i)=>`<div class="cki ${x.wip?'wip':''}" style="animation-delay:${.12+i*.16}s"><div class="n">${i+1}</div><div><b>${x.t}</b><span>${x.s||''}</span></div></div>`).join(''))+
+    (locked||stop?'':`<div class="ckvow">この1回は、負けるかもしれない。<br>負けたら「＋負」を押して、今日は終わり。</div>`)+`<div class="ckclose" style="animation-delay:${.3+(locked||stop?0:L.length)*.16}s">どこかをタップで閉じる</div>`;
   $('#ckModal').classList.add('on');
 }
 $('#fabCheck').onclick=openCheck;
+$('#fabCool').onclick=()=>openCool('urge');
 $('#ckModal').addEventListener('click',()=>$('#ckModal').classList.remove('on'));
 // GitHub側が更新されていたら自動で読み込み直す（Claudeの毎日の更新がすぐ出るように）
 async function checkUpdate(){
@@ -1373,6 +1444,54 @@ function creedHTML(small){const K=CLAUDE_DATA.creed;if(!K)return '';
   const sub=[`連続 ${st}/${U.need}`,`生存 ${dn}日目`,`目標まで ${Math.round(pr*100)}%`,'その先へ'];
   const cur=st<U.need?0:pr<1?2:3;
   return `<div class="creed ${small?'sm':''}"><div class="cr-k">原点</div><div class="cr-steps">${K.steps.map((t,i)=>`<span class="${i===cur?'now':i<cur?'done':''}">${t}<small>${sub[i]}</small></span>`).join('<i>→</i>')}</div>${small?'':`<div class="cr-n">${K.note}</div>`}</div>`}
+function stoppedDays(){const m=LS.get('dayRes',{}),C=CLAUDE_DATA.challenge;return Object.entries(m).filter(([d,a])=>(!C.start||d>=C.start)&&a.includes('L')&&a.indexOf('L')===a.length-1).length}
+const BIAS_P=[['XAU','ゴールド'],['JPY','ドル円']],BIAS_L={up:'↑ 上',down:'↓ 下',wait:'待ち'};
+function biasToday(){return (LS.get('bias',{})[todayStr()])||{}}
+function renderBias(){
+  const B=biasToday(),set=k=>B[k],el=$('#biasCard');
+  el.innerHTML=`<div class="ttl">今日の目線 <em>朝に決める。変えるのは明日</em></div>`+BIAS_P.map(([k,n])=>`<div class="bias-r"><b>${n}</b><div class="chips">${['up','down','wait'].map(v=>`<button class="chip ${v} ${B[k]===v?'on':''}" data-k="${k}" data-v="${v}" ${B[k]&&!B.edit?'disabled':''}>${BIAS_L[v]}</button>`).join('')}</div></div>`).join('')+
+    `<div class="small" style="margin-top:10px">${BIAS_P.some(([k])=>B[k])?`${B.changed?'※今日、目線を一度変えた。':''}逆方向と「待ち」の通貨は打たない。 <a href="#" id="biasEd" style="color:var(--mute)">${B.edit?'':'朝の目線を変える'}</a>`:'まだ決めていない。打つ前に、ここをタップで決める。'}</div>`;
+  $$('#biasCard .chip').forEach(b=>b.onclick=()=>{const m=LS.get('bias',{}),t=m[todayStr()]||{};if(t.edit&&t[b.dataset.k]&&t[b.dataset.k]!==b.dataset.v)t.changed=1;t[b.dataset.k]=b.dataset.v;if(BIAS_P.every(([k])=>t[k]))delete t.edit;m[todayStr()]=t;LS.set('bias',m);renderBias();renderStatus()});
+  const e=$('#biasEd');if(e)e.onclick=ev=>{ev.preventDefault();const m=LS.get('bias',{}),t=m[todayStr()]||{};t.edit=1;m[todayStr()]=t;LS.set('bias',m);renderBias();toast('夜に変えたくなったなら、見送りのサインかも')};
+}
+function biasLine(){const B=biasToday();return BIAS_P.map(([k,n])=>`${n} <b class="${B[k]||''}">${B[k]?BIAS_L[B[k]]:'未入力'}</b>`).join('　｜　')}
+function renderStatus(){
+  const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
+  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 今日は終わり':'🔴 今日は打たない日'):'🟢 打てる'}</span><span>負け ${n}/${C.selfLosses}</span><span>目線 ${BIAS_P.map(([k,nm])=>nm[0]+(B[k]?({up:'↑',down:'↓',wait:'待'}[B[k]]):'？')).join(' ')}</span><span>連続 ${lotStreak()}/${U.need}</span><button id="goPlan">📘 作戦書</button></div>`;
+  $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
+}
+let cdTimer=null;
+function openCool(kind){
+  const loss=kind==='loss',sh=$('#cdSheet');let left=90;clearInterval(cdTimer);
+  const step3=(feel)=>{if(feel){const m=LS.get('feels',{});(m[todayStr()]=m[todayStr()]||[]).push({k:kind,f:feel,t:new Date().toTimeString().slice(0,5)});LS.set('feels',m)}
+    sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">${loss?'ここで止まれた。':'波は引いた？'}</div>
+      <div class="cd-fact">${loss?'・上限内のロットなら、今日の負けは最大でも口座の <b>0.5%</b>。予定どおりの経費。<br>・11/13は、最初の負け（−2,634円）から39分で14本、−52,194円になった。<b>今日はここで終わりにできた。</b><br>・止まれた日は「守れた日」。日記の子も、今日は褒められる。':'・「取り返したい」は、打つ理由にならない。<br>・朝の目線と同じ方向？　今日の新しい1本？　違うなら見送り。<br>・5分だけチャートから離れる。形が本物なら、5分後もそこにある。'}</div>
+      <button class="cd-btn" id="cdDone">${loss?'MT5を閉じた。今日は終わり':'5分、離れる'}</button>`;
+    $('#cdDone').onclick=()=>{$('#cdModal').classList.remove('on');toast(loss?'止まれた＝今日は勝ち':'えらい。5分後にまた');renderAll()}};
+  const step2=()=>{clearInterval(cdTimer);sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">今の気持ちは？</div><div class="cd-s">いちばん近いものを1つ。名前をつけるだけでいい。</div>
+      <div class="cd-chips">${['イライラ','悔しい','取り返したい','焦り','自分に腹が立つ','意外と平気'].map(f=>`<button data-f="${f}">${f}</button>`).join('')}</div>`;
+    $$('#cdSheet .cd-chips button').forEach(b=>b.onclick=()=>step3(b.dataset.f))};
+  sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">${loss?'負けた。今日はここまで。':'いったん、止まる。'}</div><div class="cd-s">${loss?'何も決めなくていい。':'打つのは、このあとでも遅くない。'}まず90秒、呼吸だけ。<br>4秒吸って、6秒吐く。</div>
+    <div class="cd-ring"><b id="cdPh">吸う</b></div><div class="cd-t" id="cdT">90</div><button class="cd-skip" id="cdSkip">呼吸をとばす</button>`;
+  $('#cdSkip').onclick=step2;
+  cdTimer=setInterval(()=>{left--;const t=$('#cdT'),p=$('#cdPh');if(!t){clearInterval(cdTimer);return}t.textContent=left;p.textContent=((90-left)%10)<4?'吸う':'吐く';if(left<=0)step2()},1000);
+  $('#cdModal').classList.add('on');
+}
+function renderPlan(){
+  const P=CLAUDE_DATA.plan,el=$('#planBox');if(!P){el.innerHTML='';return}
+  const A=P.autopsy,mx=Math.max(...A.bursts.map(b=>-b.p)),st=lotStreak(),sd=stoppedDays();let nowSet=false;
+  const road=P.road.map(r=>{const v=r.k==='stop'?sd:r.k==='streak'?st:0,done=v>=r.need,now=!done&&!nowSet;if(now)nowSet=true;return `<div class="rd ${done?'done':now?'now':''}"><i>${done?'✅':r.ic}</i><div><b>${r.t}</b><span>${r.c}</span>${r.k!=='manual'?`<div class="mbar"><u style="width:${Math.min(1,v/r.need)*100}%"></u></div>`:''}</div>${r.k!=='manual'?`<em>${Math.min(v,r.need)}/${r.need}</em>`:''}</div>`}).join('');
+  el.innerHTML=`<div class="plan"><div class="pk">PLAYBOOK　${P.updated.slice(5).replace('-','/')} 版</div><h3>作戦書：2回目の口座</h3><div class="small">1回目の口座（11/8〜11/13）が教えてくれたこと。打つ前に、いつでも読み返す。</div>
+    <details class="fold" open><summary><b>① 守ることは3つだけ</b><span>防波堤</span></summary>${P.walls.map(w=>`<div class="wal"><i>${w.n}</i><div><b>${w.t}</b><span>${w.s}</span></div></div>`).join('')}</details>
+    <details class="fold"><summary><b>② 前の口座に起きたこと</b><span>6日間の記録</span></summary>${A.days.map(d=>`<div class="au-d"><i>${d.d}</i><div><b class="${d.c}">${d.t}</b><span>${d.s}</span></div></div>`).join('')}
+      <div class="small" style="margin-top:12px">11/13の夜：負けるたびに、本数とロットが増えていった</div>
+      <div class="au-b">${A.bursts.map(b=>`<div><em>${short(b.p)}</em><i style="height:${-b.p/mx*78}%"></i></div>`).join('')}</div><div class="au-l">${A.bursts.map(b=>`<span>${b.t}<br>${b.lot}</span>`).join('')}</div>
+      <ul>${A.points.map(p=>`<li>${p}</li>`).join('')}</ul></details>
+    <details class="fold"><summary><b>③ 崩れ方は毎回おなじ</b><span>連鎖と、切る場所</span></summary><div class="chn">${P.chain.map((c,i)=>`${i?'<i>↓</i>':''}<div>${'①②③④⑤⑥'[i]} ${c.t}<span>${c.s}</span></div>${i===0?'<div class="cutl">✂ ここで切る：＋負を押す → 90秒呼吸 → 閉じる</div>':''}`).join('')}</div><div class="small" style="margin-top:10px">${P.cut}</div></details>
+    <details class="fold"><summary><b>④ もし○○なら、こうする</b><span>先に決めておく ${P.ifthen.length}個</span></summary><div class="ift">${P.ifthen.map(([a,b])=>`<div><em>もし</em> ${a}<br><b>→</b> ${b}</div>`).join('')}</div></details>
+    <details class="fold"><summary><b>⑤ メンタル道場</b><span>1回10秒〜90秒の練習 ${P.dojo.length}個</span></summary>${P.dojo.map(d=>`<div class="djo"><b>${d.t}</b><em>${d.w}</em><span>${d.h}</span></div>`).join('')}</details>
+    <details class="fold"><summary><b>⑥ 称号への道</b><span>止まれた日 ${sd}・連続 ${st}</span></summary>${road}<div class="small" style="margin-top:8px">「止まれた日」は、＋負を押して、そのあと打たなかった日。</div></details></div>`;
+}
 function renderExp(){
   const E=CLAUDE_DATA.experiments||[],C=CLAUDE_DATA.challenge,cap=C.size*(C.maxLossPct||0.5)/100,td=todayStr();
   if(!E.length){$('#homeExp').innerHTML='';$('#lgExp').innerHTML='';return}
@@ -1411,7 +1530,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();renderPlan();renderBias();renderStatus();
 }
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
