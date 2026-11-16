@@ -1474,7 +1474,7 @@ function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
 function renderStatus(){renderHd();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
-  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.map(([k,nm])=>nm[0]+(B[k]?({up:'↑',down:'↓',wait:'待'}[B[k]]):'？')).join(' ')}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button></div>`;
+  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button></div>`;
   $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
 }
 let cdTimer=null;
