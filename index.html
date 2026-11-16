@@ -25,6 +25,8 @@ body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",sans-seri
 header{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 12px}
 header h1{font-family:Outfit;font-weight:800;font-size:24px;letter-spacing:.04em}
 header h1 span{color:var(--acc)}
+.hdscene{margin-left:auto;margin-right:8px;width:88px;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg2);position:relative;flex:none}.hdscene .scene{display:block;width:100%}.hdscene em{position:absolute;left:4px;bottom:2px;font-style:normal;font-size:9px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000,0 0 3px #000}
+@media(max-width:360px){.hdscene{width:70px}header h1{font-size:21px}}
 header small{color:var(--mute);font-size:12px;display:block}
 .gear{background:var(--card);border:1px solid var(--line);color:var(--mute);width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
 .gear svg{width:20px;height:20px}
@@ -358,7 +360,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .cd-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0}.cd-chips button{padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;font-size:14px}
 .cd-fact{background:var(--bg2);border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.7;text-align:left;margin:14px 0}
 .cd-btn{width:100%;padding:14px;border-radius:16px;border:none;background:#5aa9ff;color:#0b0e14;font:inherit;font-weight:900;font-size:16px}.cd-skip{background:none;border:none;color:var(--mute);font:inherit;font-size:12px;margin-top:12px;text-decoration:underline}
-.stt{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}.stt span,.stt button{font-size:12px;padding:6px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-family:inherit;white-space:nowrap}
+.stt{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:4px 0 12px}.stt::-webkit-scrollbar{display:none}.stt span,.stt button{flex:none;font-size:11px;padding:5px 8px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-family:inherit;white-space:nowrap}
 .stt .go{border-color:var(--win);color:var(--win);font-weight:800}.stt .stop{border-color:var(--loss);color:var(--loss);font-weight:800}.stt button{border-color:var(--acc);color:var(--acc)}
 .bias-r{display:flex;align-items:center;gap:8px;margin-top:10px}.bias-r>b{width:64px;font-size:13.5px}.bias-r .chips{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bias-r .chip{text-align:center}
 .bias-r .chip.on.up{background:var(--win);border-color:var(--win);color:#0b0e14}.bias-r .chip.on.down{background:var(--loss);border-color:var(--loss);color:#fff}.bias-r .chip.on.wait{background:var(--line);color:var(--text)}.bias-r .chip:disabled{opacity:.35}.bias-r .chip.on:disabled{opacity:1}
@@ -411,6 +413,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <body>
 <div class="wrap">
 <header><div><div class="brandrow"><h1>COCKPIT<span>.</span>LOG</h1><span class="wx" id="wx"></span></div><small class="clock" id="clock"></small></div>
+  <button class="hdscene" id="hdScene" aria-label="口座の子のようす"></button>
   <button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button></header>
 
 <!-- ===== HOME ===== -->
@@ -671,11 +674,12 @@ const CLAUDE_DATA={
     walls:[{n:'1',t:'1敗したら、その日は終わり',s:'2本目が存在しなければ、連打は起きない。勝っている間は続けてよい。同時に持った分はまとめて1敗。'},
       {n:'2',t:'負けたら、まず「＋負」を押す',s:'押すと90秒の呼吸の画面が出る。考える前に、手を動かす先を決めておく。'},
       {n:'3',t:'ロットはロット画面の数字',s:'1回の損失は口座の0.5%（2.5万円）まで。小さい負けは、心を折らない。'}],
-    ifthen:[['負けたら','「＋負」を押す → 90秒呼吸 → MT5を閉じる'],['「取り返したい」が浮かんだら','右下の🧊を押す。打つのはその後でも遅くない'],['朝の目線と逆に入りたくなったら','見送る。目線を変えるのは明日の朝'],['含み損のポジションに足したくなったら','それは2本目。足さない'],['眠い・横になっている','新規エントリーはしない（決済はOK）'],['勝って、もう1回行きたくなったら','エントリーチェックを最初からもう一度開く'],['大きく勝った日の次の日は','状態を1段下げて打つ'],['口座が飛んだら','月1見直し会まで買い直さない']],
+    ifthen:[['負けたら','「＋負」を押す → 90秒呼吸 → MT5を閉じる'],['ロットを上げたくなったら','それは合図。🧊を押す。上げても勝つ確率は同じで、失う額だけが増える'],['「取り返したい」が浮かんだら','右下の🧊を押す。打つのはその後でも遅くない'],['朝の目線と逆に入りたくなったら','見送る。目線を変えるのは明日の朝'],['含み損のポジションに足したくなったら','それは2本目。足さない'],['眠い・横になっている','新規エントリーはしない（決済はOK）'],['勝って、もう1回行きたくなったら','エントリーチェックを最初からもう一度開く'],['大きく勝った日の次の日は','状態を1段下げて打つ'],['口座が飛んだら','月1見直し会まで買い直さない']],
     dojo:[{t:'朝の目線をタップ',w:'朝・10秒',h:'ホームの「今日の目線」で、上・下・待ちを決める。夜に変えたくなったら、それは見送りのサイン。'},
       {t:'負けの予行演習',w:'打つ前・10秒',h:'「この1回は負けるかもしれない。負けたら＋負を押して終わり」と心の中で言ってから打つ。先に負けを受け入れておくと、負けた時の衝撃が小さくなる。'},
       {t:'90秒の波乗り',w:'負けた直後・90秒',h:'イライラは波。ピークは長く続かない。4秒吸って6秒吐く。波が引くまで、何も決めない。'},
       {t:'気持ちに名前をつける',w:'呼吸のあと・5秒',h:'「イライラ」「悔しい」「取り返したい」。言葉にすると、気持ちと自分の間に少し距離ができる。'},
+      {t:'「上げたら取り戻せる」に返事をする',w:'ロットを上げたくなった時',h:'この感覚は、過去にたまたま取り戻せた記憶が作ったクセ。消そうとしなくていい。「来たな」と気づいて、「確率は同じ、失う額だけ2倍」と返す。'},
       {t:'円ではなく%で言う',w:'負けを見た時',h:'「−2万円」ではなく「−0.4%、予定どおりの経費」。お店の仕入れと同じで、負けはトレードの経費。'},
       {t:'見送りは筋トレ1回',w:'打たなかった時',h:'見送りボタンを押すたびに、退屈に耐える筋肉が1回分つく。打たない日も前に進んでいる。'},
       {t:'友達に言う言葉で',w:'自分を責めたくなった時',h:'同じ負け方をした友達に「お前には無理」とは言わない。「次はどうする？」と聞く。自分にも同じ言葉を使う。'}],
@@ -952,6 +956,7 @@ function renderLot(){
   else{const usd=sl*100;perLot=A.cur==='USD'?usd:usd*A.rate}
   const lot=perLot>0?Math.floor(risk/perLot*100)/100:0;
   const lives=base>0?Math.floor(buf/base):0;
+  if(isChal&&lossToday()>=C.selfLosses){$('#lotOut').innerHTML=`<div class="stop" style="margin-top:14px"><b>今日は1敗した。ここまで</b><div class="small" style="margin-top:6px">ロットを上げても、勝つ確率は変わらない。変わるのは、失う金額だけ。</div></div>`;return}
   if(mult===0){$('#lotOut').innerHTML=`<div class="stop" style="margin-top:14px"><b>今日は打たない</b><div class="small" style="margin-top:6px">負けてトレードしたくなったら、MT5デモで戦う。</div></div>`;return}
   $('#lotOut').innerHTML=`<div class="lotout"><span class="big num">${lot.toFixed(2)}</span><span class="unit">lot</span></div>
     <div class="lotrows">
@@ -1464,9 +1469,12 @@ function renderBias(){
   const e=$('#biasEd');if(e)e.onclick=ev=>{ev.preventDefault();const m=LS.get('bias',{}),t=m[todayStr()]||{};t.edit=1;m[todayStr()]=t;LS.set('bias',m);renderBias();toast('夜に変えたくなったなら、見送りのサインかも')};
 }
 function biasLine(){const B=biasToday();return BIAS_P.map(([k,n])=>`${n} <b class="${B[k]||''}">${B[k]?BIAS_L[B[k]]:'未入力'}</b>`).join('　｜　')}
-function renderStatus(){
+function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),el=$('#hdScene');if(!cur||!cur.start){el.style.display='none';return}
+  const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
+  el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
+function renderStatus(){renderHd();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
-  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 今日は終わり':'🔴 今日は打たない日'):'🟢 打てる'}</span><span>負け ${n}/${C.selfLosses}</span><span>目線 ${BIAS_P.map(([k,nm])=>nm[0]+(B[k]?({up:'↑',down:'↓',wait:'待'}[B[k]]):'？')).join(' ')}</span><span>連続 ${lotStreak()}/${U.need}</span><button id="goPlan">📘 作戦書</button></div>`;
+  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.map(([k,nm])=>nm[0]+(B[k]?({up:'↑',down:'↓',wait:'待'}[B[k]]):'？')).join(' ')}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button></div>`;
   $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
 }
 let cdTimer=null;
@@ -1474,7 +1482,7 @@ function openCool(kind){
   const loss=kind==='loss',sh=$('#cdSheet');let left=90;clearInterval(cdTimer);
   const step3=(feel)=>{if(feel){const m=LS.get('feels',{});(m[todayStr()]=m[todayStr()]||[]).push({k:kind,f:feel,t:new Date().toTimeString().slice(0,5)});LS.set('feels',m)}
     sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">${loss?'ここで止まれた。':'波は引いた？'}</div>
-      <div class="cd-fact">${loss?'・上限内のロットなら、今日の負けは最大でも口座の <b>0.5%</b>。予定どおりの経費。<br>・11/13は、最初の負け（−2,634円）から39分で14本、−52,194円になった。<b>今日はここで終わりにできた。</b><br>・止まれた日は「守れた日」。日記の子も、今日は褒められる。':'・「取り返したい」は、打つ理由にならない。<br>・朝の目線と同じ方向？　今日の新しい1本？　違うなら見送り。<br>・5分だけチャートから離れる。形が本物なら、5分後もそこにある。'}</div>
+      <div class="cd-fact">${loss?'・上限内のロットなら、今日の負けは最大でも口座の <b>0.5%</b>。予定どおりの経費。<br>・11/13は、最初の負け（−2,634円）から39分で14本、−52,194円になった。<b>今日はここで終わりにできた。</b><br>・ロットを2倍にしても、次に勝つ確率は同じ。2倍になるのは、失う金額だけ。<br>・止まれた日は「守れた日」。日記の子も、今日は褒められる。':'・「上げたら取り戻せる」は、体が覚えた古いクセ。確率は上がらない。失う額だけが増える。<br>・「取り返したい」は、打つ理由にならない。<br>・朝の目線と同じ方向？　今日の新しい1本？　違うなら見送り。<br>・5分だけチャートから離れる。形が本物なら、5分後もそこにある。'}</div>
       <button class="cd-btn" id="cdDone">${loss?'MT5を閉じた。今日は終わり':'5分、離れる'}</button>`;
     $('#cdDone').onclick=()=>{$('#cdModal').classList.remove('on');toast(loss?'止まれた＝今日は勝ち':'えらい。5分後にまた');renderAll()}};
   const step2=()=>{clearInterval(cdTimer);sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">今の気持ちは？</div><div class="cd-s">いちばん近いものを1つ。名前をつけるだけでいい。</div>
