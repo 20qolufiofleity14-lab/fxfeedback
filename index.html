@@ -77,6 +77,10 @@ i.lg{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 2px 0 
 /* list */
 .tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .tr:last-child{border-bottom:none}
+.lf{margin-bottom:8px}.dayg{border-bottom:1px solid var(--line);padding:9px 0}.dayg summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer}.dayg summary::-webkit-details-marker{display:none}.dayg summary b{font-size:13.5px}.dayg summary span{font-size:11.5px;color:var(--mute);flex:1}.dayg summary i{font-style:normal;font-family:Outfit;font-weight:800;font-size:14px}
+.trms{margin-top:6px}.trm{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}.trm span{color:var(--mute)}.trm b{font-weight:600}.trm i{font-style:normal;font-family:Outfit;font-weight:700}
+.patmore{margin-top:8px}.patmore summary{font-size:12px;color:var(--mute);cursor:pointer;padding:6px 0}.pat.acc .psum b{display:none}.pat.acc.open .psum b{display:inline}.pat{padding:9px 0}
+.hsort{margin:6px 0 18px}.hsort>button{width:100%;padding:10px;border-radius:14px;border:1px dashed var(--line);background:none;color:var(--mute);font:inherit;font-size:12.5px}.hs-r{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:6px;font-size:13px}.hs-r b{flex:1;font-weight:600}.hs-r button{width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:15px}.hs-r button:disabled{opacity:.25}
 .tr .a{font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .tr .b{font-size:11.5px;color:var(--mute)}
 .tr .p{text-align:right;font-family:Outfit;font-weight:800;font-size:16px}
@@ -423,21 +427,23 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <div class="card" id="chal"></div>
   <div class="card" id="biasCard"></div>
   <div id="homeExp"></div>
+  <div id="homeUnlock"></div>
   <div id="homeCreed"></div>
 
-  <div class="card">
+  <div class="card" id="condCard">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
     <div class="chips" id="todayTags"></div>
     <div id="todayAlert"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="riskCard">
     <div class="ttl">1回のリスク <em>同時に持った分も合計</em></div>
     <div id="riskBars"></div>
     <div class="small" style="margin-top:8px" id="riskMsg"></div>
   </div>
 
-  <details class="fold anafold"><summary><b>成績の分析</b><span>勝率・曜日・時間帯・ブレのコスト・コンディション</span></summary>
+  <details class="fold anafold" id="anaFold"><summary><b>成績の分析</b><span>勝率・曜日・時間帯・ブレのコスト・コンディション</span></summary>
+  <div class="chips" id="anaAcct" style="margin-top:10px"></div>
   <div class="card">
     <div class="seg" id="perSeg"><button data-p="m">今月</button><button data-p="y">今年</button><button data-p="a" class="on">全期間</button></div>
     <div class="pie-row">
@@ -472,6 +478,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div class="small" style="margin-top:8px">「仮」＝5回未満。偶然の可能性が高いので、まだ法則として扱わない。</div>
   </div>
   </details>
+  <div id="homeSort"></div>
 </section>
 
 <!-- ===== CALENDAR ===== -->
@@ -880,9 +887,18 @@ function renderHome(){
   $('#bc2').textContent=yen(sb);$('#bc2').className='num '+(sb<0?'neg':sb>0?'pos':'');$('#bc2n').textContent=b.length+'回';
   $('#bcMsg').textContent=a.length?`パターンが出たトレードを見送れていたら、収支は ${yen(sb)} だった計算。`:'まだパターンは検出されていません。';
   const rec=all.slice().reverse();$('#logCnt').textContent=all.length+'件';
-  $('#tradeList').innerHTML=rec.length?rec.map(trRow).join(''):'<div class="empty">まだ記録がありません</div>';
+  const F=listF,fl=rec.filter(t=>F==='win'?t.pnl>0:F==='loss'?t.pnl<0:true),wn=rec.filter(t=>t.pnl>0).length,ln=rec.filter(t=>t.pnl<0).length;
+  const head=`<div class="chips lf">${[['all','すべて '+rec.length],['win','勝ち '+wn],['loss','負け '+ln]].map(([v,l])=>`<button class="chip ${F===v?'on':''}" data-f="${v}">${l}</button>`).join('')}<button class="chip ${listC?'on':''}" id="lfC">ぎゅっと</button></div>`;
+  const byD={};fl.forEach(t=>(byD[t.date]=byD[t.date]||[]).push(t));const wdn=d=>'日月火水木金土'[new Date(d+'T00:00').getDay()];
+  const mini=t=>`<div class="trm" data-id="${t.id}"><span>${(t.exit||t.time||'').replace('翌','')}</span><b>${({XAUUSD:'金',USDJPY:'円'}[t.pair]||t.pair||'')} ${t.dir==='L'?'買':'売'} ${t.lot??''}</b><i class="${t.pnl>0?'pos':t.pnl<0?'neg':''}">${yen(t.pnl)}</i></div>`;
+  $('#tradeList').innerHTML=head+(fl.length?Object.keys(byD).sort().reverse().map((d,ix)=>{const a=byD[d],p=a.reduce((x,t)=>x+t.pnl,0),w=a.filter(t=>t.pnl>0).length;
+    return `<details class="dayg" ${ix===0&&!listC?'open':''}><summary><b>${d.slice(5).replace('-','/')}（${wdn(d)}）</b><span>${a.length}本・${w}勝${a.length-w}敗</span><i class="${p>0?'pos':p<0?'neg':''}">${yen(p)}</i></summary>${listC?`<div class="trms">${a.map(mini).join('')}</div>`:a.map(trRow).join('')}</details>`}).join(''):'<div class="empty">まだ記録がありません</div>');
+  $$('#tradeList .lf .chip[data-f]').forEach(b=>b.onclick=()=>{listF=b.dataset.f;LS.set('listF',listF);renderAll()});
+  $('#lfC').onclick=()=>{listC=!listC;LS.set('listC',listC);renderAll()};
+  $$('#tradeList .trm').forEach(r=>r.onclick=()=>openAdd(r.dataset.id));
   bindRows($('#tradeList'));
 }
+let listF=LS.get('listF','all'),listC=LS.get('listC',true);
 function trRow(t){const ps=detect(t);
   return `<div class="tr" data-id="${t.id}"><div><div class="a">${t.pair||'—'} <span class="side ${t.dir}">${t.dir==='L'?'BUY':'SELL'}</span> <span class="num" style="font-size:12px;color:var(--mute)">${t.lot??''}${t.lot!=null?'lot':''}</span>${stOf(t)?' '+STATES.find(s=>s.id===stOf(t)).ic:''}</div>
   <div class="b">${t.date.slice(5).replace('-','/')} ${t.time||''}・${session(t)}${t.tf?'・'+t.tf:''}${t.acct?'・'+t.acct:''}</div>
@@ -1035,14 +1051,16 @@ function renderPat(){
   const list=vis();
   const rows=PATTERNS.map(p=>{const hit=list.filter(t=>detect(t).includes(p.id));return {...p,n:hit.length,loss:hit.reduce((s,t)=>s+t.pnl,0)}}).sort((a,b)=>a.loss-b.loss||b.n-a.n||(b.evidence?1:0)-(a.evidence?1:0));
   const mx=Math.max(1,...rows.map(r=>Math.abs(Math.min(0,r.loss)))),totalLoss=-list.filter(t=>t.pnl<0).reduce((x,t)=>x+t.pnl,0);
-  $('#patList').innerHTML=rows.map((r,i)=>`<div class="pat acc" data-i="${i}"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}<span class="pch">⌄</span></h4>
+  const patRow=(r,i)=>`<div class="pat acc" data-i="${i}"><div class="rank">${i+1}</div><div style="flex:1"><h4>${r.name}<span class="pch">⌄</span></h4>
     <div class="psum">${r.n?`${r.n}回・${yen(r.loss)}`:(r.evidence?'過去口座のデータあり':'まだデータなし')}　<b>→ ${r.d.split('。')[0]}。</b></div>
     <div class="abcd">
       <i>A</i><div>${r.a}</div>
       <i class="bb">B</i><div class="bt">「${r.b}」${r.quote&&r.quote[0]!=='（'?`<span class="small">　ノートより：「${r.quote}」</span>`:''}</div>
       <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:(r.evidence||'まだデータなし。出たらここに溜まっていく')}</div>
       <i class="dd">D</i><div class="dt">${r.d}</div>
-    </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`).join('');
+    </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`;
+  const hot=rows.filter(r=>r.n||r.evidence),cold=rows.filter(r=>!r.n&&!r.evidence);
+  $('#patList').innerHTML=hot.map(patRow).join('')+(cold.length?`<details class="patmore"><summary>まだ出ていないもの（${cold.length}件）</summary>${cold.map((r,i)=>patRow(r,hot.length+i)).join('')}</details>`:'');
   $$('#patList .pat').forEach(p=>p.onclick=()=>p.classList.toggle('open'));
   $('#cureList').innerHTML=CURES.map(c=>`<div class="cure"><i>✓</i>${c}</div>`).join('');
   const cnt={};list.filter(t=>t.pnl>0).forEach(t=>tagsOf(t.date).forEach(g=>cnt[g]=(cnt[g]||0)+1));
@@ -1472,7 +1490,18 @@ function biasLine(){const B=biasToday();return BIAS_P.map(([k,n])=>`${n} <b clas
 function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),el=$('#hdScene');if(!cur||!cur.start){el.style.display='none';return}
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
-function renderStatus(){renderHd();
+const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
+let sortOpen=false;
+function homeOrder(){const o=LS.get('homeOrder',null)||[],ids=HOME_SEC.map(x=>x[0]);return [...o.filter(id=>ids.includes(id)),...ids.filter(id=>!o.includes(id))]}
+function applyHomeOrder(){const v=$('#v-home'),tail=$('#homeSort');homeOrder().forEach(id=>{const e=document.getElementById(id);if(e)v.insertBefore(e,tail)})}
+function renderSort(){applyHomeOrder();const el=$('#homeSort'),o=homeOrder(),nm=Object.fromEntries(HOME_SEC);
+  el.innerHTML=`<div class="hsort"><button id="hsT">${sortOpen?'✓ 並べ替えを終わる':'↕ ホームの並びを変える'}</button>${sortOpen?o.map((id,i)=>`<div class="hs-r"><b>${nm[id]}</b><button data-i="${i}" data-d="-1" ${i===0?'disabled':''}>▲</button><button data-i="${i}" data-d="1" ${i===o.length-1?'disabled':''}>▼</button></div>`).join('')+`<div class="hs-r"><b style="color:var(--mute)">最初の並びに戻す</b><button id="hsR">↺</button></div>`:''}</div>`;
+  $('#hsT').onclick=()=>{sortOpen=!sortOpen;renderSort()};
+  $$('#homeSort .hs-r button[data-i]').forEach(b=>b.onclick=()=>{const a=homeOrder(),i=+b.dataset.i,j=i+ +b.dataset.d;[a[i],a[j]]=[a[j],a[i]];LS.set('homeOrder',a);renderSort()});
+  const r=$('#hsR');if(r)r.onclick=()=>{LS.set('homeOrder',null);renderSort()};
+  const C=CLAUDE_DATA.challenge,ac=$('#anaAcct');if(ac){ac.innerHTML=[['all','全口座'],[C.acct,'今の口座だけ']].map(([v,l])=>`<button class="chip ${cfg.acct===v?'on':''}" data-a="${v}">${l}</button>`).join('');$$('#anaAcct .chip').forEach(b=>b.onclick=()=>{cfg.acct=b.dataset.a;save();renderAll()})}
+}
+function renderStatus(){renderHd();renderSort();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
   $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button></div>`;
   $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
@@ -1528,7 +1557,7 @@ function renderExp(){
   if(U){const ts=allTrades().filter(t=>t.acct===C.acct&&t.date>=U.since).sort((a,b)=>(a.date+(a.exit||a.time||'')+a.id).localeCompare(b.date+(b.exit||b.time||'')+b.id));
     let st=0,pend=0;for(const t of ts){if(!(t.risk>0)){pend++;continue}if(t.risk>cap)st=0;else st++}
     const p=Math.min(1,st/U.need);
-    $('#homeExp').insertAdjacentHTML('beforeend',`<div class="unl"><div class="unl-h"><b>🔓 ${U.title}</b></div>
+    $('#homeUnlock').innerHTML=(`<div class="unl"><div class="unl-h"><b>🔓 ${U.title}</b></div>
       <div class="unl-h" style="margin:10px 0 6px"><span class="small">${p>=1?'✅':'①'} 実績：上限内ロットで${U.need}回連続</span><span class="num">${st} / ${U.need}</span></div>
       <div class="mbar"><i style="width:${p*100}%;background:${p>=1?'var(--acc)':'#5aa9ff'}"></i></div>
       <div class="small">超えたら0から。${pend?`（損切り幅の確認待ち ${pend}回）`:''}</div>
