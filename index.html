@@ -417,10 +417,10 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 <section class="view on" id="v-home">
   <div id="homeStatus"></div>
   <div id="homeCoach"></div>
-  <div id="homeExp"></div>
-  <div id="homeCreed"></div>
   <div class="card" id="chal"></div>
   <div class="card" id="biasCard"></div>
+  <div id="homeExp"></div>
+  <div id="homeCreed"></div>
 
   <div class="card">
     <div class="ttl">今日のコンディション <em>タップで選ぶ</em></div>
@@ -689,10 +689,14 @@ const CLAUDE_DATA={
     note:'11/13 家計の相談で決めたこと'},
   // 今週の実験（一度に1つだけ）。新しいものが先頭。Claudeが週ごとに入れ替え、結果を書く
   experiments:[
-    {start:'2026-11-13',end:'2026-11-19',title:'ロットの上限だけ守る',
+    {start:'2026-11-17',end:'2026-11-23',title:'1敗したら、その日は終わり',
+     rule:'負けたら「＋負」を押して、その日はもう打たない。勝っている間は続けてよい。同時に持った分はまとめて1敗。ロットの上限（2.5万円）はこれまでどおり。',
+     why:'前の口座は、大きな1敗ではなく「負けた後の39分・14本」で終わった。11/12の夜も同じ形。2本目が存在しなければ、連打は起きない。',
+     check:'oneloss',result:''},
+    {start:'2026-11-13',end:'2026-11-15',title:'ロットの上限だけ守る',
      rule:'時間も回数も縛らない。1回の損失が上限（口座の0.5%＝2.5万円、復帰日は約3,600円）を超えるロットでは打たない。これ1つだけ。',
      why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
-     check:'risk',result:''}],
+     check:'risk',result:'1日で終了。1本ずつのロットは上限内だったが、負けた後に14本重ねて口座が終わった。分かったこと：ロットの上限だけでは足りない。止めるべきは「負けた後の2本目」。'}],
   ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0},
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
@@ -708,9 +712,13 @@ const CLAUDE_DATA={
   ],
   // 週のまとめ（新しい週が上）。日曜にClaudeが追記
   weekly:[
-    {week:'11/9〜11/13',title:'導入の週',fought:'',won:'',lost:'',
-     next:'控えめに入る週。倍率は慎重に、1日最大2回まで。まず「ルール通りに1日を終えた」を1回作る。',
-     note:'先週のまとめは、今週の記録が溜まったら日曜に出します。'}
+    {week:'11/16〜11/20',title:'2回目の口座、最初の週',fought:'',won:'',lost:'',
+     next:'1敗したら、その日は終わり。負けたら「＋負」を押して90秒呼吸。朝に目線をタップで決めて、逆方向には入らない。'},
+    {week:'11/9〜11/13',title:'1回目の口座の週（6日で終了）',
+     fought:'3日間で22本。11/11は当直中に3本、11/12は休むと決めた夜に4本と持ち越し1本、11/13は復帰日の夜に39分で14本。',
+     won:'11/11の3本。サインどおりに入って、損切りと利確を先に置いて、触らずに待てた。ゴールドは欲張らずに利確できた。ただしロットは3本とも上限超え。',
+     lost:'負けた直後の入り直し。11/12は9分後に3本を重ね、11/13は負けるたびに本数とロットが増えた（0.02→0.05→0.1lot）。1本ずつの負けは小さく、積み重なった回数が口座を終わらせた。下目線と言った日に買いで入っていた。',
+     next:'崩れの入口は「負けた後の2本目」だけ。2本目をなくすルールで、次の口座を始める。'}
   ],
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
@@ -775,6 +783,7 @@ const PATTERNS=[
  {id:'pride',name:'大きな損失（プライドの金額割れ）',quote:'10万単位の損失に心がついていけてない',a:'大きな含み損・損失',b:'この金額を負けたまま終われない',d:'損失額ではなく、ルール通りに切れたかで自分を評価する。'},
  {id:'step2',name:'合格・突破の直後',quote:'（過去口座のデータより）',a:'STEP1を突破した・目標が目前',b:'もう勝てる、取り切りたい',d:'突破した日から3日は倍率を1段下げる。勝った後こそ「同じことを繰り返すだけ」。',evidence:'STEP1を突破した3口座は、3つともSTEP2で散っている。The5ersも目標の98%まで行ってから2週間で失格。'},
  {id:'confident',name:'「これなら勝てる」の自信',quote:'小さい甘えが出ちゃう。これなら勝てるやろうって',a:'サインがきれいに出た・形が良く見える',b:'これなら勝てる、少し大きく張ってもいい',d:'自信がある時ほどロット画面を見る。自信は本物でいい、でもロットは自信と別の場所で決める。',evidence:'11/11、自信のあるロングで1lotを2本重ね、最大5万円（バッファの26%）を背負った。本人いわく、このパターンからの崩れは過去にも多い。'},
+ {id:'bias',name:'朝の目線と逆に入る',quote:'自分で下目線言ってたのに、なんでロング狙いに行ってんだか',a:'調整完了が微妙・どちらにも行きそうに見える',b:'上にも行きそう。こっちで取れるかも',d:'目線は朝に決めたものが今日の答え。迷う形は見送り。目線を変えるのは明日の朝。',evidence:'11/13、下目線と言った日に買いで14本。ホームの「今日の目線」で朝に決めて、逆方向は打たない。'},
  {id:'fomo',name:'機会損失への焦り',quote:'分かりやすい場面で参加できないのが焦る（年末のゴールド）',a:'動きやすい相場・アノマリーの季節・他の人が取っている',b:'今入らないと取り逃す。口座を増やせばもっと取れる',d:'相場は毎年来る。取り逃しは損失ではない。今の口座で、いつものロットで取れる分だけ取る。',evidence:'11/13、年末ゴールドを前に新しい口座を買いたい気持ちが出た。家計の相談で「今の口座で、いつものロット上限で取る」と決めた。'},
  {id:'news',name:'指標・月末',quote:'指標負けが続きすぎ',a:'指標の前・月末',b:'動くから取れそう',d:'指標の前後は様子見。動いたあとの形ができるまで待つ。'}
 ];
@@ -1497,14 +1506,15 @@ function renderExp(){
   if(!E.length){$('#homeExp').innerHTML='';$('#lgExp').innerHTML='';return}
   $('#homeCreed').innerHTML=creedHTML(false);
   const x=E[0],days=[];for(let d=new Date(x.start+'T00:00');d<=new Date(x.end+'T00:00');d.setDate(d.getDate()+1)){const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');days.push(k)}
-  const dayRes=d=>{const ts=allTrades().filter(t=>t.acct===C.acct&&t.date===d);if(!ts.length)return d>td?'f':'n';if(ts.some(t=>t.risk>cap))return 'x';if(ts.every(t=>t.risk>0))return 'k';return 'q'};
+  const dayRes=d=>{const ts=allTrades().filter(t=>t.acct===C.acct&&t.date===d);if(!ts.length){const br=(LS.get('dayRes',{})[d]||[]);if(E[0].check==='oneloss'&&br.length){const fl=br.indexOf('L');return fl>=0&&fl<br.length-1?'x':'k'}return d>td?'f':'n'}
+    if(E[0].check==='oneloss'){const o=ts.slice().sort((a,b)=>String(a.exit||a.time||'').localeCompare(String(b.exit||b.time||''))),fl=o.findIndex(t=>t.pnl<0);if(fl<0)return 'k';const ft=String(o[fl].exit||o[fl].time||'');return o.slice(fl+1).some(t=>String(t.exit||t.time||'')>ft)?'x':'k'}if(ts.some(t=>t.risk>cap))return 'x';if(ts.every(t=>t.risk>0))return 'k';return 'q'};
   const R=days.map(d=>({d,r:dayRes(d)})),done=R.filter(o=>o.r==='k'||o.r==='x'),kept=done.filter(o=>o.r==='k').length;
-  const lbl={k:'守れた',x:'超えた',n:'トレードなし',q:'損切り幅を確認中',f:''};
+  
   const wd=d=>'日月火水木金土'[new Date(d+'T00:00').getDay()];
   $('#homeExp').innerHTML=`<div class="exp"><div class="exp-k">今週の実験 <em>${x.start.slice(5).replace('-','/')}〜${x.end.slice(5).replace('-','/')}</em></div>
     <h4>${x.title}</h4><p>${x.rule}</p>
     <div class="exp-days">${R.map(o=>`<div class="ed ${o.r}${o.d===td?' td':''}"><i></i><span>${wd(o.d)}</span></div>`).join('')}</div>
-    <div class="small">${done.length?`トレードした日 ${done.length}日中 ${kept}日 守れた`:'まだ結果なし'}　<span class="exp-lg"><i class="k"></i>守れた <i class="x"></i>超えた <i class="n"></i>なし</span></div>
+    <div class="small">${done.length?`トレードした日 ${done.length}日中 ${kept}日 守れた`:'まだ結果なし'}　<span class="exp-lg"><i class="k"></i>守れた <i class="x"></i>${x.check==='oneloss'?'続けた':'超えた'} <i class="n"></i>なし</span></div>
     <details><summary>なぜこの実験？</summary><div class="small" style="margin-top:6px">${x.why}</div></details></div>`;
   const U=CLAUDE_DATA.unlock;
   if(U){const ts=allTrades().filter(t=>t.acct===C.acct&&t.date>=U.since).sort((a,b)=>(a.date+(a.exit||a.time||'')+a.id).localeCompare(b.date+(b.exit||b.time||'')+b.id));
