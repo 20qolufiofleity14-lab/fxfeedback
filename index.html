@@ -609,14 +609,14 @@ const CLAUDE_DATA={
     {id:'c-20261113-1',date:'2026-11-12',time:'',exit:'翌08:46',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.3,pips:'',pnl:61676,good:'決済 08:46（日本時間）3869.49→3882.35（+$12.9）',bad:'夜のうちに持った0.3lot。損切り幅は未確認'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足','眠気'],memo:'夜勤明けで休むと決めたが、夜うとうとしながらゴールドを打ってしまった。本人いわく「これが自分が終わる理由」。'}},
-  noEntry:{},
+  noEntry:{'2026-11-16':1},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
   // 原点（11/13の対話から）。ホームとエントリーチェックに出す
   creed:{steps:['ロットを守る','口座を飛ばさない','一度、出金まで行く','生涯収支がプラスになる'],
     note:'「早く」が、これまでロットを大きくさせてきた。今日の小さな1回が、生涯収支へのいちばん短い道。3年間の負けで、目線と技術は手に入れた。あとはロットがそろえば、それがお金に変わる。'},
   // ごほうびの条件（本人が決めたもの）。sinceの日から、上限内のロットで打てたトレードが連続何回か
-  unlock:{title:'The5ers プログロース$10Kを追加',cond:'Fintokeiで合格して、出金できたら',need:20,since:'2026-11-13',
+  unlock:{title:'The5ers プログロース$10Kを追加',cond:'Fintokeiで合格して、出金できたら',need:20,since:'2026-11-16',
     rules:['年末のゴールドは、今のFintokei口座でいつものロット上限で取る（新しい口座は買わない）','Fintokeiの20日ルールを守る','口座が飛んだら、次の月1見直し会まで買い直さない','買うのは月末のカード引き落としの後。予算は1〜2万円の口座まで'],
     note:'11/13 家計の相談で決めたこと'},
   // 今週の実験（一度に1つだけ）。新しいものが先頭。Claudeが週ごとに入れ替え、結果を書く
@@ -626,7 +626,7 @@ const CLAUDE_DATA={
      why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
      check:'risk',result:''}],
   ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0},
-  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover'},
+  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
     {t:'上位足（4h）と同じ方向？',s:'4h内部・レンジ上限下限では無理に触らない'},
@@ -644,6 +644,9 @@ const CLAUDE_DATA={
   ],
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
+    {name:'Fintokei 速攻プロ シルバー（2回目）',sizeLabel:'500万',size:5000000,start:'2026-11-16',end:null,status:'alive',cause:'',epitaph:'',
+     diary:[{d:'2026-11-16',t:'あー。うー。\nまた、うまれた。\nまえの子の にっきが、まくらもとに おいてあった。'}],
+     log:[{d:'2026-11-16',t:'誕生。前の口座（11/8〜11/13）の記録を引き継いでリスタート。初日は仕事でバタバタだったので、自分で決めてノートレード。'}]},
     {name:'The5ers ブートキャンプ $20K',sizeLabel:'$20K',start:'2026-08-24',end:'2026-09-22',status:'dead',cause:'全体ライン',
      epitaph:'合格まであと$410から、2週間で全部返した',
      log:[{d:'2026-09-08',t:'残高$21,590で最高値。目標$22,000まであと$410。'},{d:'2026-09-22',t:'$18,766で失格ライン$18,800を割る。勝率36%・PF0.70。'}]},
@@ -670,16 +673,16 @@ const CLAUDE_DATA={
      log:[{d:'2026-11-08',t:'誕生。日曜スタート。バッファ17.5万円・60日。今回のテーマは「暴走ゼロ」。'},{d:'2026-11-11',t:'初陣。ドル円ロング2戦2勝、+19,250円。ただし1lot×2本の重ね・損切り25pipsで、最大5万円のリスクを背負っていた。夜はゴールドのショート0.2lotで+96,446円。1日で残高5,113,599円、目標30万円の約38%まで来た。'},{d:'2026-11-12',t:'夜勤明けで休むと決めた。でも夜、うとうとしながらゴールドを打った。0.2lotで−36,619円、9分後に0.05lot×3本を重ねて−12,429円。'},{d:'2026-11-12',t:'誓い：「人に恥じないトレード」。プロの目で見ても落ち度がない戦い方をする。1回の損失は口座の0.5%まで、取り返したい気持ちが湧いてもルールで打つ。'},{d:'2026-11-13',t:'夜のうちに持ったゴールド0.3lotが朝+61,676円で決済。残高5,122,974円。結果はプラスでも、眠いまま打った夜だった。'},{d:'2026-11-13',t:'復帰日。夜、ゴールドを0.02→0.05→0.1lotと重ねて負けが続き、口座は終了。「いつもこれの繰り返し」と本人。記録は次のために残す。'}]}
   ],
   // 挑戦中のチャレンジ（Claudeがスクショから残高を更新）
-  challenge:{name:'Fintokei 速攻プロ シルバー',acct:'Fintokei速攻',size:5000000,balance:5122974,target:300000,
-    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-08',days:60,maxLossPct:0.5,selfLosses:3,selfR:2,balanceDate:'2026-11-13'},
+  challenge:{name:'Fintokei 速攻プロ シルバー（2回目）',acct:'Fintokei速攻2',size:5000000,balance:5000000,target:300000,
+    dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-16',days:60,maxLossPct:0.5,selfLosses:3,selfR:2,balanceDate:'2026-11-16'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-13',week:'11/9〜11/13週',state:'tilt',grade:'—',
-    headline:'口座が終わった夜。今は休む',
-    reason:'振り返りは、落ち着いてから一緒にやる。今夜は答えを出さなくていい。',
-    good:['終わった直後も、隠さずに全部見せてくれた'],
-    watch:['今夜、新しい口座を買わない（月1見直し会まで買い直さない、と自分で決めている）'],
-    focus:'MT5を閉じて、休む。それだけでいい。',
-    mind:{who:'Claude',text:'口座は終わっても、記録は残る。次は、この記録から始められる。'}}
+  coach:{date:'2026-11-16',week:'11/16〜11/20週',state:'tilt',grade:'A',
+    headline:'2回目の誕生日。初日は打たないと決めた',
+    reason:'新しい口座の初日。仕事でバタバタした日に、自分で「今日はノートレード」と決められた。前の口座が教えてくれたのは、崩れるのは負けた直後のイライラの中だということ。だから、疲れた日に打たないのは正しい始まり方。',
+    good:['疲れた日を自分で見抜いて、打たないと決めた','前の口座の振り返りから、すぐに始めている'],
+    watch:['新しい口座を手にした高揚感（「今度こそ」で張りたくなる）'],
+    focus:'今日はチャートを見るだけ。明日からの「負けた後の逃げ道」を一緒に決める。',
+    mind:{who:'Jared Tendler',text:'崩れのきっかけが分かっているなら、その瞬間の前に、やることを決めておく。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -717,6 +720,7 @@ let tagList=LS.get('tagList',DEF_TAGS);
 let cfg=LS.get('cfg',{maxLotJ:1,maxLotG:0.1,cool:15,theme:'a',acct:'all',
   mult:{great:1,normal:0.75,stress:0.5,recover:0.25,tilt:0},state:'normal',lPair:'USDJPY',lSl:10,
   accounts:{'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},'The5ers':{bal:100000,floor:90000,cur:'USD',risk:2,rate:150}},lotAcct:'Fintokei速攻'});
+if(cfg.accounts&&!cfg.accounts['Fintokei速攻2']){cfg.accounts={'Fintokei速攻2':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻2'}
 if(cfg.accounts&&cfg.accounts['あみくも']){delete cfg.accounts['あみくも'];if(cfg.lotAcct==='あみくも')cfg.lotAcct='Fintokei速攻'}
 if(cfg.mult&&cfg.mult.recover==null)cfg.mult.recover=0.25;
 if(!cfg.accounts['Fintokei速攻']){cfg.accounts={'Fintokei速攻':{bal:5000000,floor:4825000,cur:'JPY',risk:5,rate:150},...cfg.accounts};cfg.lotAcct='Fintokei速攻'}
