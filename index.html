@@ -357,6 +357,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .fab svg{width:26px;height:26px}.fab:active{transform:scale(.93)}
 .ckmodal{align-items:center;padding:18px}
 .fab.r{left:auto;right:14px;border-color:#5aa9ff;color:#5aa9ff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px rgba(90,169,255,.35)}
+.fab.r.m{bottom:calc(env(safe-area-inset-bottom) + 154px);border-color:#b48cf2;color:#b48cf2;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px rgba(180,140,242,.35)}
+.mdsheet{border-color:#b48cf2}.mdsheet .cd-k{color:#b48cf2}.mdsheet .cd-ring{border-color:#b48cf2;background:radial-gradient(circle,rgba(180,140,242,.35),rgba(180,140,242,.05) 70%)}.mdsheet .cd-t{color:#b48cf2}.mdsheet .cd-btn{background:#b48cf2}.md-min{display:flex;gap:8px;justify-content:center;margin:16px 0}.md-min button{flex:1;max-width:90px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;font-weight:800;font-size:16px}
 .cdsheet{background:var(--card);border:1px solid #5aa9ff;border-radius:24px;padding:22px 18px;text-align:center}
 .cd-k{font-family:Outfit;font-size:12px;letter-spacing:.2em;color:#5aa9ff}.cd-h{font-size:22px;font-weight:900;margin:8px 0 4px}.cd-s{font-size:13px;color:var(--mute);line-height:1.7}
 .cd-ring{width:170px;height:170px;margin:22px auto 10px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(90,169,255,.35),rgba(90,169,255,.05) 70%);border:2px solid #5aa9ff;animation:cdB 10s ease-in-out infinite}
@@ -624,6 +626,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 </div></div>
 
 <button class="fab" id="fabCheck" aria-label="エントリー前チェック"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg></button>
+<button class="fab r m" id="fabMed" aria-label="瞑想">🧘</button>
 <button class="fab r" id="fabCool" aria-label="クールダウン">🧊</button>
 <div class="modal ckmodal" id="cdModal"><div class="cksheet cdsheet" id="cdSheet"></div></div>
 <div class="modal ckmodal" id="ckModal"><div class="cksheet" id="ckSheet"></div></div>
@@ -1448,7 +1451,8 @@ function openCheck(){
   $('#ckModal').classList.add('on');
 }
 $('#fabCheck').onclick=openCheck;
-$('#fabCool').onclick=()=>openCool('urge');
+$('#fabCool').onclick=()=>{$('#cdSheet').classList.remove('mdsheet');openCool('urge')};
+$('#fabMed').onclick=openMed;
 $('#ckModal').addEventListener('click',()=>$('#ckModal').classList.remove('on'));
 // GitHub側が更新されていたら自動で読み込み直す（Claudeの毎日の更新がすぐ出るように）
 async function checkUpdate(){
@@ -1497,7 +1501,7 @@ function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
 const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
-const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'},{k:'med',t:'瞑想 5分（ボーナス）',s:'座って呼吸を数えるだけでいい。した日は、人生ルートがほんの少し上がる（1日+1%、最大+5%）',bonus:1}];
+const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'},{k:'med',t:'瞑想 5分（ボーナス）',s:'右下の🧘から。座って呼吸を数えるだけでいい。した日は、人生ルートがほんの少し上がる（1日+1%、最大+5%）',bonus:1}];
 const DRILL_CORE=()=>DRILL.filter(x=>!x.bonus).map(x=>x.k);
 function drillDays(){return LS.get('drill',{})}
 function drillStreak(){const m=drillDays();let n=0,d=new Date(todayStr()+'T00:00');if(!(m[todayStr()]||[]).length)d.setDate(d.getDate()-1);for(;;){const k=ds(d);if(DRILL_CORE().every(c=>(m[k]||[]).includes(c))){n++;d.setDate(d.getDate()-1)}else break}return n}
@@ -1507,6 +1511,7 @@ function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],PR=LS.ge
     <div class="small" style="margin-top:8px">期日どおりに守れた約束 <b>${Object.values(LS.get('promise',{})).filter(p=>p&&p.ok).length}回</b>　3つそろった日 <b>${tot}日</b>・瞑想 <b>${Object.values(m).filter(a=>a.includes('med')).length}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
   $$('#drillCard .dr').forEach(r=>r.onclick=()=>{const k=r.dataset.k,mm=drillDays(),a=mm[td]||[];
     if(k==='cool'&&!a.includes('cool')){openCool('urge');return}
+    if(k==='med'&&!a.includes('med')){openMed();return}
     if(k==='promise'&&!a.includes('promise')){const pm=LS.get('promise',{});let cur=pm[td];if(typeof cur==='string')cur={t:cur};
       if(!cur||!cur.t){const p=window.prompt('今日の約束は？（何を）','22:30までにスマホを置く');if(!p)return;const by=window.prompt('何時までに？（例 22:30）',(p.match(/\d{1,2}:\d{2}/)||['22:30'])[0]);pm[td]={t:p,by:(by||'').trim()};LS.set('promise',pm);renderDrill();toast('期日を決めた。守れたら、もう一度タップ');return}
       const now=new Date(),hm=pad(now.getHours())+':'+pad(now.getMinutes());cur.at=hm;cur.ok=!cur.by||hm<=cur.by.padStart(5,'0');pm[td]=cur;LS.set('promise',pm);toast(cur.ok?'期日どおり。約束を守れた':'遅れたけど、やりきった')}
@@ -1551,6 +1556,19 @@ function openCool(kind){
     <div class="cd-ring"><b id="cdPh">吸う</b></div><div class="cd-t" id="cdT">90</div><button class="cd-skip" id="cdSkip">呼吸をとばす</button>`;
   $('#cdSkip').onclick=step2;
   cdTimer=setInterval(()=>{left--;const t=$('#cdT'),p=$('#cdPh');if(!t){clearInterval(cdTimer);return}t.textContent=left;p.textContent=((90-left)%10)<4?'吸う':'吐く';if(left<=0)step2()},1000);
+  $('#cdModal').classList.add('on');
+}
+let mdTimer=null;
+function openMed(){
+  const sh=$('#cdSheet');clearInterval(mdTimer);clearInterval(cdTimer);sh.classList.add('mdsheet');
+  const done=()=>{clearInterval(mdTimer);drillMark('med');sh.innerHTML=`<div class="cd-k">MEDITATION</div><div class="cd-h">おつかれさま。</div><div class="cd-s">今日の瞑想を記録した。<br>人生ルートが、ほんの少しだけ上向く。</div><button class="cd-btn" id="mdClose" style="margin-top:18px">閉じる</button>`;$('#mdClose').onclick=()=>{$('#cdModal').classList.remove('on');sh.classList.remove('mdsheet');renderAll()}};
+  const run=min=>{let left=min*60;const tips=['呼吸を数える。吸って1、吐いて2…10まで行ったら1に戻る','考えが浮かんだら「考え」とラベルを貼って、呼吸に戻る','戻れたら、それが1回の練習。何回それても大丈夫','お腹がふくらむ・へこむ。それだけを見る'];
+    sh.innerHTML=`<div class="cd-k">MEDITATION</div><div class="cd-h">呼吸を数える</div><div class="cd-s" id="mdTip">${tips[0]}</div><div class="cd-ring"><b id="cdPh">吸う</b></div><div class="cd-t" id="mdT"></div><button class="cd-skip" id="mdEnd">ここで終える</button>`;
+    const fmt=v=>Math.floor(v/60)+':'+String(v%60).padStart(2,'0');$('#mdT').textContent=fmt(left);
+    $('#mdEnd').onclick=()=>{if(left<=min*60-60)done();else{clearInterval(mdTimer);$('#cdModal').classList.remove('on');sh.classList.remove('mdsheet')}};
+    mdTimer=setInterval(()=>{left--;const t=$('#mdT');if(!t){clearInterval(mdTimer);return}t.textContent=fmt(left);$('#cdPh').textContent=((min*60-left)%10)<4?'吸う':'吐く';if((min*60-left)%45===0)$('#mdTip').textContent=tips[((min*60-left)/45)%tips.length];if(left<=0)done()},1000)};
+  sh.innerHTML=`<div class="cd-k">MEDITATION</div><div class="cd-h">瞑想する</div><div class="cd-s">座って、呼吸を数えるだけ。<br>1分以上で、今日の瞑想に記録される。</div><div class="md-min">${[1,3,5].map(m=>`<button data-m="${m}">${m}分</button>`).join('')}</div><button class="cd-skip" id="mdNo">やめる</button>`;
+  $$('#cdSheet .md-min button').forEach(b=>b.onclick=()=>run(+b.dataset.m));$('#mdNo').onclick=()=>{$('#cdModal').classList.remove('on');sh.classList.remove('mdsheet')};
   $('#cdModal').classList.add('on');
 }
 function renderPlan(){
