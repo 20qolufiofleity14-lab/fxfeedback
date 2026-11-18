@@ -80,7 +80,7 @@ i.lg{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 2px 0 
 .lf{margin-bottom:8px}.dayg{border-bottom:1px solid var(--line);padding:9px 0}.dayg summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer}.dayg summary::-webkit-details-marker{display:none}.dayg summary b{font-size:13.5px}.dayg summary span{font-size:11.5px;color:var(--mute);flex:1}.dayg summary i{font-style:normal;font-family:Outfit;font-weight:800;font-size:14px}
 .trms{margin-top:6px}.trm{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}.trm span{color:var(--mute)}.trm b{font-weight:600}.trm i{font-style:normal;font-family:Outfit;font-weight:700}
 .patmore{margin-top:8px}.patmore summary{font-size:12px;color:var(--mute);cursor:pointer;padding:6px 0}.pat.acc .psum b{display:none}.pat.acc.open .psum b{display:inline}.pat{padding:9px 0}
-.dr{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.dr>i{flex:none;width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:900;color:#0b0e14}.dr.on>i{background:var(--win);border-color:var(--win)}.dr b{font-size:14px}.dr span{display:block;font-size:12px;color:var(--mute);line-height:1.55;margin-top:2px}.dr.on b{color:var(--win)}
+.dr{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.dr>i{flex:none;width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:900;color:#0b0e14}.dr.on>i{background:var(--win);border-color:var(--win)}.dr b{font-size:14px}.dr span{display:block;font-size:12px;color:var(--mute);line-height:1.55;margin-top:2px}.dr.on b{color:var(--win)}.dr.bn b{color:#b48cf2}.dr.bn.on>i{background:#b48cf2;border-color:#b48cf2}
 .hsort{margin:6px 0 18px}.hsort>button{width:100%;padding:10px;border-radius:14px;border:1px dashed var(--line);background:none;color:var(--mute);font:inherit;font-size:12.5px}.hs-r{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:6px;font-size:13px}.hs-r b{flex:1;font-weight:600}.hs-r button{width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:15px}.hs-r button:disabled{opacity:.25}
 .tr .a{font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .tr .b{font-size:11.5px;color:var(--mute)}
@@ -710,7 +710,7 @@ const CLAUDE_DATA={
      rule:'時間も回数も縛らない。1回の損失が上限（口座の0.5%＝2.5万円、復帰日は約3,600円）を超えるロットでは打たない。これ1つだけ。',
      why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
      check:'risk',result:'1日で終了。1本ずつのロットは上限内だったが、負けた後に14本重ねて口座が終わった。分かったこと：ロットの上限だけでは足りない。止めるべきは「負けた後の2本目」。'}],
-  ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0},
+  ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0,'2026-11-16':1,'2026-11-17':1},
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt','2026-11-17':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
@@ -1335,11 +1335,15 @@ const RSTAGES={
 const STUDY={hi:mk([[3,'child','幼児（積み木に夢中）','blocks'],[6,'child','小学校 低学年（テストで100点）','test100'],[9,'child','小学校 高学年（表彰される）','award'],[13,'adult','中学生（図書館で猛勉強）','library'],[16,'adult','高校生（進学校）','library'],[19,'adult','大学生（難関大・講義）','d:19'],[21,'adult','大学生（研究室）','library']]),
   lo:mk([[3,'child','幼児（だだをこねる）','tantrum'],[6,'child','小学校 低学年（廊下に立たされる）','hallway'],[9,'child','小学校 高学年（夜ふかしゲーム）','gamekid'],[13,'adult','中学生（ゲーセン通い）','arcade'],[16,'adult','高校生（サボりがち）','arcade'],[19,'adult','大学生（講義に出ない）','arcade'],[21,'adult','大学生（飲み会ばかり）','d:21']])};
 const STUDY_DAY=3,BRANCH_DAY=23;
+const ds_=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function routeInfo(){
   const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),Rl=CLAUDE_DATA.ruleLog||{};
-  const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,rate=n?kept/n:0;
+  const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,base=n?kept/n:0;
+  // 瞑想ボーナス：直近10日で瞑想した日 ×1%（最大+5%）。ほんの少しだけ道を押し上げる
+  const DM=(typeof LS!=='undefined'?LS.get('drill',{}):{}),t0=new Date();t0.setDate(t0.getDate()-9);const since=ds_(t0);
+  const med=Object.entries(DM).filter(([d,a])=>d>=since&&(!cur||!cur.start||d>=cur.start)&&a.includes('med')).length,bonus=Math.min(.05,med*.01),rate=Math.min(1,base+(n?bonus:0));
   const rank=n<2?null:Math.max(1,Math.min(10,Math.floor(rate*10+1e-9)));
-  return {ds,n,kept,rate,rank,id:rank?ROUTES[rank-1].id:null,track:n<2?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
+  return {ds,n,kept,rate,base,med,bonus,rank,id:rank?ROUTES[rank-1].id:null,track:n<2?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
 }
 // その日の年齢で、いま歩いている道（共通／学生の頑張り／ルート）
 function routeNow(day){const r=routeInfo();if(day>=BRANCH_DAY)return r.id||'mid';if(day>=STUDY_DAY&&r.track)return r.track;return 'mid'}
@@ -1393,7 +1397,7 @@ function renderLog2(){
     $('#lgNow').insertAdjacentHTML('beforeend',`<details class="fold route" ${dn>=BRANCH_DAY?'open':''}><summary><b>人生ルート</b><span>${cr?`${dn<BRANCH_DAY?'今のままだと ':''}<i style="color:${cr.c}">${cr.ic} ${cr.n}</i>`:'まだ判定前'}</span></summary>
       <div class="small" style="margin:10px 0 8px">${phase}</div>
       <div class="rt-row">${[...ROUTES].reverse().map((r,i)=>`<div class="rt ${ri.id===r.id?'on':''}" style="--rc:${r.c}"><b>${r.ic}</b><span>${r.n}</span><small>${10-i===10?'10割':10-i===1?'2割未満':(10-i)+'割〜'}</small></div>`).join('')}</div>
-      <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）</span></div>
+      <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）${ri.med?`　🧘 瞑想 +${Math.round(ri.bonus*100)}%`:''}</span></div>
       <div class="small">${ri.n<3?`まだ判定前（2日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
     const DY=(cur.diary||[]).slice().sort((a,b)=>b.d.localeCompare(a.d)),nm=charName(cur)==='名前をつける'?'この子':charName(cur);
     const dEnt=e=>`<div class="dy-e"><div class="dy-h">${dayN(e.d)}さいの日記 <span>${e.d.slice(5).replace('-','/')}（${wd(e.d)}）</span></div><div class="dy-t">${e.t.replace(/\n/g,'<br>')}</div></div>`;
@@ -1493,19 +1497,20 @@ function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
 const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
-const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'}];
+const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'},{k:'med',t:'瞑想 5分（ボーナス）',s:'座って呼吸を数えるだけでいい。した日は、人生ルートがほんの少し上がる（1日+1%、最大+5%）',bonus:1}];
+const DRILL_CORE=()=>DRILL.filter(x=>!x.bonus).map(x=>x.k);
 function drillDays(){return LS.get('drill',{})}
-function drillStreak(){const m=drillDays();let n=0,d=new Date(todayStr()+'T00:00');if(!(m[todayStr()]||[]).length)d.setDate(d.getDate()-1);for(;;){const k=ds(d);if((m[k]||[]).length>=DRILL.length){n++;d.setDate(d.getDate()-1)}else break}return n}
-function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],PR=LS.get('promise',{})[td]||'',P=typeof PR==='string'?{t:PR}:PR,tot=Object.values(m).filter(a=>a.length>=DRILL.length).length;
+function drillStreak(){const m=drillDays();let n=0,d=new Date(todayStr()+'T00:00');if(!(m[todayStr()]||[]).length)d.setDate(d.getDate()-1);for(;;){const k=ds(d);if(DRILL_CORE().every(c=>(m[k]||[]).includes(c))){n++;d.setDate(d.getDate()-1)}else break}return n}
+function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],PR=LS.get('promise',{})[td]||'',P=typeof PR==='string'?{t:PR}:PR,tot=Object.values(m).filter(a=>DRILL_CORE().every(c=>a.includes(c))).length;
   $('#drillCard').innerHTML=`<div class="ttl">規律ドリル <em>トレードしない日も積める</em></div>
-    ${DRILL.map(x=>`<div class="dr ${done.includes(x.k)?'on':''}" data-k="${x.k}"><i>${done.includes(x.k)?'✓':''}</i><div><b>${x.t}</b><span>${x.k==='promise'&&P.t?`今日の約束：${P.t}${P.by?`（<b>${P.by}まで</b>）`:''}${P.at?` → ${P.at}に完了 ${P.ok?'⏰ 期日どおり':'⌛ 遅れた'}`:''}`:x.s}</span></div></div>`).join('')}
-    <div class="small" style="margin-top:8px">期日どおりに守れた約束 <b>${Object.values(LS.get('promise',{})).filter(p=>p&&p.ok).length}回</b>　3つそろった日 <b>${tot}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
+    ${DRILL.map(x=>`<div class="dr ${x.bonus?'bn':''} ${done.includes(x.k)?'on':''}" data-k="${x.k}"><i>${done.includes(x.k)?'✓':''}</i><div><b>${x.t}</b><span>${x.k==='promise'&&P.t?`今日の約束：${P.t}${P.by?`（<b>${P.by}まで</b>）`:''}${P.at?` → ${P.at}に完了 ${P.ok?'⏰ 期日どおり':'⌛ 遅れた'}`:''}`:x.s}</span></div></div>`).join('')}
+    <div class="small" style="margin-top:8px">期日どおりに守れた約束 <b>${Object.values(LS.get('promise',{})).filter(p=>p&&p.ok).length}回</b>　3つそろった日 <b>${tot}日</b>・瞑想 <b>${Object.values(m).filter(a=>a.includes('med')).length}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
   $$('#drillCard .dr').forEach(r=>r.onclick=()=>{const k=r.dataset.k,mm=drillDays(),a=mm[td]||[];
     if(k==='cool'&&!a.includes('cool')){openCool('urge');return}
     if(k==='promise'&&!a.includes('promise')){const pm=LS.get('promise',{});let cur=pm[td];if(typeof cur==='string')cur={t:cur};
       if(!cur||!cur.t){const p=window.prompt('今日の約束は？（何を）','22:30までにスマホを置く');if(!p)return;const by=window.prompt('何時までに？（例 22:30）',(p.match(/\d{1,2}:\d{2}/)||['22:30'])[0]);pm[td]={t:p,by:(by||'').trim()};LS.set('promise',pm);renderDrill();toast('期日を決めた。守れたら、もう一度タップ');return}
       const now=new Date(),hm=pad(now.getHours())+':'+pad(now.getMinutes());cur.at=hm;cur.ok=!cur.by||hm<=cur.by.padStart(5,'0');pm[td]=cur;LS.set('promise',pm);toast(cur.ok?'期日どおり。約束を守れた':'遅れたけど、やりきった')}
-    mm[td]=a.includes(k)?a.filter(x=>x!==k):[...a,k];LS.set('drill',mm);renderDrill();if(mm[td].length>=DRILL.length)toast('今日の規律ドリル、そろった')})}
+    mm[td]=a.includes(k)?a.filter(x=>x!==k):[...a,k];LS.set('drill',mm);renderDrill();if(k==='med'&&mm[td].includes('med'))toast('瞑想した。人生ルートが少しだけ上向く');else if(DRILL_CORE().every(c=>mm[td].includes(c)))toast('今日の規律ドリル、そろった')})}
 function drillMark(k){const mm=drillDays(),td=todayStr(),a=mm[td]||[];if(!a.includes(k)){mm[td]=[...a,k];LS.set('drill',mm)}}
 let sortOpen=false;
 function homeOrder(){const o=LS.get('homeOrder',null)||[],ids=HOME_SEC.map(x=>x[0]);return [...o.filter(id=>ids.includes(id)),...ids.filter(id=>!o.includes(id))]}
