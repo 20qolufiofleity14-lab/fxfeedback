@@ -1493,16 +1493,18 @@ function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
 const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
-const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'小さな約束を1つ守る',s:'朝に決める。例：寝る前にスマホを置く・甘いものを1回見送る・ゲームで負けても90秒待つ'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'}];
+const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'}];
 function drillDays(){return LS.get('drill',{})}
 function drillStreak(){const m=drillDays();let n=0,d=new Date(todayStr()+'T00:00');if(!(m[todayStr()]||[]).length)d.setDate(d.getDate()-1);for(;;){const k=ds(d);if((m[k]||[]).length>=DRILL.length){n++;d.setDate(d.getDate()-1)}else break}return n}
-function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],P=LS.get('promise',{})[td]||'',tot=Object.values(m).filter(a=>a.length>=DRILL.length).length;
+function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],PR=LS.get('promise',{})[td]||'',P=typeof PR==='string'?{t:PR}:PR,tot=Object.values(m).filter(a=>a.length>=DRILL.length).length;
   $('#drillCard').innerHTML=`<div class="ttl">規律ドリル <em>トレードしない日も積める</em></div>
-    ${DRILL.map(x=>`<div class="dr ${done.includes(x.k)?'on':''}" data-k="${x.k}"><i>${done.includes(x.k)?'✓':''}</i><div><b>${x.t}</b><span>${x.k==='promise'&&P?'今日の約束：'+P:x.s}</span></div></div>`).join('')}
-    <div class="small" style="margin-top:8px">3つそろった日 <b>${tot}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
+    ${DRILL.map(x=>`<div class="dr ${done.includes(x.k)?'on':''}" data-k="${x.k}"><i>${done.includes(x.k)?'✓':''}</i><div><b>${x.t}</b><span>${x.k==='promise'&&P.t?`今日の約束：${P.t}${P.by?`（<b>${P.by}まで</b>）`:''}${P.at?` → ${P.at}に完了 ${P.ok?'⏰ 期日どおり':'⌛ 遅れた'}`:''}`:x.s}</span></div></div>`).join('')}
+    <div class="small" style="margin-top:8px">期日どおりに守れた約束 <b>${Object.values(LS.get('promise',{})).filter(p=>p&&p.ok).length}回</b>　3つそろった日 <b>${tot}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
   $$('#drillCard .dr').forEach(r=>r.onclick=()=>{const k=r.dataset.k,mm=drillDays(),a=mm[td]||[];
     if(k==='cool'&&!a.includes('cool')){openCool('urge');return}
-    if(k==='promise'&&!a.includes('promise')&&!(LS.get('promise',{})[td])){const p=window.prompt('今日の小さな約束は？（守れたら、もう一度タップ）','寝る前にスマホを置く');if(p){const pm=LS.get('promise',{});pm[td]=p;LS.set('promise',pm);renderDrill()}return}
+    if(k==='promise'&&!a.includes('promise')){const pm=LS.get('promise',{});let cur=pm[td];if(typeof cur==='string')cur={t:cur};
+      if(!cur||!cur.t){const p=window.prompt('今日の約束は？（何を）','22:30までにスマホを置く');if(!p)return;const by=window.prompt('何時までに？（例 22:30）',(p.match(/\d{1,2}:\d{2}/)||['22:30'])[0]);pm[td]={t:p,by:(by||'').trim()};LS.set('promise',pm);renderDrill();toast('期日を決めた。守れたら、もう一度タップ');return}
+      const now=new Date(),hm=pad(now.getHours())+':'+pad(now.getMinutes());cur.at=hm;cur.ok=!cur.by||hm<=cur.by.padStart(5,'0');pm[td]=cur;LS.set('promise',pm);toast(cur.ok?'期日どおり。約束を守れた':'遅れたけど、やりきった')}
     mm[td]=a.includes(k)?a.filter(x=>x!==k):[...a,k];LS.set('drill',mm);renderDrill();if(mm[td].length>=DRILL.length)toast('今日の規律ドリル、そろった')})}
 function drillMark(k){const mm=drillDays(),td=todayStr(),a=mm[td]||[];if(!a.includes(k)){mm[td]=[...a,k];LS.set('drill',mm)}}
 let sortOpen=false;
