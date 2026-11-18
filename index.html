@@ -1534,6 +1534,7 @@ function dailyReport(){const td=todayStr(),C=CLAUDE_DATA.challenge,res=(LS.get('
   return ['【COCKPIT 今日の報告】'+td.slice(5).replace('-','/'),'口座：'+C.name,'結果ボタン：'+(res.length?res.map(r=>r==='W'?'勝':'負').join('→'):(noEntry()[td]?'見送り':'なし')),
     '朝の目線：'+BIAS_P.map(([k,n])=>n+' '+(B[k]?BIAS_L[B[k]]:'未入力')).join('／')+(B.changed?'（途中で変えた）':''),
     'クールダウン：'+(F.length?F.map(f=>f.t+' '+(f.k==='loss'?'負けた後':'🧊')+'「'+f.f+'」').join('、'):'なし'),
+    '規律ドリル：'+(()=>{const d=(LS.get('drill',{})[td]||[]);return d.length?DRILL.filter(x=>d.includes(x.k)).map(x=>x.t.replace('（ボーナス）','')).join('・'):'なし'})(),
     'コンディション：'+(tg.length?tg.join('・'):'なし'),'状態：'+STATES.find(x=>x.id===cfg.state).name,'ひとこと：'].join('\n')}
 function renderStatus(){renderHd();renderDrill();renderSort();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
