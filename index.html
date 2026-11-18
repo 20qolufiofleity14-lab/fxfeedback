@@ -80,6 +80,7 @@ i.lg{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 2px 0 
 .lf{margin-bottom:8px}.dayg{border-bottom:1px solid var(--line);padding:9px 0}.dayg summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer}.dayg summary::-webkit-details-marker{display:none}.dayg summary b{font-size:13.5px}.dayg summary span{font-size:11.5px;color:var(--mute);flex:1}.dayg summary i{font-style:normal;font-family:Outfit;font-weight:800;font-size:14px}
 .trms{margin-top:6px}.trm{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}.trm span{color:var(--mute)}.trm b{font-weight:600}.trm i{font-style:normal;font-family:Outfit;font-weight:700}
 .patmore{margin-top:8px}.patmore summary{font-size:12px;color:var(--mute);cursor:pointer;padding:6px 0}.pat.acc .psum b{display:none}.pat.acc.open .psum b{display:inline}.pat{padding:9px 0}
+.dr{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.dr>i{flex:none;width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:900;color:#0b0e14}.dr.on>i{background:var(--win);border-color:var(--win)}.dr b{font-size:14px}.dr span{display:block;font-size:12px;color:var(--mute);line-height:1.55;margin-top:2px}.dr.on b{color:var(--win)}
 .hsort{margin:6px 0 18px}.hsort>button{width:100%;padding:10px;border-radius:14px;border:1px dashed var(--line);background:none;color:var(--mute);font:inherit;font-size:12.5px}.hs-r{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:6px;font-size:13px}.hs-r b{flex:1;font-weight:600}.hs-r button{width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:15px}.hs-r button:disabled{opacity:.25}
 .tr .a{font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .tr .b{font-size:11.5px;color:var(--mute)}
@@ -428,6 +429,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <div class="card" id="biasCard"></div>
   <div id="homeExp"></div>
   <div id="homeUnlock"></div>
+  <div class="card" id="drillCard"></div>
   <div id="homeCreed"></div>
 
   <div class="card" id="condCard">
@@ -664,7 +666,7 @@ const CLAUDE_DATA={
     {id:'c-20261113-1',date:'2026-11-12',time:'',exit:'翌08:46',state:'tilt',tags:['夜トレ','眠気'],acct:'Fintokei速攻',pair:'XAUUSD',dir:'L',lot:0.3,pips:'',pnl:61676,good:'決済 08:46（日本時間）3869.49→3882.35（+$12.9）',bad:'夜のうちに持った0.3lot。損切り幅は未確認'}
   ],
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足','眠気'],memo:'夜勤明けで休むと決めたが、夜うとうとしながらゴールドを打ってしまった。本人いわく「これが自分が終わる理由」。'}},
-  noEntry:{'2026-11-16':1},
+  noEntry:{'2026-11-16':1,'2026-11-17':1,'2026-11-18':1},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
   // 作戦書（11/16、1回目の口座の振り返りから）。パターンタブの一番上に出る
@@ -709,7 +711,7 @@ const CLAUDE_DATA={
      why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
      check:'risk',result:'1日で終了。1本ずつのロットは上限内だったが、負けた後に14本重ねて口座が終わった。分かったこと：ロットの上限だけでは足りない。止めるべきは「負けた後の2本目」。'}],
   ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0},
-  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt'},
+  stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt','2026-11-17':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
     {t:'朝の目線と同じ方向？',s:'下目線の日に買わない。目線を変えるのは明日の朝'},
@@ -734,8 +736,8 @@ const CLAUDE_DATA={
   // 口座の一生（ローグライク風の記録）。Claudeがトークの内容から追記していく
   lives:[
     {name:'Fintokei 速攻プロ シルバー（2回目）',sizeLabel:'500万',size:5000000,start:'2026-11-16',end:null,status:'alive',cause:'',epitaph:'',
-     diary:[{d:'2026-11-16',t:'あー。うー。\nまた、うまれた。\nまえの子の にっきが、まくらもとに おいてあった。'}],
-     log:[{d:'2026-11-16',t:'誕生。前の口座（11/8〜11/13）の記録を引き継いでリスタート。初日は仕事でバタバタだったので、自分で決めてノートレード。'},{d:'2026-11-16',t:'新しいルール：「1敗したら、その日は終わり」。前の口座は、負けた後の39分・14本で終わった。作戦書を作った。'}]},
+     diary:[{d:'2026-11-16',t:'あー。うー。\nまた、うまれた。\nまえの子の にっきが、まくらもとに おいてあった。'},{d:'2026-11-18',t:'きょうは おうちで つみきを した。\nたかく つみたかったけど、ぐらぐらしたから いっこ やめた。\nやめても、くずれなかった。'}],
+     log:[{d:'2026-11-16',t:'誕生。前の口座（11/8〜11/13）の記録を引き継いでリスタート。初日は仕事でバタバタだったので、自分で決めてノートレード。'},{d:'2026-11-16',t:'新しいルール：「1敗したら、その日は終わり」。前の口座は、負けた後の39分・14本で終わった。作戦書を作った。'},{d:'2026-11-18',t:'今週は仕事が忙しく、自分で決めてチャートから離れる週に。トレードしない日も「規律ドリル」で練習する。'}]},
     {name:'The5ers ブートキャンプ $20K',sizeLabel:'$20K',start:'2026-08-24',end:'2026-09-22',status:'dead',cause:'全体ライン',
      epitaph:'合格まであと$410から、2週間で全部返した',
      log:[{d:'2026-09-08',t:'残高$21,590で最高値。目標$22,000まであと$410。'},{d:'2026-09-22',t:'$18,766で失格ライン$18,800を割る。勝率36%・PF0.70。'}]},
@@ -765,14 +767,13 @@ const CLAUDE_DATA={
   challenge:{name:'Fintokei 速攻プロ シルバー（2回目）',acct:'Fintokei速攻2',size:5000000,balance:5000000,target:300000,
     dailyLoss:100000,dailyProfit:150000,totalFloor:4825000,start:'2026-11-16',days:60,maxLossPct:0.5,selfLosses:1,selfR:2,balanceDate:'2026-11-16'},
   // Claudeの今日の判定：チャットで結果を見て毎回ここを更新する
-  coach:{date:'2026-11-16',week:'11/16〜11/20週',state:'tilt',grade:'A',
-    next:'stress',
-    headline:'2回目の誕生日。初日は打たないと決めた',
-    reason:'新しい口座の初日。仕事でバタバタした日に、自分で「今日はノートレード」と決められた。前の口座が教えてくれたのは、崩れるのは負けた直後のイライラの中だということ。だから、疲れた日に打たないのは正しい始まり方。',
-    good:['疲れた日を自分で見抜いて、打たないと決めた','前の口座の振り返りから、すぐに始めている'],
-    watch:['新しい口座を手にした高揚感（「今度こそ」で張りたくなる）'],
-    focus:'今日はチャートを見るだけ。パターンタブの「作戦書」を一度読む。明日からは「1敗したら、その日は終わり」。',
-    mind:{who:'Jared Tendler',text:'崩れのきっかけが分かっているなら、その瞬間の前に、やることを決めておく。'}}
+  coach:{date:'2026-11-18',week:'11/16〜11/20週',state:'tilt',next:'tilt',grade:'—',
+    headline:'離れると決めた週。打たない日も練習日',
+    reason:'仕事が忙しい週に、自分でチャートから離れると決めた。疲れた週に無理に打たないのは、前の口座が教えてくれたこと。トレードしない日は、規律ドリルで「決めたことを守る」回数を積む。',
+    good:['忙しい週を自分で見抜いて、離れると決めた'],
+    watch:['「ちょっとだけ見る」から入りたくなる。見ないと決めた日は見ない'],
+    focus:'今日の規律ドリルを3つ。🧊を1回押すだけでも1つ目は終わる。',
+    mind:{who:'James Clear',text:'規律は大きな決意ではなく、小さな約束を守った回数でできている。'}}
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1491,7 +1492,19 @@ function biasLine(){const B=biasToday();return BIAS_P.map(([k,n])=>`${n} <b clas
 function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),el=$('#hdScene');if(!cur||!cur.start){el.style.display='none';return}
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
-const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
+const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
+const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'小さな約束を1つ守る',s:'朝に決める。例：寝る前にスマホを置く・甘いものを1回見送る・ゲームで負けても90秒待つ'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'}];
+function drillDays(){return LS.get('drill',{})}
+function drillStreak(){const m=drillDays();let n=0,d=new Date(todayStr()+'T00:00');if(!(m[todayStr()]||[]).length)d.setDate(d.getDate()-1);for(;;){const k=ds(d);if((m[k]||[]).length>=DRILL.length){n++;d.setDate(d.getDate()-1)}else break}return n}
+function renderDrill(){const m=drillDays(),td=todayStr(),done=m[td]||[],P=LS.get('promise',{})[td]||'',tot=Object.values(m).filter(a=>a.length>=DRILL.length).length;
+  $('#drillCard').innerHTML=`<div class="ttl">規律ドリル <em>トレードしない日も積める</em></div>
+    ${DRILL.map(x=>`<div class="dr ${done.includes(x.k)?'on':''}" data-k="${x.k}"><i>${done.includes(x.k)?'✓':''}</i><div><b>${x.t}</b><span>${x.k==='promise'&&P?'今日の約束：'+P:x.s}</span></div></div>`).join('')}
+    <div class="small" style="margin-top:8px">3つそろった日 <b>${tot}日</b>・連続 <b>${drillStreak()}日</b>　小さな約束を守った回数が、負けた瞬間に止まれる力になる。</div>`;
+  $$('#drillCard .dr').forEach(r=>r.onclick=()=>{const k=r.dataset.k,mm=drillDays(),a=mm[td]||[];
+    if(k==='cool'&&!a.includes('cool')){openCool('urge');return}
+    if(k==='promise'&&!a.includes('promise')&&!(LS.get('promise',{})[td])){const p=window.prompt('今日の小さな約束は？（守れたら、もう一度タップ）','寝る前にスマホを置く');if(p){const pm=LS.get('promise',{});pm[td]=p;LS.set('promise',pm);renderDrill()}return}
+    mm[td]=a.includes(k)?a.filter(x=>x!==k):[...a,k];LS.set('drill',mm);renderDrill();if(mm[td].length>=DRILL.length)toast('今日の規律ドリル、そろった')})}
+function drillMark(k){const mm=drillDays(),td=todayStr(),a=mm[td]||[];if(!a.includes(k)){mm[td]=[...a,k];LS.set('drill',mm)}}
 let sortOpen=false;
 function homeOrder(){const o=LS.get('homeOrder',null)||[],ids=HOME_SEC.map(x=>x[0]);return [...o.filter(id=>ids.includes(id)),...ids.filter(id=>!o.includes(id))]}
 function applyHomeOrder(){const v=$('#v-home'),tail=$('#homeSort');homeOrder().forEach(id=>{const e=document.getElementById(id);if(e)v.insertBefore(e,tail)})}
@@ -1510,7 +1523,7 @@ function dailyReport(){const td=todayStr(),C=CLAUDE_DATA.challenge,res=(LS.get('
     '朝の目線：'+BIAS_P.map(([k,n])=>n+' '+(B[k]?BIAS_L[B[k]]:'未入力')).join('／')+(B.changed?'（途中で変えた）':''),
     'クールダウン：'+(F.length?F.map(f=>f.t+' '+(f.k==='loss'?'負けた後':'🧊')+'「'+f.f+'」').join('、'):'なし'),
     'コンディション：'+(tg.length?tg.join('・'):'なし'),'状態：'+STATES.find(x=>x.id===cfg.state).name,'ひとこと：'].join('\n')}
-function renderStatus(){renderHd();renderSort();
+function renderStatus(){renderHd();renderDrill();renderSort();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
   $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button><button id="goRep">📋報告</button></div>`;
   $('#goRep').onclick=()=>{const t=dailyReport();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('今日の報告をコピー。Claudeに貼るだけ')).catch(()=>{window.prompt('コピーしてClaudeに貼る',t)})};
@@ -1523,7 +1536,7 @@ function openCool(kind){
     sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">${loss?'ここで止まれた。':'波は引いた？'}</div>
       <div class="cd-fact">${loss?'・上限内のロットなら、今日の負けは最大でも口座の <b>0.5%</b>。予定どおりの経費。<br>・11/13は、最初の負け（−2,634円）から39分で14本、−52,194円になった。<b>今日はここで終わりにできた。</b><br>・ロットを2倍にしても、次に勝つ確率は同じ。2倍になるのは、失う金額だけ。<br>・止まれた日は「守れた日」。日記の子も、今日は褒められる。':'・「上げたら取り戻せる」は、体が覚えた古いクセ。確率は上がらない。失う額だけが増える。<br>・「取り返したい」は、打つ理由にならない。<br>・朝の目線と同じ方向？　今日の新しい1本？　違うなら見送り。<br>・5分だけチャートから離れる。形が本物なら、5分後もそこにある。'}</div>
       <button class="cd-btn" id="cdDone">${loss?'MT5を閉じた。今日は終わり':'5分、離れる'}</button>`;
-    $('#cdDone').onclick=()=>{$('#cdModal').classList.remove('on');toast(loss?'止まれた＝今日は勝ち':'えらい。5分後にまた');renderAll()}};
+    $('#cdDone').onclick=()=>{drillMark('cool');$('#cdModal').classList.remove('on');toast(loss?'止まれた＝今日は勝ち':'えらい。5分後にまた');renderAll()}};
   const step2=()=>{clearInterval(cdTimer);sh.innerHTML=`<div class="cd-k">COOL DOWN</div><div class="cd-h">今の気持ちは？</div><div class="cd-s">いちばん近いものを1つ。名前をつけるだけでいい。</div>
       <div class="cd-chips">${['イライラ','悔しい','取り返したい','焦り','自分に腹が立つ','意外と平気'].map(f=>`<button data-f="${f}">${f}</button>`).join('')}</div>`;
     $$('#cdSheet .cd-chips button').forEach(b=>b.onclick=()=>step3(b.dataset.f))};
