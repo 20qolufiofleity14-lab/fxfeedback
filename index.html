@@ -346,7 +346,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .rt-h{font-weight:800;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}.rt-h em{font-style:normal;font-weight:400;font-size:11px;color:var(--mute)}
 .rt-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:10px 0 8px}.rt{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;opacity:.45}.rt.on{opacity:1;border-color:var(--rc);box-shadow:0 0 12px -4px var(--rc)}
 .fold.route{margin:10px 0}.rt b{display:block;font-size:16px}.rt span{display:block;font-size:10px;white-space:nowrap;font-weight:700;margin-top:2px}.rt small{display:block;font-size:9.5px;color:var(--mute);margin-top:2px}
-.rt-dots{display:flex;align-items:center;gap:4px;margin-bottom:6px}.rt-dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line)}.rt-dots i.k{background:var(--win);border-color:var(--win)}.rt-dots i.x{background:var(--loss);border-color:var(--loss)}.rt-dots span{font-size:11px;color:var(--mute);margin-left:6px}
+.rt-dots{display:flex;align-items:center;gap:4px;margin-bottom:6px}.rt-dots i{width:9px;height:9px;border-radius:50%;border:1px solid var(--line)}.rt-dots i.k{background:var(--win);border-color:var(--win)}.rt-dots i.x{background:var(--loss);border-color:var(--loss)}.rt-dots i.r{background:#5aa9ff55;border-color:#5aa9ff}.rt-dots span{font-size:11px;color:var(--mute);margin-left:6px}
 .grave{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
 .grave .st{font-size:26px;flex:none}
 .grave b{font-size:13px}.grave div div{font-size:11.5px;color:var(--mute);margin-top:2px}
@@ -671,7 +671,8 @@ const CLAUDE_DATA={
   dayNotes:{'2026-11-11':{tags:['当直中'],memo:'当直の日にトレード。本人いわく「当直中のトレードは良くなかった」。'},'2026-11-12':{tags:['当直明け','睡眠不足','眠気'],memo:'夜勤明けで休むと決めたが、夜うとうとしながらゴールドを打ってしまった。本人いわく「これが自分が終わる理由」。'}},
   noEntry:{'2026-11-16':1,'2026-11-17':1,'2026-11-18':1},
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
-  // ルールを守れた日=1／守れなかった日=0（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
+  // ルールを守れた日=1／守れなかった日=0／打たずに休んだ日='rest'（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
+  // 休んだ日は0.5点。その日に規律ドリル3つをやれば0.8点。いちばん上の道は、実際に打って守れた日でしか届かない
   // 作戦書（11/16、1回目の口座の振り返りから）。パターンタブの一番上に出る
   plan:{updated:'2026-11-16',
     autopsy:{days:[
@@ -713,7 +714,7 @@ const CLAUDE_DATA={
      rule:'時間も回数も縛らない。1回の損失が上限（口座の0.5%＝2.5万円、復帰日は約3,600円）を超えるロットでは打たない。これ1つだけ。',
      why:'厳しいルールを重ねると、守れなかった反動で崩れてきた。根っこは「ロットが大きい→負けて心が折れる→惰性の取り返し」。だから入口のロットだけを守ってみる。',
      check:'risk',result:'1日で終了。1本ずつのロットは上限内だったが、負けた後に14本重ねて口座が終わった。分かったこと：ロットの上限だけでは足りない。止めるべきは「負けた後の2本目」。'}],
-  ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0,'2026-11-16':1,'2026-11-17':1},
+  ruleLog:{'2026-11-11':0,'2026-11-12':0,'2026-11-13':0,'2026-11-16':'rest','2026-11-17':'rest'},
   stateLog:{'2026-11-08':'normal','2026-11-11':'stress','2026-11-12':'tilt','2026-11-13':'recover','2026-11-16':'tilt','2026-11-17':'tilt'},
   // エントリー前チェックリスト（左下の丸ボタン）。トークの内容に合わせてClaudeが更新
   checklist:[
@@ -1341,12 +1342,15 @@ const STUDY_DAY=3,BRANCH_DAY=23;
 const ds_=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function routeInfo(){
   const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),Rl=CLAUDE_DATA.ruleLog||{};
-  const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length,kept=ds.filter(d=>Rl[d]).length,base=n?kept/n:0;
+  const ds=Object.keys(Rl).filter(d=>!cur||!cur.start||d>=cur.start).sort().slice(-10),n=ds.length;
+  const DR=(typeof LS!=='undefined'?LS.get('drill',{}):{}),core=['cool','promise','stop'];
+  const pt=d=>Rl[d]==='rest'?(core.every(c=>(DR[d]||[]).includes(c))?.8:.5):(Rl[d]?1:0);
+  const kept=ds.filter(d=>Rl[d]===1||Rl[d]===true).length,rest=ds.filter(d=>Rl[d]==='rest').length,base=n?ds.reduce((x,d)=>x+pt(d),0)/n:0;
   // 瞑想ボーナス：直近10日で瞑想した日 ×1%（最大+5%）。ほんの少しだけ道を押し上げる
   const DM=(typeof LS!=='undefined'?LS.get('drill',{}):{}),t0=new Date();t0.setDate(t0.getDate()-9);const since=ds_(t0);
   const med=Object.entries(DM).filter(([d,a])=>d>=since&&(!cur||!cur.start||d>=cur.start)&&a.includes('med')).length,bonus=Math.min(.05,med*.01),rate=Math.min(1,base+(n?bonus:0));
   const rank=n<2?null:Math.max(1,Math.min(10,Math.floor(rate*10+1e-9)));
-  return {ds,n,kept,rate,base,med,bonus,rank,id:rank?ROUTES[rank-1].id:null,track:n<2?null:rate>=.8?'hi':rate<.4?'lo':null,dots:ds.map(d=>Rl[d]?1:0)};
+  return {ds,n,kept,rate,base,med,bonus,rank,id:rank?ROUTES[rank-1].id:null,track:n<2?null:rate>=.8?'hi':rate<.4?'lo':null,rest,dots:ds.map(d=>Rl[d]==='rest'?2:Rl[d]?1:0)};
 }
 // その日の年齢で、いま歩いている道（共通／学生の頑張り／ルート）
 function routeNow(day){const r=routeInfo();if(day>=BRANCH_DAY)return r.id||'mid';if(day>=STUDY_DAY&&r.track)return r.track;return 'mid'}
@@ -1400,8 +1404,8 @@ function renderLog2(){
     $('#lgNow').insertAdjacentHTML('beforeend',`<details class="fold route" ${dn>=BRANCH_DAY?'open':''}><summary><b>人生ルート</b><span>${cr?`${dn<BRANCH_DAY?'今のままだと ':''}<i style="color:${cr.c}">${cr.ic} ${cr.n}</i>`:'まだ判定前'}</span></summary>
       <div class="small" style="margin:10px 0 8px">${phase}</div>
       <div class="rt-row">${[...ROUTES].reverse().map((r,i)=>`<div class="rt ${ri.id===r.id?'on':''}" style="--rc:${r.c}"><b>${r.ic}</b><span>${r.n}</span><small>${10-i===10?'10割':10-i===1?'2割未満':(10-i)+'割〜'}</small></div>`).join('')}</div>
-      <div class="rt-dots">${ri.dots.map(v=>`<i class="${v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>守れた日 ${ri.kept}/${ri.n}（直近10日）${ri.med?`　🧘 瞑想 +${Math.round(ri.bonus*100)}%`:''}</span></div>
-      <div class="small">${ri.n<3?`まだ判定前（2日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。途中からでも、守った日が増えれば上の道へ、崩れれば下の道へ移る。</div></details>`);
+      <div class="rt-dots">${ri.dots.map(v=>`<i class="${v===2?'r':v?'k':'x'}"></i>`).join('')}${Array(Math.max(0,10-ri.n)).fill('<i></i>').join('')}<span>打って守れた ${ri.kept}・休み ${ri.rest} ／ ${ri.n}日　${Math.round(ri.rate*100)}点${ri.med?`　🧘 瞑想 +${Math.round(ri.bonus*100)}%`:''}</span></div>
+      <div class="small">${ri.n<2?`まだ判定前（2日分たまってから）。今は${ri.n}日分。`:nx?`次は <b style="color:${nx.c}">${nx.ic} ${nx.n}</b>。守れた日が${ri.rank+1}割に届けば上がる。`:'いちばん上の道。落ち度なしを続ける。'}　勝ち負けは関係なし。打って守れた日＝1点、休んだ日＝0.5点（ドリル3つで0.8点）、崩れた日＝0点。休んでいるだけでは、上の道には届かない。</div></details>`);
     const DY=(cur.diary||[]).slice().sort((a,b)=>b.d.localeCompare(a.d)),nm=charName(cur)==='名前をつける'?'この子':charName(cur);
     const dEnt=e=>`<div class="dy-e"><div class="dy-h">${dayN(e.d)}さいの日記 <span>${e.d.slice(5).replace('-','/')}（${wd(e.d)}）</span></div><div class="dy-t">${e.t.replace(/\n/g,'<br>')}</div></div>`;
     if(DY.length)$('#lgNow').insertAdjacentHTML('beforeend',`<div class="diary"><div class="dy-k">📓 ${nm}の日記</div>${dEnt(DY[0])}${DY.length>1?`<details><summary>これまでの日記（${DY.length-1}日分）</summary>${DY.slice(1).map(dEnt).join('')}</details>`:''}</div>`);
