@@ -373,6 +373,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .pp-f{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px}.pp-f a{color:#2b241b}.pp-f button{border:1px solid #2b241b;background:none;border-radius:10px;padding:6px 12px;font:inherit;color:#2b241b}
 .pp-old summary{font-size:12px;margin-top:12px;cursor:pointer;opacity:.75}
 .stt .newb{position:relative;border-color:var(--acc);color:var(--acc2,#f5d78a);background:var(--accdim)}.stt .newb.nw::after{content:"NEW";position:absolute;top:-6px;right:-4px;background:var(--loss);color:#fff;font-size:8px;font-weight:800;padding:1px 4px;border-radius:6px}
+.ncard{display:block;width:100%;text-align:left;margin:12px 0;padding:14px 16px;border-radius:18px;border:1px solid #c9b88f;background:#f3ecdc;color:#2b241b;font:inherit;cursor:pointer}.ncard .nk{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.04em;opacity:.8}.ncard .nk em{font-style:normal;background:var(--loss);color:#fff;font-size:9px;padding:1px 6px;border-radius:6px}.ncard b{display:block;font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-size:17px;line-height:1.45;margin:6px 0 4px}.ncard .ns{font-size:11px;opacity:.65}
 .mindhd{display:flex;align-items:baseline;justify-content:space-between;margin:4px 2px 12px}.mindhd b{font-family:Outfit;font-weight:800;font-size:22px;letter-spacing:.06em}.mindhd span{font-size:11.5px;color:var(--mute)}
 .wis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.wis div{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px;font-size:12.5px;font-weight:700;line-height:1.5;cursor:pointer}.wis div span{display:block;font-size:10px;color:var(--mute);font-weight:400;margin-top:3px}.wis div.op{grid-column:1/-1;border-color:var(--acc)}.wis div p{font-size:12px;font-weight:400;color:var(--text);line-height:1.65;margin-top:6px}
 .plink{margin-top:8px;border-left:3px solid var(--acc);background:var(--bg2);border-radius:0 10px 10px 0;padding:8px 10px;font-size:12px;line-height:1.6}.plink small{display:block;color:var(--mute);font-size:10.5px}
@@ -447,6 +448,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <div id="homeStatus"></div>
   <div id="homeCoach"></div>
   <div class="card" id="chal"></div>
+  <div id="newsCard"></div>
   <div class="card" id="biasCard"></div>
   <div id="homeExp"></div>
   <div id="homeUnlock"></div>
@@ -1548,7 +1550,7 @@ function biasLine(){const B=biasToday();return BIAS_P.map(([k,n])=>`${n} <b clas
 function renderHd(){const cur=(CLAUDE_DATA.lives||[]).find(l=>l.status==='alive'),el=$('#hdScene');if(!cur||!cur.start){el.style.display='none';return}
   const dn=Math.floor((new Date(todayStr()+'T00:00')-new Date(cur.start+'T00:00'))/864e5)+1,rt=routeNow(dn),st=stageOf(dn,rt);
   el.style.display='';el.innerHTML=scene(st.k,dn,cfg.state,rt)+`<em>${dn}歳</em>`;el.onclick=()=>$('nav button[data-v="log2"]').click()}
-const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
+const HOME_SEC=[['homeStatus','状態バー'],['homeCoach','Claudeの総合判定'],['chal','口座の残高'],['newsCard','📰新聞'],['biasCard','今日の目線'],['homeExp','今週の実験'],['homeUnlock','実績目標（次の口座）'],['drillCard','規律ドリル'],['homeCreed','原点'],['condCard','今日のコンディション'],['riskCard','1回のリスク'],['anaFold','成績の分析']];
 const DRILL=[{k:'cool',t:'避難訓練',s:'🧊を押して90秒呼吸。負けた日の動きを体に覚えさせる'},{k:'promise',t:'期日つきの約束を1つ守る',s:'朝に「何を・何時までに」を決める。例：12:00までに目線をタップ・22:30までにスマホを置く'},{k:'stop',t:'「やめる」を1回やる',s:'もう1回やりたい時に、そこでやめる。ゲーム・動画・SNS、何でもいい'},{k:'med',t:'瞑想 5分（ボーナス）',s:'右下の🧘から。座って呼吸を数えるだけでいい。した日は、人生ルートがほんの少し上がる（1日+1%、最大+5%）',bonus:1}];
 const DRILL_CORE=()=>DRILL.filter(x=>!x.bonus).map(x=>x.k);
 function drillDays(){return LS.get('drill',{})}
@@ -1629,7 +1631,9 @@ function openNews(){const N=CLAUDE_DATA.news||[];if(!N.length)return;const x=N[0
   $('#paper').innerHTML=`<div class="pp-mast"><b>COCKPIT新聞</b><span>第${x.no}号<br>${x.date.replace(/-/g,'.')}</span></div>${issue(x)}
     ${N.length>1?`<details class="pp-old"><summary>▸ 過去の号（${N.length-1}）</summary>${N.slice(1).map(n=>`<div class="pp-mast" style="margin-top:14px"><b style="font-size:18px">第${n.no}号</b><span>${n.date.replace(/-/g,'.')}</span></div>${issue(n)}`).join('')}</details>`:''}
     <div class="pp-f"><a href="${x.book}" target="_blank" rel="noopener">📖 教本をぜんぶ読む</a><button id="ppClose">閉じる</button></div>`;
-  $('#ppClose').onclick=()=>{$('#newsModal').classList.remove('on');renderStatus()};$('#newsModal').classList.add('on')}
+  $('#ppClose').onclick=()=>{$('#newsModal').classList.remove('on');renderStatus();renderNewsCard()};$('#newsModal').classList.add('on')}
+function renderNewsCard(){const N=CLAUDE_DATA.news||[],el=$('#newsCard');if(!el)return;if(!N.length){el.innerHTML='';return}const x=N[0],nw=x.no>newsSeen();
+  el.innerHTML=`<button class="ncard ${nw?'nw':''}" id="ncBtn"><span class="nk">📰 COCKPIT新聞　第${x.no}号・${x.date.slice(5).replace('-','/')}${nw?'<em>NEW</em>':''}</span><b>${x.lead}</b><span class="ns">タップで読む　｜　2週に1回、The5ers・Fintokeiの動画から届く</span></button>`;$('#ncBtn').onclick=openNews}
 function wisFor(pid){return (CLAUDE_DATA.wisdom||[]).filter(w=>(w.pat||[]).includes(pid))}
 function renderWis(){const W=CLAUDE_DATA.wisdom||[],el=$('#wisCard');if(!el)return;
   el.innerHTML=`<div class="ttl">先人の知恵 <em>新聞から育つ・${W.length}枚</em></div><div class="small">新聞で拾った話のうち、自分の失敗に効くものだけを残す。タップで開く。</div><div class="wis">${W.map((w,i)=>`<div data-i="${i}"><b style="font-weight:700">${w.t}</b><span>${w.w}${w.no?'・第'+w.no+'号':''}</span></div>`).join('')}</div>`;
@@ -1688,7 +1692,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();renderPlan();renderWis();renderBias();renderStatus();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();renderPlan();renderWis();renderNewsCard();renderBias();renderStatus();
 }
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
