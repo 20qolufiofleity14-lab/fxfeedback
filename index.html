@@ -99,7 +99,7 @@ i.lg{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 2px 0 
 .meter{height:6px;background:var(--bg2);border-radius:4px;margin-top:6px;overflow:hidden}
 .meter i{display:block;height:100%;background:var(--acc)}
 .pat.acc{cursor:pointer}
-.pat.acc .abcd{display:none}.pat.acc.open .abcd{display:grid}
+.pat.acc .abcd{display:none}.pat.acc.open .abcd{display:grid}.pat.acc .plink{display:none}.pat.acc.open .plink{display:block}
 .pch{float:right;color:var(--mute);font-weight:400;transition:.2s}.pat.open .pch{transform:rotate(180deg)}
 .psum{font-size:12px;color:var(--mute);margin-top:4px;line-height:1.6}.psum b{color:var(--win);font-weight:700}
 .pat.open .psum{display:none}
@@ -357,6 +357,25 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 .fab svg{width:26px;height:26px}.fab:active{transform:scale(.93)}
 .ckmodal{align-items:center;padding:18px}
 .fab.r{left:auto;right:14px;border-color:#5aa9ff;color:#5aa9ff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px rgba(90,169,255,.35)}
+.dial{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom) + 92px);z-index:7;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.dial .dimbg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:-1}.dial.open .dimbg{display:block}
+.dis{display:none;flex-direction:column;align-items:flex-end;gap:10px}.dial.open .dis{display:flex}
+.di{display:flex;align-items:center;gap:10px;background:none;border:none;padding:0;color:var(--text);font:inherit}
+.di em{font-style:normal;font-size:12.5px;font-weight:700;background:var(--card);border:1px solid var(--line);padding:5px 10px;border-radius:10px}
+.di i{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:21px;background:rgba(10,11,14,.95);border:1.5px solid var(--c);box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.dmain{width:56px;height:56px;border-radius:50%;border:none;background:var(--acc);color:#111;font-size:30px;font-weight:800;line-height:1;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 0 4px var(--accdim);transition:transform .2s}.dial.open .dmain{transform:rotate(45deg)}
+.paper{width:100%;max-width:460px;max-height:86vh;overflow:auto;background:#f3ecdc;color:#2b241b;border-radius:20px;padding:18px 16px 20px}
+.pp-mast{border-bottom:3px double #2b241b;padding-bottom:8px;display:flex;justify-content:space-between;align-items:flex-end}.pp-mast b{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-size:26px;font-weight:800;letter-spacing:.06em}.pp-mast span{font-size:10.5px;text-align:right;line-height:1.5}
+.pp-lead{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-size:20px;font-weight:800;line-height:1.45;margin:12px 0 8px}.paper p{font-size:13px;line-height:1.8}
+.pp-pick{margin-top:12px;border:1px solid #2b241b;padding:10px;border-radius:6px}.pp-pick h5{font-size:11px;letter-spacing:.12em;margin-bottom:6px}.pp-pick a{display:block;color:#2b241b;text-decoration:none;font-size:13px;line-height:1.5;padding:6px 0;border-top:1px dashed rgba(43,36,27,.3)}.pp-pick a:first-of-type{border-top:none}.pp-pick small{display:block;font-size:11px;opacity:.7}
+.pp-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;font-size:12px;line-height:1.65}.pp-cols b{display:block;font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-size:13.5px;margin-bottom:2px}
+.pp-q{margin-top:12px;background:#2b241b;color:#f3ecdc;padding:10px 12px;font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-size:14px;line-height:1.6;border-radius:6px}
+.pp-f{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px}.pp-f a{color:#2b241b}.pp-f button{border:1px solid #2b241b;background:none;border-radius:10px;padding:6px 12px;font:inherit;color:#2b241b}
+.pp-old summary{font-size:12px;margin-top:12px;cursor:pointer;opacity:.75}
+.stt .newb{position:relative;border-color:var(--acc);color:var(--acc2,#f5d78a);background:var(--accdim)}.stt .newb.nw::after{content:"NEW";position:absolute;top:-6px;right:-4px;background:var(--loss);color:#fff;font-size:8px;font-weight:800;padding:1px 4px;border-radius:6px}
+.mindhd{display:flex;align-items:baseline;justify-content:space-between;margin:4px 2px 12px}.mindhd b{font-family:Outfit;font-weight:800;font-size:22px;letter-spacing:.06em}.mindhd span{font-size:11.5px;color:var(--mute)}
+.wis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.wis div{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px;font-size:12.5px;font-weight:700;line-height:1.5;cursor:pointer}.wis div span{display:block;font-size:10px;color:var(--mute);font-weight:400;margin-top:3px}.wis div.op{grid-column:1/-1;border-color:var(--acc)}.wis div p{font-size:12px;font-weight:400;color:var(--text);line-height:1.65;margin-top:6px}
+.plink{margin-top:8px;border-left:3px solid var(--acc);background:var(--bg2);border-radius:0 10px 10px 0;padding:8px 10px;font-size:12px;line-height:1.6}.plink small{display:block;color:var(--mute);font-size:10.5px}
 .fab.r.m{bottom:calc(env(safe-area-inset-bottom) + 154px);border-color:#b48cf2;color:#b48cf2;box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 14px rgba(180,140,242,.35)}
 .mdsheet{border-color:#b48cf2}.mdsheet .cd-k{color:#b48cf2}.mdsheet .cd-ring{border-color:#b48cf2;background:radial-gradient(circle,rgba(180,140,242,.35),rgba(180,140,242,.05) 70%)}.mdsheet .cd-t{color:#b48cf2}.mdsheet .cd-btn{background:#b48cf2}.md-min{display:flex;gap:8px;justify-content:center;margin:16px 0}.md-min button{flex:1;max-width:90px;padding:14px 0;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;font-weight:800;font-size:16px}
 .cdsheet{background:var(--card);border:1px solid #5aa9ff;border-radius:24px;padding:22px 18px;text-align:center}
@@ -549,6 +568,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 
 <!-- ===== PATTERNS ===== -->
 <section class="view" id="v-pat">
+  <div class="mindhd"><b>MIND</b><span>自分のデータ ＋ 先人の知恵</span></div>
   <div id="planBox"></div>
   <div class="card">
     <div class="ttl">注意ポイント <em>タップで詳しく（ABCD）</em></div>
@@ -563,6 +583,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
     <div class="ttl">好調の条件 <em>勝ちトレードの日に多いタグ</em></div>
     <div id="goodList"></div>
   </div>
+  <div class="card" id="wisCard"></div>
 </section>
 </div>
 
@@ -626,8 +647,8 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
 </div></div>
 
 <button class="fab" id="fabCheck" aria-label="エントリー前チェック"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1v5M12 18v5M1 12h5M18 12h5"/></svg></button>
-<button class="fab r m" id="fabMed" aria-label="瞑想">🧘</button>
-<button class="fab r" id="fabCool" aria-label="クールダウン">🧊</button>
+<div class="dial" id="dial"><div class="dimbg" id="dialBg"></div><div class="dis"><button class="di" id="fabMed"><em>瞑想</em><i style="--c:#b48cf2">🧘</i></button><button class="di" id="fabCool"><em>クールダウン</em><i style="--c:#5aa9ff">🧊</i></button></div><button class="dmain" id="dialBtn" aria-label="メニュー">＋</button></div>
+<div class="modal ckmodal" id="newsModal"><div class="paper" id="paper"></div></div>
 <div class="modal ckmodal" id="cdModal"><div class="cksheet cdsheet" id="cdSheet"></div></div>
 <div class="modal ckmodal" id="ckModal"><div class="cksheet" id="ckSheet"></div></div>
 <nav><div class="in">
@@ -635,7 +656,7 @@ body.t-c .coachbig{background:linear-gradient(160deg,rgba(255,159,46,.16),var(--
   <button data-v="log2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ログ</button>
   <button data-v="lot" class="plus" id="lotCenter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg></button>
   <button data-v="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>カレンダー</button>
-  <button data-v="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>パターン</button>
+  <button data-v="pat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>MIND</button>
 </div></nav>
 <div class="toast" id="toast"></div>
 
@@ -673,6 +694,27 @@ const CLAUDE_DATA={
   // Claudeの判定の履歴（その日から有効）。トレードの状態が未入力なら、その日の判定を引き継ぐ
   // ルールを守れた日=1／守れなかった日=0／打たずに休んだ日='rest'（Claudeが日次レビューで付ける）。人生ルートの分岐に使う
   // 休んだ日は0.5点。その日に規律ドリル3つをやれば0.8点。いちばん上の道は、実際に打って守れた日でしか届かない
+  // 📰新聞：2週に1回、教本（トレーダーのメンタル教本）の更新と一緒に1号ずつ足す。新しい号が先頭
+  news:[
+    {no:1,date:'2026-11-21',lead:'負けの本体は「取り返したい」気持ちやった',
+     body:'2年負け続けたトレーダー（Alexandros・The5ers）が記録を見直したら、10回中8回は勝っていた。口座を飛ばしたのは、負けた1回に「個人的になって」同じ方向に何度も入り直したときだけ。1回の負けは問題やない。その後の取り返しが問題。',
+     picks:[{t:'72,710ドル出金｜欲望から規律へ',s:'The5ers · 2:00〜6:00 取り返しの癖を直した話',u:'https://www.youtube.com/watch?v=Ko9U32gEdKk'},{t:'報酬68万円超「手法と習慣」',s:'Fintokei · 4:30〜7:00 人間をやめる、9:00 2連敗ルール',u:'https://www.youtube.com/watch?v=_ZvmfSWD3NI'},{t:'チャレンジ合格の10ステップ',s:'The5ers · 37:00〜39:00 内側のコート',u:'https://www.youtube.com/watch?v=0_YNEcm-Pco'}],
+     cols:[{h:'内側のコート',t:'プロップのルールは外線。その内側に、もっと狭い自分のコートを引く。破っても外線まで余裕が残る（Rich Wells・David Grant）。'},{h:'待てたら勝ち',t:'4時間足で待ってチャンスを1回逃しても、「無駄撃ちして負けてない」を評価する（リョーマ）。'},{h:'モチベは消える',t:'やる気はスタートを切らせるだけ。続けさせるのは規律とルーティン（Will）。'},{h:'弱い日を認める',t:'寝不足の日は「今日は弱い日やから小さく、またはやらん」と決める（Will）。'}],
+     quote:'負けが痛いのは負けたからやなく、その後に取り返しに行くから。',
+     book:'https://claude.ai/artifact/96SK7CPviFq1twtiLNqJUV'}],
+  // 先人の知恵（MINDタブの下に並ぶ）。新聞で拾った話のうち、自分の失敗に効くものだけを残す。pat＝関係する注意ポイント
+  wisdom:[
+    {t:'負けの本体は「取り返したい」気持ち',w:'Alexandros（The5ers）',d:'1回の負けは問題やない。負けた後に同じ方向へ入り直すのが口座を飛ばす。',pat:['revenge','stack'],no:1},
+    {t:'イラッとしたら閉じる',w:'Alexandros（The5ers）',d:'「もう一回同じ方向に」と思った瞬間が危険信号。チャートを閉じる。',pat:['revenge'],no:1},
+    {t:'連敗したら、その日は終わり',w:'来店さん（Fintokei）',d:'それでもやらかす日はある。だからルールで先に決めておく。',pat:['revenge','tired'],no:1},
+    {t:'モチベは消える。仕組みは残る',w:'Will（The5ers）',d:'気分で守れる日は、気分で破れる日でもある。',pat:[],no:1},
+    {t:'規律＝戻ってくる力',w:'Will（The5ers）',d:'ミスしないことではなく、気づいて直して繰り返さないこと。昨日破っても、今日から取り戻せる。',pat:[],no:1},
+    {t:'判断を紙に移す',w:'来店さん（Fintokei）',d:'人は感情の生き物。手法を書いて見える化し、過去検証で確かめてはじめて、気分で入らなくなる。',pat:['bias'],no:1},
+    {t:'エッジと交渉しない',w:'Rich Wells',d:'条件が揃ってるのに見送るのも、揃ってないのに入るのも、どちらも交渉。',pat:['bias','confident'],no:1},
+    {t:'内側のコート',w:'David Grant・Rich Wells',d:'プロップの線の内側に、自分の狭い線を引く。1回0.5%、連敗で終了。',pat:['lot','stack'],no:1},
+    {t:'待てた日も勝ち',w:'リョーマ（Fintokei）',d:'無駄撃ちしなかった日を、勝ちと数える。',pat:['fomo'],no:1},
+    {t:'弱い日を認める',w:'Will（The5ers）',d:'寝不足・当直明けの日は、強がらずに小さく、またはやらない。',pat:['tired','night'],no:1},
+    {t:'合格後はモードを切り替える',w:'The5ers 著者対談',d:'合格までは届く勝負、合格後は守る勝負。合格した瞬間に飛ばす人が多い。',pat:['step2'],no:1}],
   // 作戦書（11/16、1回目の口座の振り返りから）。パターンタブの一番上に出る
   plan:{updated:'2026-11-16',
     autopsy:{days:[
@@ -1064,7 +1106,7 @@ function renderPat(){
       <i class="bb">B</i><div class="bt">「${r.b}」${r.quote&&r.quote[0]!=='（'?`<span class="small">　ノートより：「${r.quote}」</span>`:''}</div>
       <i>C</i><div class="ct">${r.n?`これまで ${r.n}回 ・ ${yen(r.loss)}（全体の損失の${totalLoss?Math.round(Math.abs(Math.min(0,r.loss))/totalLoss*100):0}%）`:(r.evidence||'まだデータなし。出たらここに溜まっていく')}</div>
       <i class="dd">D</i><div class="dt">${r.d}</div>
-    </div>${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`;
+    </div>${wisFor(r.id).map(w=>`<div class="plink">関係する知恵：${w.t}<small>${w.w}・新聞 第${w.no}号</small></div>`).join('')}${r.n?`<div class="meter"><i style="width:${Math.abs(Math.min(0,r.loss))/mx*100}%"></i></div>`:''}</div></div>`;
   const hot=rows.filter(r=>r.n||r.evidence),cold=rows.filter(r=>!r.n&&!r.evidence);
   $('#patList').innerHTML=hot.map(patRow).join('')+(cold.length?`<details class="patmore"><summary>まだ出ていないもの（${cold.length}件）</summary>${cold.map((r,i)=>patRow(r,hot.length+i)).join('')}</details>`:'');
   $$('#patList .pat').forEach(p=>p.onclick=()=>p.classList.toggle('open'));
@@ -1455,8 +1497,10 @@ function openCheck(){
   $('#ckModal').classList.add('on');
 }
 $('#fabCheck').onclick=openCheck;
-$('#fabCool').onclick=()=>{$('#cdSheet').classList.remove('mdsheet');openCool('urge')};
-$('#fabMed').onclick=openMed;
+const dialClose=()=>$('#dial').classList.remove('open');
+$('#dialBtn').onclick=()=>$('#dial').classList.toggle('open');$('#dialBg').onclick=dialClose;
+$('#fabCool').onclick=()=>{dialClose();$('#cdSheet').classList.remove('mdsheet');openCool('urge')};
+$('#fabMed').onclick=()=>{dialClose();openMed()};
 $('#ckModal').addEventListener('click',()=>$('#ckModal').classList.remove('on'));
 // GitHub側が更新されていたら自動で読み込み直す（Claudeの毎日の更新がすぐ出るように）
 async function checkUpdate(){
@@ -1542,7 +1586,8 @@ function dailyReport(){const td=todayStr(),C=CLAUDE_DATA.challenge,res=(LS.get('
     'コンディション：'+(tg.length?tg.join('・'):'なし'),'状態：'+STATES.find(x=>x.id===cfg.state).name,'ひとこと：'].join('\n')}
 function renderStatus(){renderHd();renderDrill();renderSort();
   const C=CLAUDE_DATA.challenge,U=CLAUDE_DATA.unlock||{need:20},n=lossToday(),stop=cfg.state==='tilt'||n>=C.selfLosses,B=biasToday();
-  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button><button id="goRep">📋報告</button></div>`;
+  $('#homeStatus').innerHTML=`<div class="stt"><span class="${stop?'stop':'go'}">${stop?(n>=C.selfLosses?'🔴 終わり':'🔴 休み'):'🟢 打てる'}</span><span>負${n}/${C.selfLosses}</span><span>${BIAS_P.some(([k])=>B[k])?'目線 '+BIAS_P.map(([k])=>({XAU:'金',JPY:'円'}[k])+(B[k]?({up:'↑',down:'↓',wait:'待ち'}[B[k]]):'未')).join('・'):'目線 未入力'}</span><span>連続${lotStreak()}/${U.need}</span><button id="goPlan">📘作戦書</button>${(CLAUDE_DATA.news||[]).length?`<button id="goNews" class="newb ${CLAUDE_DATA.news[0].no>newsSeen()?'nw':''}">📰新聞</button>`:''}<button id="goRep">📋報告</button></div>`;
+  const gn=$('#goNews');if(gn)gn.onclick=openNews;
   $('#goRep').onclick=()=>{const t=dailyReport();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('今日の報告をコピー。Claudeに貼るだけ')).catch(()=>{window.prompt('コピーしてClaudeに貼る',t)})};
   $('#goPlan').onclick=()=>$('nav button[data-v="pat"]').click();
 }
@@ -1576,6 +1621,19 @@ function openMed(){
   $$('#cdSheet .md-min button').forEach(b=>b.onclick=()=>run(+b.dataset.m));$('#mdNo').onclick=()=>{$('#cdModal').classList.remove('on');sh.classList.remove('mdsheet')};
   $('#cdModal').classList.add('on');
 }
+function newsSeen(){return LS.get('newsSeen',0)}
+function openNews(){const N=CLAUDE_DATA.news||[];if(!N.length)return;const x=N[0];LS.set('newsSeen',x.no);
+  const issue=n=>`<div class="pp-lead">${n.lead}</div><p>${n.body}</p>
+    <div class="pp-pick"><h5>今週末に見るなら</h5>${n.picks.map(p=>`<a href="${p.u}" target="_blank" rel="noopener">${p.t}<small>${p.s}</small></a>`).join('')}</div>
+    <div class="pp-cols">${n.cols.map(c=>`<div><b>${c.h}</b>${c.t}</div>`).join('')}</div><div class="pp-q">今週の一言：${n.quote}</div>`;
+  $('#paper').innerHTML=`<div class="pp-mast"><b>COCKPIT新聞</b><span>第${x.no}号<br>${x.date.replace(/-/g,'.')}</span></div>${issue(x)}
+    ${N.length>1?`<details class="pp-old"><summary>▸ 過去の号（${N.length-1}）</summary>${N.slice(1).map(n=>`<div class="pp-mast" style="margin-top:14px"><b style="font-size:18px">第${n.no}号</b><span>${n.date.replace(/-/g,'.')}</span></div>${issue(n)}`).join('')}</details>`:''}
+    <div class="pp-f"><a href="${x.book}" target="_blank" rel="noopener">📖 教本をぜんぶ読む</a><button id="ppClose">閉じる</button></div>`;
+  $('#ppClose').onclick=()=>{$('#newsModal').classList.remove('on');renderStatus()};$('#newsModal').classList.add('on')}
+function wisFor(pid){return (CLAUDE_DATA.wisdom||[]).filter(w=>(w.pat||[]).includes(pid))}
+function renderWis(){const W=CLAUDE_DATA.wisdom||[],el=$('#wisCard');if(!el)return;
+  el.innerHTML=`<div class="ttl">先人の知恵 <em>新聞から育つ・${W.length}枚</em></div><div class="small">新聞で拾った話のうち、自分の失敗に効くものだけを残す。タップで開く。</div><div class="wis">${W.map((w,i)=>`<div data-i="${i}"><b style="font-weight:700">${w.t}</b><span>${w.w}${w.no?'・第'+w.no+'号':''}</span></div>`).join('')}</div>`;
+  $$('#wisCard .wis div').forEach(d=>d.onclick=()=>{const op=d.classList.toggle('op');const w=W[+d.dataset.i];const p=d.querySelector('p');if(op&&!p)d.insertAdjacentHTML('beforeend',`<p>${w.d}</p>`);if(!op&&p)p.remove()})}
 function renderPlan(){
   const P=CLAUDE_DATA.plan,el=$('#planBox');if(!P){el.innerHTML='';return}
   const A=P.autopsy,mx=Math.max(...A.bursts.map(b=>-b.p)),st=lotStreak(),sd=stoppedDays();let nowSet=false;
@@ -1630,7 +1688,7 @@ function renderAll(){
     if(m&&m.s==='great'&&!base&&rank[c]<=1&&!a)cfg.state='great';
   }
   renderCoach();renderChal();
-  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();renderPlan();renderBias();renderStatus();
+  renderHome();renderLot();renderAcct();renderAna();renderPat();renderLog2();renderWeek();renderExp();renderPlan();renderWis();renderBias();renderStatus();
 }
 $('#states').addEventListener('click',e=>{const b=e.target.closest('.state');if(!b)return;cfg.manual={d:todayStr(),s:b.dataset.s};save();renderAll()});
 // 日付が変わったら・アプリに戻ってきたら描き直す（開きっぱなしで前日の表示が残るのを防ぐ）
